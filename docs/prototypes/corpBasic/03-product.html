@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>企业官网 - 产品服务</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>tailwind.config = { theme: { extend: { colors: { primary: '#1E40AF' } } } }</script>
+  <style>
+    .phone-frame { width: 375px; height: 812px; margin: 20px auto; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .status-bar { height: 44px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 600; }
+    .safe-area-bottom { padding-bottom: 34px; }
+    .home-indicator { width: 134px; height: 5px; background: #000; border-radius: 3px; margin: 8px auto; }
+  </style>
+</head>
+<body class="bg-gray-200 flex items-start justify-center min-h-screen py-8">
+  <div class="phone-frame bg-gray-50 flex flex-col">
+    <div class="status-bar bg-white"><span>9:41</span><div class="flex items-center gap-1"><i data-lucide="signal" class="w-4 h-4"></i><i data-lucide="wifi" class="w-4 h-4"></i><i data-lucide="battery-full" class="w-4 h-4"></i></div></div>
+
+    <main class="flex-1 overflow-y-auto">
+      <div class="bg-white px-5 pt-3 pb-4">
+        <p class="text-2xl font-bold text-gray-800 mb-3">产品服务</p>
+        <div class="flex gap-2">
+          <span class="bg-primary text-white text-xs px-4 py-1.5 rounded-full font-medium">全部</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-4 py-1.5 rounded-full">云服务</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-4 py-1.5 rounded-full">安全</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-4 py-1.5 rounded-full">AI</span>
+        </div>
+      </div>
+
+      <!-- 产品列表 -->
+      <div class="px-5 mt-4 space-y-3 mb-4">
+        <!-- 产品卡片 1 -->
+        <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+          <div class="h-32 relative" style="background: linear-gradient(135deg, #1E40AF, #3B82F6);">
+            <div class="absolute w-32 h-32 bg-white/10 rounded-full -top-8 -right-8"></div>
+            <div class="absolute inset-0 flex items-center justify-center"><span class="text-5xl">☁️</span></div>
+            <div class="absolute top-3 left-3"><span class="bg-white/25 text-white text-[10px] px-2 py-0.5 rounded-full">热门</span></div>
+          </div>
+          <div class="p-4">
+            <p class="text-base font-bold text-gray-800">TechCloud 云平台</p>
+            <p class="text-xs text-gray-400 mt-1 leading-relaxed">企业级云计算平台，提供弹性计算、对象存储、CDN加速等一站式云服务。</p>
+            <div class="flex items-center justify-between mt-3">
+              <div class="flex items-center gap-1"><span class="text-primary text-sm font-bold">¥999</span><span class="text-[10px] text-gray-400">/月起</span></div>
+              <span class="bg-primary text-white text-[10px] px-3 py-1 rounded-full font-medium">了解详情</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 产品卡片 2 -->
+        <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+          <div class="h-32 relative" style="background: linear-gradient(135deg, #059669, #10B981);">
+            <div class="absolute w-32 h-32 bg-white/10 rounded-full -top-8 -right-8"></div>
+            <div class="absolute inset-0 flex items-center justify-center"><span class="text-5xl">🔒</span></div>
+          </div>
+          <div class="p-4">
+            <p class="text-base font-bold text-gray-800">SafeGuard 安全盾</p>
+            <p class="text-xs text-gray-400 mt-1 leading-relaxed">全方位网络安全防护，包含WAF防火墙、DDoS防护、漏洞扫描等模块。</p>
+            <div class="flex items-center justify-between mt-3">
+              <div class="flex items-center gap-1"><span class="text-green-600 text-sm font-bold">¥1,999</span><span class="text-[10px] text-gray-400">/月起</span></div>
+              <span class="bg-primary text-white text-[10px] px-3 py-1 rounded-full font-medium">了解详情</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 产品卡片 3 -->
+        <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+          <div class="h-32 relative" style="background: linear-gradient(135deg, #D97706, #F59E0B);">
+            <div class="absolute w-32 h-32 bg-white/10 rounded-full -top-8 -right-8"></div>
+            <div class="absolute inset-0 flex items-center justify-center"><span class="text-5xl">📊</span></div>
+          </div>
+          <div class="p-4">
+            <p class="text-base font-bold text-gray-800">DataInsight 数据平台</p>
+            <p class="text-xs text-gray-400 mt-1 leading-relaxed">智能数据分析平台，支持实时数据流处理、BI报表、智能预警。</p>
+            <div class="flex items-center justify-between mt-3">
+              <div class="flex items-center gap-1"><span class="text-amber-600 text-sm font-bold">¥2,499</span><span class="text-[10px] text-gray-400">/月起</span></div>
+              <span class="bg-primary text-white text-[10px] px-3 py-1 rounded-full font-medium">了解详情</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 产品卡片 4 -->
+        <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+          <div class="h-32 relative" style="background: linear-gradient(135deg, #7C3AED, #8B5CF6);">
+            <div class="absolute w-32 h-32 bg-white/10 rounded-full -top-8 -right-8"></div>
+            <div class="absolute inset-0 flex items-center justify-center"><span class="text-5xl">🤖</span></div>
+            <div class="absolute top-3 left-3"><span class="bg-white/25 text-white text-[10px] px-2 py-0.5 rounded-full">新品</span></div>
+          </div>
+          <div class="p-4">
+            <p class="text-base font-bold text-gray-800">AI Assistant 智能助手</p>
+            <p class="text-xs text-gray-400 mt-1 leading-relaxed">企业级AI解决方案，支持智能客服、文档分析、流程自动化。</p>
+            <div class="flex items-center justify-between mt-3">
+              <div class="flex items-center gap-1"><span class="text-purple-600 text-sm font-bold">¥3,999</span><span class="text-[10px] text-gray-400">/月起</span></div>
+              <span class="bg-primary text-white text-[10px] px-3 py-1 rounded-full font-medium">了解详情</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="h-4"></div>
+    </main>
+
+    <nav class="border-t bg-white safe-area-bottom">
+      <div class="flex justify-around py-1.5">
+        <a href="01-index.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline"><i data-lucide="home" class="w-5 h-5 text-gray-400"></i><span class="text-[10px] text-gray-400">首页</span></a>
+        <a href="02-about.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline"><i data-lucide="info" class="w-5 h-5 text-gray-400"></i><span class="text-[10px] text-gray-400">关于</span></a>
+        <a href="03-product.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline"><i data-lucide="box" class="w-5 h-5 text-primary"></i><span class="text-[10px] text-primary font-medium">产品</span></a>
+        <a href="04-contact.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline"><i data-lucide="phone" class="w-5 h-5 text-gray-400"></i><span class="text-[10px] text-gray-400">联系</span></a>
+      </div>
+      <div class="home-indicator"></div>
+    </nav>
+  </div>
+  <script>lucide.createIcons();</script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>益智游戏 - 首页</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { primary: '#EC4899', 'primary-dark': '#DB2777' } } } }
+  </script>
+  <style>
+    .phone-frame { width: 375px; height: 812px; margin: 20px auto; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .status-bar { height: 44px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 600; }
+    .safe-area-bottom { padding-bottom: 34px; }
+    .home-indicator { width: 134px; height: 5px; background: #000; border-radius: 3px; margin: 8px auto; }
+  </style>
+</head>
+<body class="bg-gray-200 flex items-start justify-center min-h-screen py-8">
+  <div class="phone-frame bg-gray-50 flex flex-col">
+    <div class="status-bar" style="background: linear-gradient(135deg, #EC4899, #DB2777);">
+      <span class="text-white">9:41</span>
+      <div class="flex items-center gap-1 text-white"><i data-lucide="signal" class="w-4 h-4"></i><i data-lucide="wifi" class="w-4 h-4"></i><i data-lucide="battery-full" class="w-4 h-4"></i></div>
+    </div>
+
+    <main class="flex-1 overflow-y-auto">
+      <!-- 粉色渐变头部 -->
+      <div class="relative overflow-hidden px-5 pt-3 pb-12" style="background: linear-gradient(135deg, #EC4899, #DB2777);">
+        <div class="absolute w-48 h-48 rounded-full bg-white/10 -top-10 -right-10"></div>
+        <div class="absolute w-40 h-40 rounded-full bg-white/10 -bottom-16 right-16"></div>
+        <div class="absolute w-32 h-32 rounded-full bg-white/10 top-5 -left-10"></div>
+
+        <div class="flex justify-between items-center mb-5 relative z-10">
+          <div>
+            <p class="text-white/80 text-xs">欢迎回来</p>
+            <p class="text-white text-2xl font-bold mt-1">🎮 益智乐园</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="bg-white/20 rounded-full px-3 py-1 flex items-center gap-1">
+              <span class="text-yellow-300 text-sm">⭐</span>
+              <span class="text-white text-xs font-bold">2,580</span>
+            </div>
+            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+              <i data-lucide="bell" class="w-5 h-5 text-white"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- 每日挑战卡片 -->
+        <div class="bg-white/15 rounded-2xl px-4 py-3 relative z-10">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-white font-bold text-base">🔥 每日挑战</p>
+              <p class="text-white/80 text-xs mt-1">完成3关赢取双倍积分</p>
+              <p class="text-yellow-300 text-[10px] mt-0.5">进度 2/3 · 剩余 5:32:18</p>
+            </div>
+            <span class="bg-white text-primary text-xs font-bold px-4 py-2 rounded-full">继续</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 游戏分类 -->
+      <div class="mx-5 -mt-5 bg-white rounded-2xl p-4 shadow-sm relative z-20">
+        <div class="grid grid-cols-4 gap-3 text-center">
+          <a href="02-game.html" class="flex flex-col items-center gap-1 no-underline">
+            <div class="w-12 h-12 rounded-2xl bg-pink-50 flex items-center justify-center"><span class="text-2xl">🧩</span></div>
+            <span class="text-[10px] text-gray-600">拼图</span>
+          </a>
+          <a href="02-game.html" class="flex flex-col items-center gap-1 no-underline">
+            <div class="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center"><span class="text-2xl">🔢</span></div>
+            <span class="text-[10px] text-gray-600">数独</span>
+          </a>
+          <a href="02-game.html" class="flex flex-col items-center gap-1 no-underline">
+            <div class="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center"><span class="text-2xl">🎯</span></div>
+            <span class="text-[10px] text-gray-600">消消乐</span>
+          </a>
+          <a href="02-game.html" class="flex flex-col items-center gap-1 no-underline">
+            <div class="w-12 h-12 rounded-2xl bg-green-50 flex items-center justify-center"><span class="text-2xl">🧠</span></div>
+            <span class="text-[10px] text-gray-600">记忆</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 热门游戏 -->
+      <div class="mx-5 mt-5">
+        <div class="flex justify-between items-center mb-3">
+          <span class="text-base font-bold text-gray-800">热门游戏</span>
+          <a href="02-game.html" class="text-xs text-primary no-underline">全部 ›</a>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+            <div class="h-28 flex items-center justify-center relative" style="background: linear-gradient(135deg, #EC4899, #F472B6);">
+              <div class="absolute w-20 h-20 bg-white/10 rounded-full -top-4 -right-4"></div>
+              <span class="text-5xl relative z-10">🧩</span>
+            </div>
+            <div class="p-3">
+              <p class="text-sm font-bold text-gray-800">经典拼图</p>
+              <p class="text-[10px] text-gray-400 mt-0.5">3×3 至 6×6 难度</p>
+              <div class="flex items-center justify-between mt-2">
+                <div class="flex items-center gap-0.5">
+                  <span class="text-yellow-400 text-[10px]">★★★★★</span>
+                  <span class="text-[10px] text-gray-400">4.9</span>
+                </div>
+                <span class="text-[10px] text-gray-400">12k人玩过</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+            <div class="h-28 flex items-center justify-center relative" style="background: linear-gradient(135deg, #8B5CF6, #A78BFA);">
+              <div class="absolute w-20 h-20 bg-white/10 rounded-full -top-4 -right-4"></div>
+              <span class="text-5xl relative z-10">🔢</span>
+            </div>
+            <div class="p-3">
+              <p class="text-sm font-bold text-gray-800">数独大师</p>
+              <p class="text-[10px] text-gray-400 mt-0.5">入门到地狱难度</p>
+              <div class="flex items-center justify-between mt-2">
+                <div class="flex items-center gap-0.5">
+                  <span class="text-yellow-400 text-[10px]">★★★★★</span>
+                  <span class="text-[10px] text-gray-400">4.8</span>
+                </div>
+                <span class="text-[10px] text-gray-400">8.5k人玩过</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+            <div class="h-28 flex items-center justify-center relative" style="background: linear-gradient(135deg, #3B82F6, #60A5FA);">
+              <div class="absolute w-20 h-20 bg-white/10 rounded-full -top-4 -right-4"></div>
+              <span class="text-5xl relative z-10">🎯</span>
+            </div>
+            <div class="p-3">
+              <p class="text-sm font-bold text-gray-800">消消乐</p>
+              <p class="text-[10px] text-gray-400 mt-0.5">200+关卡挑战</p>
+              <div class="flex items-center justify-between mt-2">
+                <div class="flex items-center gap-0.5">
+                  <span class="text-yellow-400 text-[10px]">★★★★☆</span>
+                  <span class="text-[10px] text-gray-400">4.6</span>
+                </div>
+                <span class="text-[10px] text-gray-400">15k人玩过</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+            <div class="h-28 flex items-center justify-center relative" style="background: linear-gradient(135deg, #10B981, #34D399);">
+              <div class="absolute w-20 h-20 bg-white/10 rounded-full -top-4 -right-4"></div>
+              <span class="text-5xl relative z-10">🧠</span>
+            </div>
+            <div class="p-3">
+              <p class="text-sm font-bold text-gray-800">记忆翻牌</p>
+              <p class="text-[10px] text-gray-400 mt-0.5">锻炼超强记忆力</p>
+              <div class="flex items-center justify-between mt-2">
+                <div class="flex items-center gap-0.5">
+                  <span class="text-yellow-400 text-[10px]">★★★★★</span>
+                  <span class="text-[10px] text-gray-400">4.7</span>
+                </div>
+                <span class="text-[10px] text-gray-400">6.2k人玩过</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="h-4"></div>
+    </main>
+
+    <nav class="border-t bg-white safe-area-bottom">
+      <div class="flex justify-around py-1.5">
+        <a href="01-index.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline"><i data-lucide="home" class="w-5 h-5 text-primary"></i><span class="text-[10px] text-primary font-medium">首页</span></a>
+        <a href="02-game.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline"><i data-lucide="gamepad-2" class="w-5 h-5 text-gray-400"></i><span class="text-[10px] text-gray-400">游戏</span></a>
+        <a href="03-rank.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline"><i data-lucide="trophy" class="w-5 h-5 text-gray-400"></i><span class="text-[10px] text-gray-400">排行</span></a>
+        <a href="04-my.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline"><i data-lucide="user" class="w-5 h-5 text-gray-400"></i><span class="text-[10px] text-gray-400">我的</span></a>
+      </div>
+      <div class="home-indicator"></div>
+    </nav>
+  </div>
+  <script>lucide.createIcons();</script>
+</body>
+</html>

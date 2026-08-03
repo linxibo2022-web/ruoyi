@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>plus.ruoyi</groupId>
+        <artifactId>ruoyi-common</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ruoyi-common-test</artifactId>
+
+    <description>
+        测试支持模块 - 提供单元测试依赖和测试基础类
+        · 统一管理测试框架依赖(JUnit5/Mockito/AssertJ等)
+        · 提供测试基类(BaseTest/BaseControllerTest/BaseServiceTest)
+        · 提供测试工具类(TestDataBuilder等)
+        · scope=test,不会被打包进生产环境
+    </description>
+
+    <dependencies>
+        <!-- ================ Spring Boot 测试框架 ================ -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <exclusions>
+                <!-- 排除JUnit4,使用JUnit5 -->
+                <exclusion>
+                    <groupId>org.junit.vintage</groupId>
+                    <artifactId>junit-vintage-engine</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- ================ Spring Web支持 (BaseControllerTest 需要) ================ -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+        </dependency>
+
+        <!-- ================ Jackson支持 (BaseControllerTest 需要) ================ -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+
+        <!-- ================ 测试数据生成 ================ -->
+        <!-- JavaFaker - 生成测试数据 -->
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+
+        <!-- ================ 工具类依赖 ================ -->
+        <!-- HuTool核心工具包 - 提供文件操作等工具 (TestConfig需要) -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-core</artifactId>
+        </dependency>
+
+        <!-- HuTool HTTP工具包 - 提供HTTP请求能力 (BaseControllerTest需要) -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-http</artifactId>
+        </dependency>
+
+        <!-- HuTool JSON工具包 - 提供JSON序列化能力 (BaseControllerTest需要) -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-json</artifactId>
+        </dependency>
+
+        <!-- Lombok - 简化测试代码编写 -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+
+        <!-- Forest HTTP客户端 - 集成测试中ApiClient需要 -->
+        <dependency>
+            <groupId>com.dtflys.forest</groupId>
+            <artifactId>forest-spring-boot3-starter</artifactId>
+        </dependency>
+    </dependencies>
+</project>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>plus.ruoyi</groupId>
+        <artifactId>ruoyi-common-pay</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ruoyi-common-pay-core</artifactId>
+
+    <description>
+        ruoyi-common-pay-core 支付核心模块
+    </description>
+
+    <dependencies>
+        <!-- 核心模块 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-core</artifactId>
+        </dependency>
+
+        <!-- 租户插件 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-tenant</artifactId>
+        </dependency>
+
+        <!-- satoken插件 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-satoken</artifactId>
+        </dependency>
+
+        <!-- JSON工具依赖 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-json</artifactId>
+        </dependency>
+
+        <!-- 媒体处理模块 - 用于生成二维码 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-media</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

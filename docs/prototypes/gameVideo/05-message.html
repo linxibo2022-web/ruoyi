@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>短视频 - 消息</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>tailwind.config = { theme: { extend: { colors: { primary: '#EF4444' } } } }</script>
+  <style>
+    .phone-frame { width: 375px; height: 812px; margin: 20px auto; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .status-bar { height: 44px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 600; }
+    .safe-area-bottom { padding-bottom: 34px; }
+    .home-indicator { width: 134px; height: 5px; background: #000; border-radius: 3px; margin: 8px auto; }
+  </style>
+</head>
+<body class="bg-gray-200 flex items-start justify-center min-h-screen py-8">
+  <div class="phone-frame bg-white flex flex-col">
+    <div class="status-bar bg-white">
+      <span>9:41</span>
+      <div class="flex items-center gap-1"><i data-lucide="signal" class="w-4 h-4"></i><i data-lucide="wifi" class="w-4 h-4"></i><i data-lucide="battery-full" class="w-4 h-4"></i></div>
+    </div>
+
+    <main class="flex-1 overflow-y-auto bg-gray-50">
+      <div class="bg-white px-5 pt-3 pb-4">
+        <p class="text-2xl font-bold text-gray-800 mb-3">消息</p>
+      </div>
+
+      <!-- 系统通知入口 -->
+      <div class="bg-white px-5 py-3 mt-2">
+        <div class="grid grid-cols-4 gap-3 text-center">
+          <div class="flex flex-col items-center gap-1.5">
+            <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center relative">
+              <span class="text-xl">❤️</span>
+              <div class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary rounded-full flex items-center justify-center"><span class="text-white text-[8px]">5</span></div>
+            </div>
+            <span class="text-[10px] text-gray-600">赞</span>
+          </div>
+          <div class="flex flex-col items-center gap-1.5">
+            <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center relative">
+              <span class="text-xl">💬</span>
+              <div class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary rounded-full flex items-center justify-center"><span class="text-white text-[8px]">3</span></div>
+            </div>
+            <span class="text-[10px] text-gray-600">评论</span>
+          </div>
+          <div class="flex flex-col items-center gap-1.5">
+            <div class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center">
+              <span class="text-xl">👤</span>
+            </div>
+            <span class="text-[10px] text-gray-600">新粉丝</span>
+          </div>
+          <div class="flex flex-col items-center gap-1.5">
+            <div class="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center">
+              <span class="text-xl">📢</span>
+            </div>
+            <span class="text-[10px] text-gray-600">通知</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 聊天列表 -->
+      <div class="bg-white mt-2">
+        <div class="flex items-center px-5 py-3.5 border-b border-gray-50">
+          <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mr-3 shrink-0">
+            <span class="text-xl">😎</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-center">
+              <p class="text-sm font-semibold text-gray-800">创意达人</p>
+              <span class="text-[10px] text-gray-400">刚刚</span>
+            </div>
+            <p class="text-xs text-gray-400 truncate mt-0.5">太棒了！你的折纸教程真的很详细 👍</p>
+          </div>
+          <div class="w-4 h-4 bg-primary rounded-full flex items-center justify-center ml-2 shrink-0"><span class="text-white text-[8px]">2</span></div>
+        </div>
+
+        <div class="flex items-center px-5 py-3.5 border-b border-gray-50">
+          <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mr-3 shrink-0">
+            <span class="text-xl">👨‍🍳</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-center">
+              <p class="text-sm font-semibold text-gray-800">美食家小李</p>
+              <span class="text-[10px] text-gray-400">2小时前</span>
+            </div>
+            <p class="text-xs text-gray-400 truncate mt-0.5">请问那个酱料的配方可以分享一下吗？</p>
+          </div>
+        </div>
+
+        <div class="flex items-center px-5 py-3.5 border-b border-gray-50">
+          <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mr-3 shrink-0">
+            <span class="text-xl">🧑‍💻</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-center">
+              <p class="text-sm font-semibold text-gray-800">旅行者阿杰</p>
+              <span class="text-[10px] text-gray-400">昨天</span>
+            </div>
+            <p class="text-xs text-gray-400 truncate mt-0.5">下次去西藏可以一起约！</p>
+          </div>
+        </div>
+
+        <div class="flex items-center px-5 py-3.5 border-b border-gray-50">
+          <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mr-3 shrink-0">
+            <span class="text-xl">👧</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-center">
+              <p class="text-sm font-semibold text-gray-800">小雨同学</p>
+              <span class="text-[10px] text-gray-400">昨天</span>
+            </div>
+            <p class="text-xs text-gray-400 truncate mt-0.5">你用的是什么剪辑软件呀？</p>
+          </div>
+        </div>
+
+        <div class="flex items-center px-5 py-3.5 border-b border-gray-50">
+          <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mr-3 shrink-0">
+            <span class="text-xl">🤓</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-center">
+              <p class="text-sm font-semibold text-gray-800">码农小王</p>
+              <span class="text-[10px] text-gray-400">3天前</span>
+            </div>
+            <p class="text-xs text-gray-400 truncate mt-0.5">VSCode插件推荐视频太有用了，感谢！</p>
+          </div>
+        </div>
+
+        <div class="flex items-center px-5 py-3.5">
+          <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mr-3 shrink-0">
+            <span class="text-xl">👩‍🎨</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-center">
+              <p class="text-sm font-semibold text-gray-800">画画小姐姐</p>
+              <span class="text-[10px] text-gray-400">一周前</span>
+            </div>
+            <p class="text-xs text-gray-400 truncate mt-0.5">[图片]</p>
+          </div>
+        </div>
+      </div>
+      <div class="h-4"></div>
+    </main>
+
+    <nav class="border-t bg-white safe-area-bottom">
+      <div class="flex justify-around py-1.5">
+        <a href="01-index.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline"><i data-lucide="home" class="w-5 h-5 text-gray-400"></i><span class="text-[10px] text-gray-400">首页</span></a>
+        <a href="02-discover.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline"><i data-lucide="compass" class="w-5 h-5 text-gray-400"></i><span class="text-[10px] text-gray-400">发现</span></a>
+        <a href="03-create.html" class="flex flex-col items-center gap-0.5 min-w-[56px] py-1 no-underline">
+          <div class="w-10 h-7 rounded-lg flex items-center justify-center relative">
+            <div class="absolute w-8 h-6 rounded bg-cyan-400 left-0.5"></div>
+            <div class="absolute w-8 h-6 rounded bg-primary right-0.5"></div>
+            <div class="absolute w-8 h-6 rounded bg-black flex items-center justify-center"><i data-lucide="plus" class="w-4 h-4 text-white"></i></div>
+          </div>
+        </a>
+        <a href="05-message.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline"><i data-lucide="message-square" class="w-5 h-5 text-primary"></i><span class="text-[10px] text-primary font-medium">消息</span></a>
+        <a href="04-my.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline"><i data-lucide="user" class="w-5 h-5 text-gray-400"></i><span class="text-[10px] text-gray-400">我的</span></a>
+      </div>
+      <div class="home-indicator"></div>
+    </nav>
+  </div>
+  <script>lucide.createIcons();</script>
+</body>
+</html>

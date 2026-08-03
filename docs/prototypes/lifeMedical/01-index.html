@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, initial-scale=1.0">
+<title>医疗健康 - 首页</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#0EA5E9',
+        'primary-dark': '#0284C7',
+        'primary-light': '#E0F2FE',
+      }
+    }
+  }
+}
+</script>
+<style>
+  body { margin: 0; background: #1a1a2e; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .phone-frame { width: 375px; height: 812px; background: #F8FAFC; border-radius: 40px; overflow: hidden; position: relative; box-shadow: 0 25px 60px rgba(0,0,0,0.3); border: 8px solid #2a2a3e; }
+  .phone-content { height: 100%; overflow-y: auto; padding-bottom: 80px; }
+  .phone-content::-webkit-scrollbar { display: none; }
+  .tab-bar { position: absolute; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #E2E8F0; display: flex; padding: 8px 0 20px; z-index: 50; }
+  .tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; text-decoration: none; color: #94A3B8; font-size: 10px; }
+  .tab-item.active { color: #0EA5E9; }
+  .tab-item i { width: 24px; height: 24px; }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <div class="phone-content">
+    <!-- 状态栏 -->
+    <div class="bg-primary pt-10 pb-4 px-4">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-white text-lg font-semibold">健康守护</div>
+        <div class="flex items-center gap-3">
+          <i data-lucide="bell" class="w-5 h-5 text-white/80"></i>
+          <i data-lucide="scan-line" class="w-5 h-5 text-white/80"></i>
+        </div>
+      </div>
+      <!-- 搜索栏 -->
+      <div class="bg-white/20 backdrop-blur rounded-full px-4 py-2.5 flex items-center gap-2">
+        <i data-lucide="search" class="w-4 h-4 text-white/70"></i>
+        <span class="text-white/70 text-sm">搜索症状、医院、医生...</span>
+      </div>
+    </div>
+
+    <!-- 快捷入口宫格 -->
+    <div class="px-4 py-4">
+      <div class="grid grid-cols-4 gap-3">
+        <a href="#" class="flex flex-col items-center gap-1.5">
+          <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-xl">🩺</div>
+          <span class="text-xs text-gray-600">在线问诊</span>
+        </a>
+        <a href="#" class="flex flex-col items-center gap-1.5">
+          <div class="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-xl">📅</div>
+          <span class="text-xs text-gray-600">预约挂号</span>
+        </a>
+        <a href="#" class="flex flex-col items-center gap-1.5">
+          <div class="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-xl">🏥</div>
+          <span class="text-xs text-gray-600">健康体检</span>
+        </a>
+        <a href="#" class="flex flex-col items-center gap-1.5">
+          <div class="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-xl">💊</div>
+          <span class="text-xs text-gray-600">药品购买</span>
+        </a>
+        <a href="#" class="flex flex-col items-center gap-1.5">
+          <div class="w-12 h-12 bg-cyan-50 rounded-2xl flex items-center justify-center text-xl">📋</div>
+          <span class="text-xs text-gray-600">报告查询</span>
+        </a>
+        <a href="#" class="flex flex-col items-center gap-1.5">
+          <div class="w-12 h-12 bg-teal-50 rounded-2xl flex items-center justify-center text-xl">📖</div>
+          <span class="text-xs text-gray-600">健康百科</span>
+        </a>
+        <a href="#" class="flex flex-col items-center gap-1.5">
+          <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-xl">🚑</div>
+          <span class="text-xs text-gray-600">急救指南</span>
+        </a>
+        <a href="#" class="flex flex-col items-center gap-1.5">
+          <div class="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-xl">📦</div>
+          <span class="text-xs text-gray-600">更多服务</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- 健康资讯横幅 -->
+    <div class="px-4 mb-4">
+      <div class="bg-gradient-to-r from-primary to-cyan-400 rounded-2xl p-4 text-white relative overflow-hidden">
+        <div class="relative z-10">
+          <div class="text-xs bg-white/20 inline-block px-2 py-0.5 rounded-full mb-2">健康提醒</div>
+          <div class="text-sm font-medium mb-1">春季疫苗接种提醒</div>
+          <div class="text-xs text-white/80">流感高发季，建议及时接种流感疫苗</div>
+          <button class="mt-2 bg-white text-primary text-xs px-3 py-1 rounded-full font-medium">了解详情</button>
+        </div>
+        <div class="absolute right-2 top-2 text-5xl opacity-20">💉</div>
+      </div>
+    </div>
+
+    <!-- 推荐医生 -->
+    <div class="px-4">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-base font-semibold text-gray-800">推荐医生</div>
+        <span class="text-xs text-primary">查看更多 ›</span>
+      </div>
+
+      <!-- 医生卡片1 -->
+      <div class="bg-white rounded-2xl p-3 mb-3 shadow-sm">
+        <div class="flex gap-3">
+          <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-2xl flex-shrink-0">👨‍⚕️</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="font-medium text-sm text-gray-800">张伟明</span>
+              <span class="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">主任医师</span>
+            </div>
+            <div class="text-xs text-gray-500 mb-2">心血管内科 | 三甲医院</div>
+            <div class="flex items-center gap-3 text-xs text-gray-400">
+              <span class="flex items-center gap-0.5"><i data-lucide="star" class="w-3 h-3 text-amber-400 fill-amber-400"></i> 4.9</span>
+              <span>问诊 2860 次</span>
+              <span>好评率 99%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 医生卡片2 -->
+      <div class="bg-white rounded-2xl p-3 mb-3 shadow-sm">
+        <div class="flex gap-3">
+          <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-pink-100 to-pink-200 flex items-center justify-center text-2xl flex-shrink-0">👩‍⚕️</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="font-medium text-sm text-gray-800">李雅琴</span>
+              <span class="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">副主任医师</span>
+            </div>
+            <div class="text-xs text-gray-500 mb-2">儿科 | 市人民医院</div>
+            <div class="flex items-center gap-3 text-xs text-gray-400">
+              <span class="flex items-center gap-0.5"><i data-lucide="star" class="w-3 h-3 text-amber-400 fill-amber-400"></i> 4.8</span>
+              <span>问诊 1920 次</span>
+              <span>好评率 98%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 医生卡片3 -->
+      <div class="bg-white rounded-2xl p-3 mb-3 shadow-sm">
+        <div class="flex gap-3">
+          <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center text-2xl flex-shrink-0">👨‍⚕️</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="font-medium text-sm text-gray-800">陈建国</span>
+              <span class="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">主治医师</span>
+            </div>
+            <div class="text-xs text-gray-500 mb-2">骨科 | 协和医院</div>
+            <div class="flex items-center gap-3 text-xs text-gray-400">
+              <span class="flex items-center gap-0.5"><i data-lucide="star" class="w-3 h-3 text-amber-400 fill-amber-400"></i> 4.7</span>
+              <span>问诊 1560 次</span>
+              <span>好评率 97%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 医生卡片4 -->
+      <div class="bg-white rounded-2xl p-3 mb-16 shadow-sm">
+        <div class="flex gap-3">
+          <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center text-2xl flex-shrink-0">👩‍⚕️</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="font-medium text-sm text-gray-800">王晓燕</span>
+              <span class="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">主任医师</span>
+            </div>
+            <div class="text-xs text-gray-500 mb-2">皮肤科 | 中医院</div>
+            <div class="flex items-center gap-3 text-xs text-gray-400">
+              <span class="flex items-center gap-0.5"><i data-lucide="star" class="w-3 h-3 text-amber-400 fill-amber-400"></i> 4.9</span>
+              <span>问诊 3100 次</span>
+              <span>好评率 99%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部Tab栏 -->
+  <div class="tab-bar">
+    <a href="01-index.html" class="tab-item active">
+      <i data-lucide="home"></i>
+      <span>首页</span>
+    </a>
+    <a href="02-consult.html" class="tab-item">
+      <i data-lucide="stethoscope"></i>
+      <span>问诊</span>
+    </a>
+    <a href="03-booking.html" class="tab-item">
+      <i data-lucide="calendar-check"></i>
+      <span>预约</span>
+    </a>
+    <a href="04-my.html" class="tab-item">
+      <i data-lucide="user"></i>
+      <span>我的</span>
+    </a>
+  </div>
+</div>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+services:
+  # 此镜像仅用于测试 正式环境需自行安装数据库
+  # SID: XE user: system password: oracle
+  oracle:
+    image: tekintian/oracle12c:latest
+    container_name: oracle
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+      # Oracle数据库总内存配置（MB）
+      DBCA_TOTAL_MEMORY: 16192
+    ports:
+      # Oracle Web管理界面端口
+      - "18080:8080"
+      # Oracle数据库连接端口
+      - "1521:1521"
+    volumes:
+      # 数据挂载
+      - "/docker/oracle/data:/u01/app/oracle"
+    network_mode: "host"
+
+  # 此镜像仅用于测试 正式环境需自行安装数据库
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    container_name: sqlserver
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+      # 接受许可协议
+      ACCEPT_EULA: "Y"
+      # SQL Server SA用户密码（至少8位包含大小写字母数字和特殊字符）
+      SA_PASSWORD: "YourComplexPassword123!"
+    ports:
+      # SQL Server数据库连接端口
+      - "1433:1433"
+    volumes:
+      # 数据挂载
+      - "/docker/sqlserver/data:/var/opt/mssql"
+    network_mode: "host"
+
+  postgres:
+    image: postgres:14.2
+    container_name: postgres
+    environment:
+      # PostgreSQL超级用户名
+      POSTGRES_USER: root
+      # PostgreSQL超级用户密码
+      POSTGRES_PASSWORD: postgres123456
+      # PostgreSQL默认数据库名
+      POSTGRES_DB: postgres
+      # 时区配置
+      TZ: Asia/Shanghai
+    ports:
+      # PostgreSQL数据库连接端口
+      - "5432:5432"
+    volumes:
+      # 数据持久化
+      - /docker/postgres/data:/var/lib/postgresql/data
+    network_mode: "host"
+
+  postgres13:
+    image: postgres:13.6
+    container_name: postgres13
+    environment:
+      # PostgreSQL超级用户名
+      POSTGRES_USER: root
+      # PostgreSQL超级用户密码
+      POSTGRES_PASSWORD: postgres13123456
+      # PostgreSQL默认数据库名
+      POSTGRES_DB: postgres
+      # 时区配置
+      TZ: Asia/Shanghai
+    ports:
+      # PostgreSQL数据库连接端口（使用不同端口避免冲突）
+      - "5433:5432"
+    volumes:
+      # 数据持久化
+      - /docker/postgres13/data:/var/lib/postgresql/data
+    network_mode: "host"

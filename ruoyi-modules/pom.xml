@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>ruoyi-plus-uniapp</artifactId>
+        <groupId>plus.ruoyi</groupId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ruoyi-modules</artifactId>
+    <packaging>pom</packaging>
+
+    <description>
+        功能模块 - 集合所有业务功能与系统核心模块
+    </description>
+
+    <!-- 模块列表 - 按功能重要性排序 -->
+    <modules>
+        <!-- 系统核心模块 - 提供用户、角色、权限等基础支持 -->
+        <module>ruoyi-system</module>
+
+        <!-- 业务功能模块 - 提供具体业务实现 -->
+        <module>ruoyi-business</module>
+
+        <!-- 商城模块 - 提供商品、订单、购物车等商城功能 -->
+        <module>ruoyi-mall</module>
+
+        <!-- 代码生成模块 - 提供代码自动生成工具 -->
+        <module>ruoyi-generator</module>
+    </modules>
+</project>

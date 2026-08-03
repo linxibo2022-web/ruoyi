@@ -1,0 +1,87 @@
+package ${packageName}.dao.impl;
+
+import org.springframework.stereotype.Repository;
+import ${packageName}.dao.I${ClassName}Dao;
+import ${packageName}.domain.${ClassName};
+import ${packageName}.domain.bo.${ClassName}Bo;
+import ${packageName}.mapper.${ClassName}Mapper;
+import plus.ruoyi.common.core.utils.StringUtils;
+import plus.ruoyi.common.mybatis.core.dao.impl.BaseDaoImpl;
+import plus.ruoyi.common.mybatis.core.query.PlusLambdaQuery;
+
+import java.util.Map;
+
+/**
+ * ${functionName}数据访问实现
+ *
+ * @author ${author}
+ * @date ${datetime}
+ */
+@Repository
+public class ${ClassName}DaoImpl extends BaseDaoImpl<${ClassName}Mapper, ${ClassName}> implements I${ClassName}Dao {
+
+    /**
+     * 构建查询条件
+     *
+     * @param bo 查询参数
+     * @return 查询条件
+     */
+    @Override
+    public PlusLambdaQuery<${ClassName}> buildQueryWrapper(${ClassName}Bo bo) {
+        Map<String, Object> params = bo.getParams();
+        PlusLambdaQuery<${ClassName}> lqw = PlusLambdaQuery.of();
+
+        // 查询条件构建
+        #foreach($column in $columns)
+            #if($column.query)
+                #set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
+                #if($column.queryType == "EQ")
+        lqw.eq(${ClassName}::get${AttrName}, bo.get${AttrName}());
+                #elseif($column.queryType == "NE")
+        lqw.ne(${ClassName}::get${AttrName}, bo.get${AttrName}());
+                #elseif($column.queryType == "GT")
+        lqw.gt(${ClassName}::get${AttrName}, bo.get${AttrName}());
+                #elseif($column.queryType == "GE")
+        lqw.ge(${ClassName}::get${AttrName}, bo.get${AttrName}());
+                #elseif($column.queryType == "LT")
+        lqw.lt(${ClassName}::get${AttrName}, bo.get${AttrName}());
+                #elseif($column.queryType == "LE")
+        lqw.le(${ClassName}::get${AttrName}, bo.get${AttrName}());
+                #elseif($column.queryType == "LIKE")
+        lqw.like(${ClassName}::get${AttrName}, bo.get${AttrName}());
+                #elseif($column.queryType == "BETWEEN")
+        lqw.between(${ClassName}::get${AttrName}, params.get("begin${AttrName}"), params.get("end${AttrName}"));
+                #end
+            #end
+        #end
+
+        // 模糊查询（对非字符串字段使用 likeCast 确保跨数据库兼容）
+        String searchValue = bo.getSearchValue();
+        if (StringUtils.isNotBlank(searchValue)) {
+            lqw.and(w -> w
+            #set($isFirst = true)
+            #foreach($column in $columns)
+                #if($column.query)
+                    #set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
+## 判断是否为字符串类型：String 用 like，其他类型用 likeCast
+                    #if($column.javaType == 'String')
+                        #if($isFirst)
+                .like(${ClassName}::get${AttrName}, searchValue)
+                        #else
+                .or().like(${ClassName}::get${AttrName}, searchValue)
+                        #end
+                    #else
+                        #if($isFirst)
+                .likeCast(${ClassName}::get${AttrName}, searchValue)
+                        #else
+                .or().likeCast(${ClassName}::get${AttrName}, searchValue)
+                        #end
+                    #end
+                    #set($isFirst = false)
+                #end
+            #end
+            );
+        }
+        return lqw;
+    }
+}

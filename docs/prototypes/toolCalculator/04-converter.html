@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, user-scalable=no">
+<title>计算器 - 单位转换</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f0f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .phone-frame { width: 375px; height: 812px; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; background: #f5f5f5; position: relative; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+  .status-bar { height: 44px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }
+  .status-bar span { color: #1c1c1e; font-size: 12px; font-weight: 600; }
+  .screen { flex: 1; overflow-y: auto; padding-bottom: 80px; }
+  .screen::-webkit-scrollbar { display: none; }
+  .tab-bar { position: absolute; bottom: 0; left: 0; right: 0; background: white; display: flex; border-top: 1px solid #e5e7eb; padding-bottom: 20px; z-index: 50; }
+  .tab-bar a { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 8px 0 4px; text-decoration: none; color: #9ca3af; font-size: 10px; gap: 2px; }
+  .tab-bar a.active { color: #0EA5E9; }
+  .tab-bar a i { width: 22px; height: 22px; }
+  .home-indicator { width: 134px; height: 5px; background: #1a1a1a; border-radius: 3px; margin: 0 auto; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); }
+
+  .cat-tab { display: inline-flex; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+  .cat-tab-active { background: #0EA5E9; color: white; }
+  .cat-tab-inactive { background: white; color: #6b7280; border: 1px solid #e5e7eb; }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span>9:41</span>
+    <span>●●●●○ ⚡ 85%</span>
+  </div>
+
+  <!-- Screen Content -->
+  <div class="screen">
+    <!-- Header -->
+    <div style="background: white; padding: 12px 16px 14px; border-bottom: 1px solid #f0f0f0;">
+      <div style="font-size: 20px; font-weight: 700; color: #1f2937;">单位转换</div>
+    </div>
+
+    <!-- Category Tabs -->
+    <div style="padding: 14px 16px; display: flex; gap: 8px; flex-wrap: wrap;">
+      <span class="cat-tab cat-tab-active">长度</span>
+      <span class="cat-tab cat-tab-inactive">重量</span>
+      <span class="cat-tab cat-tab-inactive">温度</span>
+      <span class="cat-tab cat-tab-inactive">面积</span>
+    </div>
+
+    <!-- Converter Card -->
+    <div style="padding: 0 16px;">
+      <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+
+        <!-- From -->
+        <div style="padding: 20px 20px 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div style="font-size: 13px; color: #9ca3af; font-weight: 500;">从</div>
+            <div style="display: flex; align-items: center; gap: 4px; background: #f0f9ff; padding: 4px 10px; border-radius: 8px; cursor: pointer;">
+              <span style="font-size: 13px; color: #0EA5E9; font-weight: 600;">千米 (km)</span>
+              <i data-lucide="chevron-down" style="width: 14px; height: 14px; color: #0EA5E9;"></i>
+            </div>
+          </div>
+          <div style="display: flex; align-items: baseline; gap: 4px;">
+            <input type="text" value="1" style="border: none; outline: none; font-size: 40px; font-weight: 300; color: #1f2937; width: 100%; background: transparent; caret-color: #0EA5E9;" />
+          </div>
+          <div style="height: 2px; background: linear-gradient(90deg, #0EA5E9, #38bdf8); border-radius: 1px; margin-top: 4px;"></div>
+        </div>
+
+        <!-- Swap Button -->
+        <div style="display: flex; justify-content: center; padding: 4px 0;">
+          <div style="width: 44px; height: 44px; background: #0EA5E9; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(14,165,233,0.3);">
+            <i data-lucide="arrow-up-down" style="width: 20px; height: 20px; color: white;"></i>
+          </div>
+        </div>
+
+        <!-- To -->
+        <div style="padding: 16px 20px 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div style="font-size: 13px; color: #9ca3af; font-weight: 500;">到</div>
+            <div style="display: flex; align-items: center; gap: 4px; background: #f5f5f5; padding: 4px 10px; border-radius: 8px; cursor: pointer;">
+              <span style="font-size: 13px; color: #6b7280; font-weight: 600;">米 (m)</span>
+              <i data-lucide="chevron-down" style="width: 14px; height: 14px; color: #6b7280;"></i>
+            </div>
+          </div>
+          <div style="font-size: 40px; font-weight: 300; color: #0EA5E9;">1,000</div>
+          <div style="height: 2px; background: #e5e7eb; border-radius: 1px; margin-top: 4px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Conversion Formula -->
+    <div style="padding: 16px; text-align: center;">
+      <div style="font-size: 13px; color: #9ca3af;">1 千米 = 1,000 米</div>
+    </div>
+
+    <!-- Quick Conversions -->
+    <div style="padding: 0 16px 20px;">
+      <div style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 10px;">常用换算</div>
+      <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+        <div style="padding: 12px 16px; border-bottom: 1px solid #f5f5f5; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span style="font-size: 14px; color: #1f2937;">厘米</span>
+            <span style="font-size: 12px; color: #9ca3af; margin-left: 4px;">cm</span>
+          </div>
+          <div style="font-size: 16px; font-weight: 600; color: #0EA5E9;">100,000</div>
+        </div>
+        <div style="padding: 12px 16px; border-bottom: 1px solid #f5f5f5; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span style="font-size: 14px; color: #1f2937;">毫米</span>
+            <span style="font-size: 12px; color: #9ca3af; margin-left: 4px;">mm</span>
+          </div>
+          <div style="font-size: 16px; font-weight: 600; color: #0EA5E9;">1,000,000</div>
+        </div>
+        <div style="padding: 12px 16px; border-bottom: 1px solid #f5f5f5; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span style="font-size: 14px; color: #1f2937;">英里</span>
+            <span style="font-size: 12px; color: #9ca3af; margin-left: 4px;">mi</span>
+          </div>
+          <div style="font-size: 16px; font-weight: 600; color: #0EA5E9;">0.6214</div>
+        </div>
+        <div style="padding: 12px 16px; border-bottom: 1px solid #f5f5f5; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span style="font-size: 14px; color: #1f2937;">英尺</span>
+            <span style="font-size: 12px; color: #9ca3af; margin-left: 4px;">ft</span>
+          </div>
+          <div style="font-size: 16px; font-weight: 600; color: #0EA5E9;">3,280.84</div>
+        </div>
+        <div style="padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span style="font-size: 14px; color: #1f2937;">英寸</span>
+            <span style="font-size: 12px; color: #9ca3af; margin-left: 4px;">in</span>
+          </div>
+          <div style="font-size: 16px; font-weight: 600; color: #0EA5E9;">39,370.08</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <a href="01-index.html">
+      <i data-lucide="calculator"></i>
+      <span>计算器</span>
+    </a>
+    <a href="02-science.html">
+      <i data-lucide="flask-conical"></i>
+      <span>科学</span>
+    </a>
+    <a href="03-history.html">
+      <i data-lucide="history"></i>
+      <span>历史</span>
+    </a>
+    <a href="04-converter.html" class="active">
+      <i data-lucide="arrow-left-right"></i>
+      <span>转换</span>
+    </a>
+  </div>
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+  lucide.createIcons();
+</script>
+</body>
+</html>

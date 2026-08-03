@@ -1,0 +1,276 @@
+/**
+ * 全局过渡动画样式
+ * 定义应用中各种元素的过渡效果
+ * 包含现代化的对话框动画
+ */
+
+/* 淡入淡出效果 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity var(--duration-normal);; // 不透明度过渡，持续0.28秒
+}
+
+.fade-enter,
+.fade-leave-active {
+  opacity: 0; // 元素进入前和离开后设置为完全透明
+}
+
+/* 淡入淡出+位移变换效果 */
+.fade-transform--move,
+.fade-transform-leave-active,
+.fade-transform-enter-active {
+  transition: all var(--duration-slow); // 所有属性过渡，持续0.5秒
+}
+
+.fade-transform-enter {
+  opacity: 0; // 元素进入前完全透明
+  transform: translateX(-30px); // 元素进入前向左偏移30像素
+}
+
+.fade-transform-leave-to {
+  opacity: 0; // 元素离开后完全透明
+  transform: translateX(30px); // 元素离开后向右偏移30像素
+}
+
+/* 面包屑导航过渡效果 */
+.breadcrumb-enter-active,
+.breadcrumb-leave-active {
+  transition: all var(--duration-slow); // 所有属性过渡，持续0.5秒
+}
+
+.breadcrumb-enter,
+.breadcrumb-leave-active {
+  opacity: 0; // 元素进入前和离开后完全透明
+  transform: translateX(20px); // 元素进入前和离开后向右偏移20像素
+}
+
+.breadcrumb-move {
+  transition: all var(--duration-slow); // 元素位置变化时的过渡效果
+}
+
+.breadcrumb-leave-active {
+  position: absolute; // 元素离开时使用绝对定位，防止影响其他元素布局
+}
+
+/* ===== 现代化对话框动画 ===== */
+
+// 修改 dialog 动画 - 现代化缩放效果
+.dialog-fade-enter-active {
+  .el-dialog:not(.is-draggable) {
+    animation: dialog-open 0.2s cubic-bezier(0.32, 0.14, 0.15, 0.86);
+
+    // 修复 el-dialog 动画后宽度不自适应问题
+    .el-select__selected-item {
+      display: inline-block;
+    }
+  }
+}
+
+.dialog-fade-leave-active {
+  animation: fade-out 0.2s linear;
+
+  .el-dialog:not(.is-draggable) {
+    animation: dialog-close 0.5s;
+  }
+}
+
+@keyframes dialog-open {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes dialog-close {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+}
+
+// 遮罩层动画
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* 菜单动画优化 */
+.el-menu.el-menu--inline {
+  transition: max-height 0.26s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* 菜单项悬停动画优化 */
+.el-sub-menu__title,
+.el-menu-item {
+  transition: background-color 0s !important;
+}
+
+/* 徽章呼吸动画 */
+@keyframes breathe {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+}
+
+/* 图标动画关键帧 */
+
+/* 抖动动画 */
+@keyframes shake {
+  0% {
+    transform: rotate(0);
+  }
+
+  25% {
+    transform: rotate(-5deg);
+  }
+
+  50% {
+    transform: rotate(5deg);
+  }
+
+  75% {
+    transform: rotate(-5deg);
+  }
+
+  100% {
+    transform: rotate(0);
+  }
+}
+
+/* 180度旋转动画 */
+@keyframes rotate180 {
+  0% {
+    transform: rotate(0);
+  }
+
+  100% {
+    transform: rotate(180deg);
+  }
+}
+
+/* 上下移动动画 */
+@keyframes moveUp {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-3px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* 放大缩小动画 */
+@keyframes expand {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 缩小放大动画 */
+@keyframes shrink {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(0.9);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 呼吸动画 */
+@keyframes breathing {
+  0% {
+    opacity: 0.4;
+    transform: scale(0.9);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  100% {
+    opacity: 0.4;
+    transform: scale(0.9);
+  }
+}
+
+/* 图标悬停动画效果类 */
+.icon-hover-shake {
+  &:hover {
+    animation: shake 0.5s ease-in-out;
+  }
+}
+
+.icon-hover-rotate180 {
+  transform-origin: 50% 50% !important;
+
+  &:hover {
+    animation: rotate180 0.4s cubic-bezier(0.4, 0, 0.6, 1);
+  }
+}
+
+
+.icon-hover-moveUp {
+  &:hover {
+    animation: moveUp 0.4s ease-in-out;
+  }
+}
+
+.icon-hover-expand {
+  &:hover {
+    animation: expand 0.6s ease-in-out;
+  }
+}
+
+.icon-hover-shrink {
+  &:hover {
+    animation: shrink 0.6s ease-in-out;
+  }
+}
+
+.icon-hover-breathing {
+  animation: breathing 1.5s ease-in-out infinite;
+}

@@ -1,0 +1,27 @@
+{
+  "server": {
+    "host": "192.168.1.100",
+    "port": 22,
+    "username": "root",
+    "auth_type": "password",
+    "password": "your-ssh-password",
+    "key_file": ""
+  },
+  "backend": {
+    "deploy_dir": "/opt/ryplus",
+    "image_name": "erp_sys",
+    "image_tag": "latest",
+    "server_port": 5500,
+    "compose_mode": "single"
+  },
+  "frontend": {
+    "nginx_html_dir": "/docker/nginx/html",
+    "pc_subdir": "",
+    "h5_subdir": "h5"
+  },
+  "options": {
+    "skip_maven_build": false,
+    "skip_frontend_build": false,
+    "health_check_timeout": 30
+  }
+}

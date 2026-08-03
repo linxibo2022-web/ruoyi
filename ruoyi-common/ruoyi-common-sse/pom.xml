@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>plus.ruoyi</groupId>
+        <artifactId>ruoyi-common</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ruoyi-common-sse</artifactId>
+
+    <description>
+        SSE通讯模块 - 提供服务器发送事件与实时推送功能
+    </description>
+
+    <dependencies>
+        <!-- ================ 内部模块依赖 ================ -->
+        <!-- 核心模块 - 提供基础功能支持 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-core</artifactId>
+        </dependency>
+
+        <!-- Redis模块 - 提供分布式消息支持 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-redis</artifactId>
+        </dependency>
+
+        <!-- 认证模块 - 提供用户认证支持 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-satoken</artifactId>
+        </dependency>
+
+        <!-- JSON模块 - 提供消息序列化支持 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-json</artifactId>
+        </dependency>
+    </dependencies>
+</project>

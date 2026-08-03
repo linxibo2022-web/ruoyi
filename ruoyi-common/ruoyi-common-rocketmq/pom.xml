@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>plus.ruoyi</groupId>
+        <artifactId>ruoyi-common</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ruoyi-common-rocketmq</artifactId>
+
+    <description>
+        消息队列模块 - 基于RocketMQ提供分布式消息通信能力
+    </description>
+
+    <dependencies>
+        <!-- ================ 内部模块依赖 ================ -->
+        <!-- 核心模块 - 提供基础功能支持 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-core</artifactId>
+        </dependency>
+
+        <!-- ================ Spring依赖 ================ -->
+        <!-- Spring Boot自动配置 - 提供自动配置与条件装配能力 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+        </dependency>
+
+        <!-- ================ RocketMQ依赖 ================ -->
+        <!-- RocketMQ Spring Boot Starter - 提供消息生产和消费能力 -->
+        <dependency>
+            <groupId>org.apache.rocketmq</groupId>
+            <artifactId>rocketmq-spring-boot-starter</artifactId>
+            <version>${rocketmq-spring.version}</version>
+        </dependency>
+
+        <!-- RocketMQ Tools - 提供Topic管理工具 -->
+        <dependency>
+            <groupId>org.apache.rocketmq</groupId>
+            <artifactId>rocketmq-tools</artifactId>
+            <version>${rocketmq.version}</version>
+        </dependency>
+    </dependencies>
+</project>

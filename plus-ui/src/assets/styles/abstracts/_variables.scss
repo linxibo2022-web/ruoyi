@@ -1,0 +1,93 @@
+/**
+ * 全局SCSS变量模块
+ * 定义应用的基础变量，主题变量从_light.scss和_dark.scss中引入
+ */
+
+/* 基础颜色变量 */
+$blue: #324157;
+$light-blue: #3a71a8;
+$red: #c03639;
+$pink: #e65d6e;
+$green: #30b08f;
+$tiffany: #4ab7bd;
+$yellow: #fec171;
+$panGreen: #30b08f;
+
+/* Element UI 主题色变量 */
+$el-color-primary: #409eff;
+$el-color-success: #67c23a;
+$el-color-warning: #e6a23c;
+$el-color-danger: #f56c6c;
+$el-color-info: #909399;
+
+/* 布局尺寸变量 */
+$base-sidebar-width: 240px;
+
+/* 响应式断点变量 */
+$sm: 768px;
+$md: 992px;
+$lg: 1200px;
+$xl: 1920px;
+
+/* 设备断点变量 */
+$device-notebook: 1600px;
+$device-ipad-pro: 1180px;
+$device-ipad: 800px;
+$device-ipad-vertical: 900px;
+$device-phone: 500px;
+
+/* 断点映射 */
+$breakpoints: (
+  'sm': $sm,
+  'md': $md,
+  'lg': $lg,
+  'xl': $xl
+) !default;
+
+/* CSS变量 */
+:root {
+  // 动画时长统一（解决不一致问题）
+  --duration-normal: 0.3s;
+  --duration-slow: 0.6s;
+
+  // Z-index层级统一（解决混乱问题）
+  --z-sidebar: 1001;
+  --z-header: 9;
+  --z-mask: 999;
+  --z-modal: 1050;
+
+  // 侧边栏尺寸统一
+  --sidebar-collapsed-width: 54px;
+
+  // 边框圆角统一
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-round: 20px;
+
+  // 设计系统化变量
+  // 主色系
+  --main-color: var(--el-color-primary);
+
+  // 组件统一高度系统
+  --el-component-custom-height: 32px !important;
+  --el-component-size: var(--el-component-custom-height) !important;
+
+  // 动态圆角系统 - 基于自定义圆角变量计算
+  --custom-radius: 12px; // 基础圆角值，可以通过主题切换
+  --el-border-radius-base: calc(var(--custom-radius) / 3 + 2px) !important;
+  --el-border-radius-small: calc(var(--custom-radius) / 3 + 4px) !important;
+  --el-messagebox-border-radius: calc(var(--custom-radius) / 3 + 4px) !important;
+  --el-popover-border-radius: calc(var(--custom-radius) / 3 + 4px) !important;
+
+  // 按钮样式
+  --el-font-weight-primary: 400 !important;
+
+  /* Element UI 菜单颜色映射 */
+  --custom-active-bg-color: rgba(64, 158, 255, 0.1);
+  --cutsom-active-text-color: rgba(66, 161, 255, 1);
+
+  /* Element UI 菜单颜色映射 */
+  --el-menu-active-bg-color: rgba(64, 158, 255, 0.1);
+  --el-menu-active-text-color: rgba(66, 161, 255, 1);
+}

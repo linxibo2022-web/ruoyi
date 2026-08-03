@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false" scan="true" scanPeriod="1 seconds">
+
+    <contextName>logback</contextName>
+    <!-- 从Spring配置读取日志路径 -->
+    <springProperty scope="context" name="log.path" source="logging.file.path" defaultValue="./logs/ruoyi-monitor-admin"/>
+    <property name="console.log.pattern"
+              value="%cyan(%d{yyyy-MM-dd HH:mm:ss}) %green([%thread]) %highlight(%-5level) %boldMagenta(%logger{36}%n) - %msg%n"/>
+    <property name="log.pattern" value="%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"/>
+
+    <!-- 控制台输出 -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${console.log.pattern}</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 开发环境配置 -->
+    <springProfile name="dev">
+        <root level="info">
+            <!-- 开发环境只使用控制台输出 -->
+            <appender-ref ref="console"/>
+        </root>
+    </springProfile>
+
+    <!-- 生产环境配置 -->
+    <springProfile name="prod">
+        <!-- 文件输出 -->
+        <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${log.path}.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${log.path}.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <!-- 日志最大的历史 60天 -->
+                <maxHistory>60</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>${log.pattern}</pattern>
+            </encoder>
+        </appender>
+
+        <root level="info">
+            <!-- 生产环境使用控制台和文件输出 -->
+            <appender-ref ref="console"/>
+            <appender-ref ref="file"/>
+        </root>
+    </springProfile>
+
+</configuration>

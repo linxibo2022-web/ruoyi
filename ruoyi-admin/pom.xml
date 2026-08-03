@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>ruoyi-plus-uniapp</artifactId>
+        <groupId>plus.ruoyi</groupId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>jar</packaging>
+    <artifactId>erp_sys</artifactId>
+
+    <description>
+        系统入口模块 - 应用程序主入口，负责集成各个功能模块并启动应用
+    </description>
+
+    <dependencies>
+        <!-- ================ 核心业务模块 ================ -->
+        <!-- 系统核心功能模块 - 包含核心业务逻辑和基础功能 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-system</artifactId>
+        </dependency>
+
+        <!-- 业务功能模块 - 包含具体业务实现 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-business</artifactId>
+        </dependency>
+
+        <!-- 商城模块 - 包含商品、订单、购物车等商城功能 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-mall</artifactId>
+        </dependency>
+
+        <!-- ================ 功能增强模块 ================ -->
+
+        <!-- 代码生成模块 - 提供代码自动生成功能，简化开发 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-generator</artifactId>
+        </dependency>
+
+        <!-- ================ 监控和测试工具 ================ -->
+        <!-- Spring Boot Admin客户端 - 用于应用监控 -->
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-starter-client</artifactId>
+        </dependency>
+
+        <!-- 测试支持模块 - 提供单元测试框架和测试基础类 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-test</artifactId>
+            <version>${revision}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- ================ 可选监控工具 (已注释) ================ -->
+        <!-- SkyWalking日志集成 - 用于分布式追踪和监控 -->
+        <!--
+        <dependency>
+            <groupId>org.apache.skywalking</groupId>
+            <artifactId>apm-toolkit-logback-1.x</artifactId>
+            <version>${skywalking.version}</version>
+        </dependency>
+        -->
+
+        <!-- SkyWalking追踪工具 - 用于性能分析和链路追踪 -->
+        <!--
+        <dependency>
+            <groupId>org.apache.skywalking</groupId>
+            <artifactId>apm-toolkit-trace</artifactId>
+            <version>${skywalking.version}</version>
+        </dependency>
+        -->
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <!-- Spring Boot Maven插件 - 用于构建可执行的JAR包 -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Maven JAR插件 - 用于构建JAR包 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven-jar-plugin.version}</version>
+            </plugin>
+
+            <!-- Maven WAR插件 - 用于构建WAR包 (当需要部署到外部容器时) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${maven-war-plugin.version}</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <warName>${project.artifactId}</warName>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

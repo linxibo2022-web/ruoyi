@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>plus.ruoyi</groupId>
+        <artifactId>ruoyi-common</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ruoyi-common-idempotent</artifactId>
+
+    <description>
+        幂等功能模块 - 提供接口幂等性控制，防止重复提交与操作
+    </description>
+
+    <dependencies>
+        <!-- ================ 内部模块依赖 ================ -->
+        <!-- JSON模块 - 提供数据序列化支持 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-json</artifactId>
+        </dependency>
+
+        <!-- Redis模块 - 提供分布式锁与缓存支持 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-redis</artifactId>
+        </dependency>
+
+        <!-- ================ 安全与身份验证依赖 ================ -->
+        <!-- HuTool加密工具 - 提供Token生成与验证所需的加密功能 -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-crypto</artifactId>
+        </dependency>
+
+        <!-- Sa-Token核心库 - 提供会话管理与用户标识 -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-core</artifactId>
+        </dependency>
+    </dependencies>
+</project>

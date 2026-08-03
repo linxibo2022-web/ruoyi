@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>plus.ruoyi</groupId>
+        <artifactId>ruoyi-common</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ruoyi-common-sms</artifactId>
+
+    <description>
+        短信模块 - 提供短信发送与验证码功能
+    </description>
+
+    <dependencies>
+        <!-- ================ 内部模块依赖 ================ -->
+        <!-- Redis模块 - 提供验证码存储与校验 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-redis</artifactId>
+        </dependency>
+
+        <!-- ================ 短信服务依赖 ================ -->
+        <!-- SMS4J框架 - 提供多平台短信发送支持 -->
+        <dependency>
+            <groupId>org.dromara.sms4j</groupId>
+            <artifactId>sms4j-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- ================ 测试依赖 ================ -->
+        <!-- 测试模块 - 提供测试基础设施 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

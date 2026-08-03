@@ -1,0 +1,22 @@
+{
+  "name": "文档模板",
+  "description": "ruoyi-common-doctemplate 模块（Word/Excel 文档模板渲染），无业务模块直接依赖",
+  "delete_dirs": [
+    "ruoyi-common/ruoyi-common-doctemplate"
+  ],
+  "delete_files": [],
+  "remove_pom_lines": [
+    {
+      "file": "ruoyi-common/pom.xml",
+      "patterns": [
+        "<module>ruoyi-common-doctemplate</module>"
+      ]
+    }
+  ],
+  "manual_actions": [
+    "✅ 实测：单独裁 doctemplate 编译通过（无业务模块直接依赖此 common）",
+    "若日后业务代码新增 doctemplate 引用（如生成合同/报告），本预设需配套删除",
+    "ruoyi-common-bom 中保留的版本声明可不动（不影响构建）"
+  ],
+  "depends_on": []
+}

@@ -1,0 +1,157 @@
+package ${packageName}.controller;
+
+import java.util.List;
+import java.util.ArrayList;
+
+import lombok.RequiredArgsConstructor;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.*;
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import plus.ruoyi.common.core.constant.I18nKeys;
+import plus.ruoyi.common.core.utils.MapstructUtils;
+import plus.ruoyi.common.excel.core.ExcelResult;
+import org.springframework.http.MediaType;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import plus.ruoyi.common.idempotent.annotation.RepeatSubmit;
+import plus.ruoyi.common.log.annotation.Log;
+import plus.ruoyi.common.mybatis.core.page.PageQuery;
+import plus.ruoyi.common.mybatis.core.page.PageResult;
+import plus.ruoyi.common.core.domain.R;
+import plus.ruoyi.common.core.validate.AddGroup;
+import plus.ruoyi.common.core.validate.EditGroup;
+import plus.ruoyi.common.core.dict.DictOperType;
+import plus.ruoyi.common.excel.utils.ExcelUtil;
+import plus.ruoyi.common.core.domain.vo.DictItemVo;
+import plus.ruoyi.common.core.utils.StreamUtils;
+import ${packageName}.domain.${ClassName};
+import ${packageName}.domain.vo.${ClassName}Vo;
+import ${packageName}.domain.bo.${ClassName}Bo;
+import ${packageName}.service.I${ClassName}Service;
+
+/**
+ * ${functionName}
+ *
+ * @author ${author}
+ * @date ${datetime}
+ */
+@Validated
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("/${moduleName}/${businessName}")
+public class ${ClassName}Controller {
+
+    private final I${ClassName}Service ${className}Service;
+
+    /**
+     * 查询${functionName}列表
+     */
+    @SaCheckPermission("${permissionPrefix}:query")
+    @GetMapping("/page${BusinessName}${pluralSuffix}")
+    public R<PageResult<${ClassName}Vo>> page${BusinessName}${pluralSuffix}(${ClassName}Bo bo, PageQuery pageQuery) {
+        return R.ok(${className}Service.page(bo, pageQuery));
+    }
+
+    /**
+     * 获取${functionName}详细信息
+     *
+     * @param ${pkColumn.javaField} 主键
+     */
+    @SaCheckPermission("${permissionPrefix}:query")
+    @GetMapping("/get${BusinessName}/{${pkColumn.javaField}}")
+    public R<${ClassName}Vo> get${BusinessName}(@NotNull(message = I18nKeys.Common.ID_REQUIRED) @PathVariable ${pkColumn.javaType} ${pkColumn.javaField}) {
+        return R.ok(${className}Service.get(${pkColumn.javaField}));
+    }
+
+    /**
+     * 新增${functionName}
+     */
+    @SaCheckPermission("${permissionPrefix}:add")
+    @Log(title = "${functionName}", operType = DictOperType.INSERT)
+    @RepeatSubmit()
+    @PostMapping("/add${BusinessName}")
+    public R<${pkColumn.javaType}> add${BusinessName}(@Validated(AddGroup.class) @RequestBody ${ClassName}Bo bo) {
+        return R.ok(${className}Service.add(bo));
+    }
+
+    /**
+     * 修改${functionName}
+     */
+    @SaCheckPermission("${permissionPrefix}:update")
+    @Log(title = "${functionName}", operType = DictOperType.UPDATE)
+    @RepeatSubmit()
+    @PutMapping("/update${BusinessName}")
+    public R<Void> update${BusinessName}(@Validated(EditGroup.class) @RequestBody ${ClassName}Bo bo) {
+        return R.status(${className}Service.update(bo));
+    }
+
+    /**
+     * 删除${functionName}
+     *
+     * @param ${pkColumn.javaField}s 主键串
+     */
+    @SaCheckPermission("${permissionPrefix}:delete")
+    @Log(title = "${functionName}", operType = DictOperType.DELETE)
+    @DeleteMapping("/delete${BusinessName}${pluralSuffix}/{${pkColumn.javaField}s}")
+    public R<Void> delete${BusinessName}${pluralSuffix}(@NotEmpty(message = I18nKeys.Common.ID_REQUIRED) @PathVariable ${pkColumn.javaType}[] ${pkColumn.javaField}s) {
+        return R.status(${className}Service.batchDelete(List.of(${pkColumn.javaField}s)));
+    }
+
+    /**
+     * 导出${functionName}列表
+     */
+    @SaCheckPermission("${permissionPrefix}:export")
+    @Log(title = "${functionName}", operType = DictOperType.EXPORT)
+    @PostMapping("/export${BusinessName}${pluralSuffix}")
+    public void export${BusinessName}${pluralSuffix}(${ClassName}Bo bo, PageQuery pageQuery, HttpServletResponse response) {
+        PageResult<${ClassName}Vo> pageResult = ${className}Service.page(bo, pageQuery);
+        ExcelUtil.exportExcel(pageResult.getRecords(), "${functionName}", ${ClassName}Vo.class, response);
+    }
+
+    /**
+     * 获取${functionName}导入模板
+     */
+    @PostMapping("/template${BusinessName}${pluralSuffix}")
+    public void template${BusinessName}${pluralSuffix}(HttpServletResponse response) {
+        ExcelUtil.exportExcel(new ArrayList<>(), "${functionName}模板", ${ClassName}Vo.class, response);
+    }
+
+    /**
+     * 导入${functionName}
+     *
+     * @param file 导入文件
+        #if($isSubTable)
+         * @param ${parentTableSubTableFkclassName} ${parentTableSubTableFkComment}
+        #end
+     */
+    @Log(title = "${functionName}", operType = DictOperType.IMPORT)
+    @SaCheckPermission("${permissionPrefix}:import")
+    @PostMapping(value = "/import${BusinessName}${pluralSuffix}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public R<Void> import${BusinessName}${pluralSuffix}(MultipartFile file#if($isSubTable), ${parentTableSubTableFkJavaType} ${parentTableSubTableFkclassName}#end) throws Exception {
+        ExcelResult<${ClassName}Vo> excelResult = ExcelUtil.importExcel(file.getInputStream(), ${ClassName}Vo.class, true);
+        #if($isSubTable)
+        List<${ClassName}Bo> boList = MapstructUtils.convert(excelResult.getList(), ${ClassName}Bo.class);
+        boList.forEach(bo -> bo.set${parentTableSubTableFkClassName}(${parentTableSubTableFkclassName}));
+        ${className}Service.batchSave(boList);
+        #else
+        List<${ClassName}Bo> boList = MapstructUtils.convert(excelResult.getList(), ${ClassName}Bo.class);
+        ${className}Service.batchSave(boList);
+        #end
+        return R.ok(excelResult.getAnalysis());
+    }
+
+    /**
+     * 获取${functionName}选项列表
+     * 用于下拉选择、关联查询等场景
+     */
+    @SaCheckPermission("${permissionPrefix}:query")
+    @GetMapping("/option${BusinessName}${pluralSuffix}")
+    public R<List<DictItemVo>> option${BusinessName}${pluralSuffix}() {
+        List<${ClassName}Vo> list = ${className}Service.listForOption();
+        List<DictItemVo> options = StreamUtils.toList(list, item ->
+            DictItemVo.of(item.get${displayField}(), String.valueOf(item.get${pkColumn.javaField.substring(0,1).toUpperCase()}${pkColumn.javaField.substring(1)}()), "success")
+        );
+        return R.ok(options);
+    }
+}

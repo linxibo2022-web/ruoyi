@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, user-scalable=no">
+<title>天气工具 - 当前天气</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f0f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .phone-frame { width: 375px; height: 812px; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; background: #ffffff; position: relative; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+  .status-bar { height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }
+  .status-bar span { color: white; font-size: 12px; font-weight: 600; }
+  .screen { flex: 1; overflow-y: auto; padding-bottom: 80px; }
+  .screen::-webkit-scrollbar { display: none; }
+  .tab-bar { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); display: flex; border-top: 1px solid #e5e7eb; padding-bottom: 20px; z-index: 50; }
+  .tab-bar a { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 8px 0 4px; text-decoration: none; color: #9ca3af; font-size: 10px; gap: 2px; }
+  .tab-bar a.active { color: #0EA5E9; }
+  .tab-bar a i { width: 22px; height: 22px; }
+  .home-indicator { width: 134px; height: 5px; background: #000; border-radius: 3px; margin: 0 auto; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); opacity: 0.2; }
+
+  .hero { background: linear-gradient(180deg, #0EA5E9 0%, #0284C7 100%); color: white; padding: 20px 24px 28px; text-align: center; }
+  .city-row { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 18px; font-weight: 500; margin-bottom: 8px; }
+  .temp-big { font-size: 96px; font-weight: 200; line-height: 1; margin: 4px 0; }
+  .weather-desc { font-size: 20px; margin-bottom: 4px; }
+  .feels-like { font-size: 13px; opacity: 0.8; }
+
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 20px 16px 12px; }
+  .info-card { background: #f0f9ff; border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+  .info-card .label { font-size: 11px; color: #64748b; display: flex; align-items: center; gap: 4px; }
+  .info-card .label i { width: 14px; height: 14px; }
+  .info-card .value { font-size: 22px; font-weight: 600; color: #0c4a6e; }
+  .info-card .sub { font-size: 11px; color: #64748b; }
+
+  .hourly-section { padding: 12px 16px 16px; }
+  .hourly-section .title { font-size: 13px; color: #64748b; font-weight: 500; margin-bottom: 10px; display: flex; align-items: center; gap: 4px; }
+  .hourly-section .title i { width: 14px; height: 14px; }
+  .hourly-scroll { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 4px; }
+  .hourly-scroll::-webkit-scrollbar { display: none; }
+  .hourly-item { flex-shrink: 0; width: 56px; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 4px; border-radius: 20px; background: #f8fafc; }
+  .hourly-item.now { background: #0EA5E9; color: white; }
+  .hourly-item .h-time { font-size: 11px; color: #64748b; }
+  .hourly-item.now .h-time { color: rgba(255,255,255,0.8); }
+  .hourly-item .h-icon { font-size: 20px; }
+  .hourly-item .h-temp { font-size: 14px; font-weight: 600; color: #1e293b; }
+  .hourly-item.now .h-temp { color: white; }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <!-- Status Bar -->
+  <div class="status-bar" style="background: #0EA5E9;">
+    <span>9:41</span>
+    <span>●●●●○ ⚡ 85%</span>
+  </div>
+
+  <div class="screen">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="city-row">
+        <i data-lucide="map-pin" style="width:18px;height:18px;"></i>
+        <span>北京市</span>
+      </div>
+      <div class="temp-big">28°</div>
+      <div class="weather-desc">☀️ 晴</div>
+      <div class="feels-like">最高 31° / 最低 22°</div>
+    </div>
+
+    <!-- Info Grid -->
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="label"><i data-lucide="thermometer"></i> 体感温度</div>
+        <div class="value">30°</div>
+        <div class="sub">略高于实际温度</div>
+      </div>
+      <div class="info-card">
+        <div class="label"><i data-lucide="droplets"></i> 湿度</div>
+        <div class="value">45%</div>
+        <div class="sub">较为舒适</div>
+      </div>
+      <div class="info-card">
+        <div class="label"><i data-lucide="wind"></i> 风速</div>
+        <div class="value">12 km/h</div>
+        <div class="sub">东南风 3级</div>
+      </div>
+      <div class="info-card">
+        <div class="label"><i data-lucide="sun"></i> 紫外线</div>
+        <div class="value">中等</div>
+        <div class="sub">建议涂抹防晒霜</div>
+      </div>
+    </div>
+
+    <!-- Hourly Forecast -->
+    <div class="hourly-section">
+      <div class="title"><i data-lucide="clock"></i> 24小时预报</div>
+      <div class="hourly-scroll">
+        <div class="hourly-item now">
+          <div class="h-time">现在</div>
+          <div class="h-icon">☀️</div>
+          <div class="h-temp">28°</div>
+        </div>
+        <div class="hourly-item">
+          <div class="h-time">11:00</div>
+          <div class="h-icon">☀️</div>
+          <div class="h-temp">29°</div>
+        </div>
+        <div class="hourly-item">
+          <div class="h-time">12:00</div>
+          <div class="h-icon">⛅</div>
+          <div class="h-temp">31°</div>
+        </div>
+        <div class="hourly-item">
+          <div class="h-time">13:00</div>
+          <div class="h-icon">⛅</div>
+          <div class="h-temp">31°</div>
+        </div>
+        <div class="hourly-item">
+          <div class="h-time">14:00</div>
+          <div class="h-icon">☀️</div>
+          <div class="h-temp">30°</div>
+        </div>
+        <div class="hourly-item">
+          <div class="h-time">15:00</div>
+          <div class="h-icon">☀️</div>
+          <div class="h-temp">29°</div>
+        </div>
+        <div class="hourly-item">
+          <div class="h-time">16:00</div>
+          <div class="h-icon">⛅</div>
+          <div class="h-temp">28°</div>
+        </div>
+        <div class="hourly-item">
+          <div class="h-time">17:00</div>
+          <div class="h-icon">🌤️</div>
+          <div class="h-temp">27°</div>
+        </div>
+        <div class="hourly-item">
+          <div class="h-time">18:00</div>
+          <div class="h-icon">🌤️</div>
+          <div class="h-temp">26°</div>
+        </div>
+        <div class="hourly-item">
+          <div class="h-time">19:00</div>
+          <div class="h-icon">🌙</div>
+          <div class="h-temp">24°</div>
+        </div>
+        <div class="hourly-item">
+          <div class="h-time">20:00</div>
+          <div class="h-icon">🌙</div>
+          <div class="h-temp">23°</div>
+        </div>
+        <div class="hourly-item">
+          <div class="h-time">21:00</div>
+          <div class="h-icon">🌙</div>
+          <div class="h-temp">23°</div>
+        </div>
+        <div class="hourly-item">
+          <div class="h-time">22:00</div>
+          <div class="h-icon">🌙</div>
+          <div class="h-temp">22°</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <a href="01-index.html" class="active">
+      <i data-lucide="cloud-sun"></i>
+      <span>天气</span>
+    </a>
+    <a href="02-forecast.html">
+      <i data-lucide="calendar-days"></i>
+      <span>预报</span>
+    </a>
+    <a href="03-map.html">
+      <i data-lucide="map"></i>
+      <span>天气图</span>
+    </a>
+    <a href="04-setting.html">
+      <i data-lucide="settings"></i>
+      <span>设置</span>
+    </a>
+  </div>
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+  lucide.createIcons();
+</script>
+</body>
+</html>

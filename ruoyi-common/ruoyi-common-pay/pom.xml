@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>plus.ruoyi</groupId>
+        <artifactId>ruoyi-common</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ruoyi-common-pay</artifactId>
+    <packaging>pom</packaging>
+
+    <description>
+        支付模块聚合 - 统一管理所有支付子模块
+
+        子模块说明:
+        - ruoyi-common-pay-core: 支付核心模块,提供通用接口和工具
+        - ruoyi-common-pay-wechat: 微信支付模块 (可选)
+        - ruoyi-common-pay-alipay: 支付宝支付模块 (可选,默认注释)
+        - ruoyi-common-pay-balance: 余额支付模块 (可选)
+
+        使用说明:
+        1. 核心模块(pay-core)是必需的,其他支付模块可按需启用
+        2. 业务模块默认只引入 pay-core、pay-wechat 和 pay-balance
+        3. 如需启用支付宝支付,取消业务模块下方 pay-alipay 依赖的注释即可
+    </description>
+
+    <!-- 子模块列表 -->
+    <modules>
+        <module>ruoyi-common-pay-core</module>
+        <module>ruoyi-common-pay-wechat</module>
+        <module>ruoyi-common-pay-alipay</module>
+        <module>ruoyi-common-pay-unionpay</module>
+        <module>ruoyi-common-pay-balance</module>
+    </modules>
+
+</project>

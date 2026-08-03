@@ -1,0 +1,99 @@
+/* 此文件为WangEditor编辑器 所需图标 */
+@font-face {
+    font-family: "iconfont"; /* Project id 5022663 */
+    src: url('./iconfont.woff2') format('woff2'),
+    url('./iconfont.woff') format('woff'),
+    url('./iconfont.ttf') format('truetype');
+}
+
+.iconfont {
+    font-family: "iconfont" !important;
+    font-size: 16px;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-double-quotes-left:before {
+    content: "\e61c";
+}
+
+.icon-bold:before {
+    content: "\e630";
+}
+
+.icon-expand1:before {
+    content: "\e633";
+}
+
+.icon-image:before {
+    content: "\e634";
+}
+
+.icon-italic:before {
+    content: "\e638";
+}
+
+.icon-link-break:before {
+    content: "\e63a";
+}
+
+.icon-list-remove:before {
+    content: "\e63e";
+}
+
+.icon-select-multi:before {
+    content: "\e641";
+}
+
+.icon-more-grid-big:before {
+    content: "\e648";
+}
+
+.icon-list-disorder:before {
+    content: "\e64e";
+}
+
+.icon-redo:before {
+    content: "\e659";
+}
+
+.icon-underline:before {
+    content: "\e65a";
+}
+
+.icon-undo:before {
+    content: "\e65e";
+}
+
+.icon-list-order:before {
+    content: "\e66c";
+}
+
+.icon-remove-minus:before {
+    content: "\e66d";
+}
+
+.icon-table:before {
+    content: "\e67b";
+}
+
+.icon-text-align-left:before {
+    content: "\e67e";
+}
+
+.icon-code-inline:before {
+    content: "\e68b";
+}
+
+.icon-font-color:before {
+    content: "\e68c";
+}
+
+.icon-beijingsetianchong:before {
+    content: "\e691";
+}
+
+.icon-biaoqing1:before {
+    content: "\e690";
+}

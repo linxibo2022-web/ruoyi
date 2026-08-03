@@ -1,0 +1,115 @@
+{
+  "framework": {
+    "description": "框架模块配置 - 这些模块是框架的一部分，不参与业务进度统计",
+    "backend": {
+      "modules": [
+        "ruoyi-common",
+        "ruoyi-admin",
+        "ruoyi-extend"
+      ],
+      "systemModules": [
+        "ruoyi-modules/ruoyi-system",
+        "ruoyi-modules/ruoyi-generator"
+      ],
+      "description": "后端框架模块，包含通用工具、系统管理、代码生成器等"
+    },
+    "frontend": {
+      "excludeViewDirs": [
+        "system",
+        "tool",
+        "common"
+      ],
+      "excludeApiDirs": [
+        "system",
+        "tool",
+        "common"
+      ],
+      "description": "前端框架页面和API。注意：views/ 下除了 system/tool/common 外，其他都可能是业务页面（如 business/、mall/、iot/、crm/ 等）"
+    },
+    "systemFeatures": [
+      "用户管理",
+      "角色管理",
+      "菜单管理",
+      "部门管理",
+      "岗位管理",
+      "字典管理",
+      "参数配置",
+      "通知公告",
+      "操作日志",
+      "登录日志",
+      "在线用户",
+      "定时任务",
+      "数据监控",
+      "服务监控",
+      "缓存监控",
+      "代码生成器",
+      "表单构建",
+      "系统接口",
+      "租户管理",
+      "租户套餐",
+      "客户端管理",
+      "OSS配置",
+      "OSS对象存储",
+      "API密钥管理"
+    ]
+  },
+  "business": {
+    "description": "业务模块配置 - 这些是需要统计进度的业务代码",
+    "backend": {
+      "modulePattern": "ruoyi-modules/ruoyi-*",
+      "excludeModules": [
+        "ruoyi-modules/ruoyi-system",
+        "ruoyi-modules/ruoyi-generator"
+      ],
+      "description": "业务模块位于 ruoyi-modules/ 下，以 ruoyi- 开头但不包括 system 和 generator"
+    },
+    "frontend": {
+      "viewBaseDir": "plus-ui/src/views",
+      "apiBaseDir": "plus-ui/src/api",
+      "excludeDirs": ["system", "tool", "common"],
+      "description": "前端业务页面和API：views/ 和 api/ 下除了 system/tool/common 外的所有目录都是业务（如 business/、mall/、iot/、crm/、erp/ 等）"
+    },
+    "mobile": {
+      "pagesDir": "plus-uniapp/src/pages",
+      "pagesSubDir": "plus-uniapp/src/pages-sub",
+      "frameworkPages": [
+        "pages/index",
+        "pages/login",
+        "pages/user"
+      ],
+      "description": "移动端业务页面：pages-sub/ 全部是业务；pages/ 中除了 index/login/user 外也可能是业务主包页面"
+    }
+  },
+  "scanRules": {
+    "backend": {
+      "requiredFiles": [
+        "Entity (domain/*.java)",
+        "BO (domain/bo/*Bo.java)",
+        "VO (domain/vo/*Vo.java)",
+        "Controller (*Controller.java)",
+        "Service (I*Service.java)",
+        "ServiceImpl (impl/*ServiceImpl.java)",
+        "DAO (I*Dao.java)",
+        "DAOImpl (impl/*DaoImpl.java)",
+        "Mapper (*Mapper.java)"
+      ],
+      "completenessFormula": "存在文件数 / 9 * 100%"
+    },
+    "frontend": {
+      "pageTypes": [
+        "列表页 (index.vue)",
+        "表单页 (form.vue)",
+        "详情页 (detail.vue)"
+      ]
+    },
+    "todoPatterns": [
+      "TODO:",
+      "FIXME:",
+      "XXX:",
+      "HACK:",
+      "NOTE:"
+    ]
+  },
+  "version": "1.0.0",
+  "lastUpdated": "2025-12-05"
+}

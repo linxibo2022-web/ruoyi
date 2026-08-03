@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, user-scalable=no">
+<title>天气工具 - 7日预报</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f0f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .phone-frame { width: 375px; height: 812px; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; background: #ffffff; position: relative; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+  .status-bar { height: 44px; background: #ffffff; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }
+  .status-bar span { color: #1e293b; font-size: 12px; font-weight: 600; }
+  .screen { flex: 1; overflow-y: auto; padding-bottom: 80px; }
+  .screen::-webkit-scrollbar { display: none; }
+  .tab-bar { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); display: flex; border-top: 1px solid #e5e7eb; padding-bottom: 20px; z-index: 50; }
+  .tab-bar a { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 8px 0 4px; text-decoration: none; color: #9ca3af; font-size: 10px; gap: 2px; }
+  .tab-bar a.active { color: #0EA5E9; }
+  .tab-bar a i { width: 22px; height: 22px; }
+  .home-indicator { width: 134px; height: 5px; background: #000; border-radius: 3px; margin: 0 auto; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); opacity: 0.2; }
+
+  .page-header { padding: 4px 20px 16px; }
+  .page-header h1 { font-size: 28px; font-weight: 700; color: #0f172a; }
+  .page-header p { font-size: 13px; color: #64748b; margin-top: 2px; }
+
+  .forecast-list { padding: 0 16px; }
+  .forecast-item { display: flex; align-items: center; padding: 14px 0; border-bottom: 1px solid #f1f5f9; }
+  .forecast-item:last-child { border-bottom: none; }
+  .forecast-day { width: 60px; }
+  .forecast-day .day-name { font-size: 14px; font-weight: 600; color: #1e293b; }
+  .forecast-day .day-date { font-size: 11px; color: #94a3b8; }
+  .forecast-icon { width: 36px; text-align: center; font-size: 22px; }
+  .forecast-desc { flex: 1; font-size: 12px; color: #64748b; padding: 0 8px; }
+  .forecast-temps { display: flex; align-items: center; gap: 6px; width: 120px; }
+  .forecast-temps .t-low { font-size: 13px; color: #94a3b8; width: 28px; text-align: right; }
+  .forecast-temps .t-high { font-size: 13px; font-weight: 600; color: #1e293b; width: 28px; }
+  .temp-bar-wrap { flex: 1; height: 4px; background: #e2e8f0; border-radius: 2px; position: relative; }
+  .temp-bar { height: 100%; border-radius: 2px; position: absolute; left: 0; }
+
+  .life-section { padding: 20px 16px 8px; }
+  .life-section .section-title { font-size: 13px; color: #64748b; font-weight: 500; margin-bottom: 12px; display: flex; align-items: center; gap: 4px; }
+  .life-section .section-title i { width: 14px; height: 14px; }
+  .life-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .life-card { background: #f8fafc; border-radius: 12px; padding: 14px; }
+  .life-card .lc-icon { font-size: 24px; margin-bottom: 6px; }
+  .life-card .lc-name { font-size: 12px; color: #64748b; margin-bottom: 2px; }
+  .life-card .lc-level { font-size: 15px; font-weight: 600; color: #1e293b; }
+  .life-card .lc-tip { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+
+  .today-tag { display: inline-block; background: #0EA5E9; color: white; font-size: 10px; padding: 1px 6px; border-radius: 4px; font-weight: 500; }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span>9:41</span>
+    <span>●●●●○ ⚡ 85%</span>
+  </div>
+
+  <div class="screen">
+    <!-- Header -->
+    <div class="page-header">
+      <h1>7日预报</h1>
+      <p>北京市 · 未来一周天气趋势</p>
+    </div>
+
+    <!-- Forecast List -->
+    <div class="forecast-list">
+      <div class="forecast-item">
+        <div class="forecast-day">
+          <div class="day-name"><span class="today-tag">今天</span></div>
+          <div class="day-date">4/14</div>
+        </div>
+        <div class="forecast-icon">☀️</div>
+        <div class="forecast-desc">晴</div>
+        <div class="forecast-temps">
+          <span class="t-low">22°</span>
+          <div class="temp-bar-wrap">
+            <div class="temp-bar" style="left:30%;width:50%;background:linear-gradient(90deg,#38bdf8,#f97316);"></div>
+          </div>
+          <span class="t-high">31°</span>
+        </div>
+      </div>
+
+      <div class="forecast-item">
+        <div class="forecast-day">
+          <div class="day-name">明天</div>
+          <div class="day-date">4/15</div>
+        </div>
+        <div class="forecast-icon">⛅</div>
+        <div class="forecast-desc">多云</div>
+        <div class="forecast-temps">
+          <span class="t-low">20°</span>
+          <div class="temp-bar-wrap">
+            <div class="temp-bar" style="left:20%;width:50%;background:linear-gradient(90deg,#38bdf8,#fb923c);"></div>
+          </div>
+          <span class="t-high">29°</span>
+        </div>
+      </div>
+
+      <div class="forecast-item">
+        <div class="forecast-day">
+          <div class="day-name">周三</div>
+          <div class="day-date">4/16</div>
+        </div>
+        <div class="forecast-icon">🌧️</div>
+        <div class="forecast-desc">小雨</div>
+        <div class="forecast-temps">
+          <span class="t-low">18°</span>
+          <div class="temp-bar-wrap">
+            <div class="temp-bar" style="left:10%;width:40%;background:linear-gradient(90deg,#38bdf8,#60a5fa);"></div>
+          </div>
+          <span class="t-high">25°</span>
+        </div>
+      </div>
+
+      <div class="forecast-item">
+        <div class="forecast-day">
+          <div class="day-name">周四</div>
+          <div class="day-date">4/17</div>
+        </div>
+        <div class="forecast-icon">🌧️</div>
+        <div class="forecast-desc">中雨</div>
+        <div class="forecast-temps">
+          <span class="t-low">16°</span>
+          <div class="temp-bar-wrap">
+            <div class="temp-bar" style="left:5%;width:35%;background:linear-gradient(90deg,#38bdf8,#60a5fa);"></div>
+          </div>
+          <span class="t-high">22°</span>
+        </div>
+      </div>
+
+      <div class="forecast-item">
+        <div class="forecast-day">
+          <div class="day-name">周五</div>
+          <div class="day-date">4/18</div>
+        </div>
+        <div class="forecast-icon">⛅</div>
+        <div class="forecast-desc">多云</div>
+        <div class="forecast-temps">
+          <span class="t-low">19°</span>
+          <div class="temp-bar-wrap">
+            <div class="temp-bar" style="left:15%;width:45%;background:linear-gradient(90deg,#38bdf8,#fb923c);"></div>
+          </div>
+          <span class="t-high">27°</span>
+        </div>
+      </div>
+
+      <div class="forecast-item">
+        <div class="forecast-day">
+          <div class="day-name">周六</div>
+          <div class="day-date">4/19</div>
+        </div>
+        <div class="forecast-icon">☀️</div>
+        <div class="forecast-desc">晴</div>
+        <div class="forecast-temps">
+          <span class="t-low">21°</span>
+          <div class="temp-bar-wrap">
+            <div class="temp-bar" style="left:25%;width:55%;background:linear-gradient(90deg,#38bdf8,#f97316);"></div>
+          </div>
+          <span class="t-high">30°</span>
+        </div>
+      </div>
+
+      <div class="forecast-item">
+        <div class="forecast-day">
+          <div class="day-name">周日</div>
+          <div class="day-date">4/20</div>
+        </div>
+        <div class="forecast-icon">☀️</div>
+        <div class="forecast-desc">晴</div>
+        <div class="forecast-temps">
+          <span class="t-low">22°</span>
+          <div class="temp-bar-wrap">
+            <div class="temp-bar" style="left:30%;width:55%;background:linear-gradient(90deg,#38bdf8,#f97316);"></div>
+          </div>
+          <span class="t-high">32°</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Life Index -->
+    <div class="life-section">
+      <div class="section-title"><i data-lucide="heart"></i> 生活指数</div>
+      <div class="life-grid">
+        <div class="life-card">
+          <div class="lc-icon">👕</div>
+          <div class="lc-name">穿衣指数</div>
+          <div class="lc-level">薄款短袖</div>
+          <div class="lc-tip">天气炎热，注意防晒</div>
+        </div>
+        <div class="life-card">
+          <div class="lc-icon">🚗</div>
+          <div class="lc-name">洗车指数</div>
+          <div class="lc-level">适宜</div>
+          <div class="lc-tip">未来两天无雨，适合洗车</div>
+        </div>
+        <div class="life-card">
+          <div class="lc-icon">🏃</div>
+          <div class="lc-name">运动指数</div>
+          <div class="lc-level">适宜</div>
+          <div class="lc-tip">避开正午时段即可</div>
+        </div>
+        <div class="life-card">
+          <div class="lc-icon">🕶️</div>
+          <div class="lc-name">紫外线</div>
+          <div class="lc-level">中等偏强</div>
+          <div class="lc-tip">建议涂抹 SPF30+ 防晒</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <a href="01-index.html">
+      <i data-lucide="cloud-sun"></i>
+      <span>天气</span>
+    </a>
+    <a href="02-forecast.html" class="active">
+      <i data-lucide="calendar-days"></i>
+      <span>预报</span>
+    </a>
+    <a href="03-map.html">
+      <i data-lucide="map"></i>
+      <span>天气图</span>
+    </a>
+    <a href="04-setting.html">
+      <i data-lucide="settings"></i>
+      <span>设置</span>
+    </a>
+  </div>
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+  lucide.createIcons();
+</script>
+</body>
+</html>

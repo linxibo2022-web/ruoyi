@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, user-scalable=no">
+<title>科技资讯 - 我的</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f0f0f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .phone-frame { width: 375px; height: 812px; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; background: #f5f5f5; display: flex; flex-direction: column; position: relative; }
+  .status-bar { height: 44px; background: #4F46E5; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }
+  .status-bar span { color: white; font-size: 12px; font-weight: 600; }
+  .content-area { flex: 1; overflow-y: auto; padding-bottom: 80px; }
+  .content-area::-webkit-scrollbar { display: none; }
+  .tab-bar { position: absolute; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e5e7eb; display: flex; padding: 6px 0 0 0; z-index: 10; }
+  .tab-bar a { flex: 1; display: flex; flex-direction: column; align-items: center; text-decoration: none; padding: 4px 0 2px 0; }
+  .tab-bar a .tab-icon { width: 24px; height: 24px; color: #9ca3af; }
+  .tab-bar a .tab-label { font-size: 10px; color: #9ca3af; margin-top: 2px; }
+  .tab-bar a.active .tab-icon { color: #4F46E5; }
+  .tab-bar a.active .tab-label { color: #4F46E5; font-weight: 600; }
+  .safe-area-bottom { height: 20px; background: white; }
+  .home-indicator { width: 134px; height: 5px; background: #1a1a1a; border-radius: 3px; margin: 0 auto 8px auto; }
+
+  .func-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; padding: 16px; }
+  .func-item { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 0; }
+  .func-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+  .func-label { font-size: 11px; color: #374151; }
+
+  .menu-item { display: flex; align-items: center; padding: 14px 16px; background: white; gap: 12px; }
+  .menu-item:not(:last-child) { border-bottom: 1px solid #f3f4f6; }
+  .menu-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .menu-text { flex: 1; font-size: 13px; color: #374151; }
+  .menu-arrow { color: #d1d5db; }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <!-- Status Bar (透明，融入渐变头部) -->
+  <div class="status-bar" style="background: transparent; position: absolute; top: 0; left: 0; right: 0; z-index: 5;">
+    <span>9:41</span>
+    <span></span>
+    <span>
+      <i data-lucide="settings" style="width:16px;height:16px;color:white;"></i>
+    </span>
+  </div>
+
+  <!-- Content -->
+  <div class="content-area" style="padding-top: 0;">
+    <!-- 靛蓝渐变头部 -->
+    <div style="background: linear-gradient(135deg, #312e81, #4F46E5, #6366f1); padding: 60px 20px 24px 20px; position: relative; overflow: hidden;">
+      <!-- 装饰圆 -->
+      <div style="position: absolute; top: -20px; right: -20px; width: 120px; height: 120px; border: 2px solid rgba(255,255,255,0.1); border-radius: 50%;"></div>
+      <div style="position: absolute; bottom: -30px; left: -10px; width: 80px; height: 80px; border: 2px solid rgba(255,255,255,0.08); border-radius: 50%;"></div>
+
+      <!-- 用户信息 -->
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center;">
+          <i data-lucide="user" style="width:28px;height:28px;color:white;"></i>
+        </div>
+        <div>
+          <div style="color: white; font-size: 18px; font-weight: 700;">TechExplorer</div>
+          <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+            <span style="font-size: 10px; color: white; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px;">Lv.8 科技达人</span>
+            <span style="font-size: 10px; color: white; background: rgba(245,158,11,0.6); padding: 2px 8px; border-radius: 10px;">
+              <i data-lucide="crown" style="width:10px;height:10px;display:inline-block;vertical-align:-1px;"></i> VIP
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 数据卡片 -->
+      <div style="display: flex; margin-top: 20px; background: rgba(255,255,255,0.12); border-radius: 12px; padding: 14px 0; backdrop-filter: blur(10px);">
+        <div style="flex: 1; text-align: center;">
+          <div style="color: white; font-size: 18px; font-weight: 700;">328</div>
+          <div style="color: rgba(255,255,255,0.7); font-size: 11px; margin-top: 2px;">收藏</div>
+        </div>
+        <div style="width: 1px; background: rgba(255,255,255,0.15);"></div>
+        <div style="flex: 1; text-align: center;">
+          <div style="color: white; font-size: 18px; font-weight: 700;">1.2k</div>
+          <div style="color: rgba(255,255,255,0.7); font-size: 11px; margin-top: 2px;">关注</div>
+        </div>
+        <div style="width: 1px; background: rgba(255,255,255,0.15);"></div>
+        <div style="flex: 1; text-align: center;">
+          <div style="color: white; font-size: 18px; font-weight: 700;">56</div>
+          <div style="color: rgba(255,255,255,0.7); font-size: 11px; margin-top: 2px;">评论</div>
+        </div>
+        <div style="width: 1px; background: rgba(255,255,255,0.15);"></div>
+        <div style="flex: 1; text-align: center;">
+          <div style="color: white; font-size: 18px; font-weight: 700;">890</div>
+          <div style="color: rgba(255,255,255,0.7); font-size: 11px; margin-top: 2px;">点赞</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 功能入口 -->
+    <div style="background: white; margin: 12px 16px; border-radius: 12px; overflow: hidden;">
+      <div class="func-grid">
+        <div class="func-item">
+          <div class="func-icon" style="background: #eef2ff;">
+            <i data-lucide="history" style="width:20px;height:20px;color:#4F46E5;"></i>
+          </div>
+          <span class="func-label">浏览历史</span>
+        </div>
+        <div class="func-item">
+          <div class="func-icon" style="background: #fef3c7;">
+            <i data-lucide="bookmark" style="width:20px;height:20px;color:#f59e0b;"></i>
+          </div>
+          <span class="func-label">我的收藏</span>
+        </div>
+        <div class="func-item">
+          <div class="func-icon" style="background: #fce7f3;">
+            <i data-lucide="heart" style="width:20px;height:20px;color:#ec4899;"></i>
+          </div>
+          <span class="func-label">我的点赞</span>
+        </div>
+        <div class="func-item">
+          <div class="func-icon" style="background: #d1fae5;">
+            <i data-lucide="download" style="width:20px;height:20px;color:#059669;"></i>
+          </div>
+          <span class="func-label">离线阅读</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 更多功能列表 -->
+    <div style="background: white; margin: 0 16px 12px 16px; border-radius: 12px; overflow: hidden;">
+      <div class="menu-item">
+        <div class="menu-icon" style="background: #ede9fe;">
+          <i data-lucide="rss" style="width:16px;height:16px;color:#7c3aed;"></i>
+        </div>
+        <span class="menu-text">订阅管理</span>
+        <i data-lucide="chevron-right" class="menu-arrow" style="width:16px;height:16px;"></i>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon" style="background: #dbeafe;">
+          <i data-lucide="bell" style="width:16px;height:16px;color:#3b82f6;"></i>
+        </div>
+        <span class="menu-text">消息通知</span>
+        <div style="background: #ef4444; color: white; font-size: 10px; padding: 1px 6px; border-radius: 10px; margin-right: 4px;">3</div>
+        <i data-lucide="chevron-right" class="menu-arrow" style="width:16px;height:16px;"></i>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon" style="background: #fef3c7;">
+          <i data-lucide="palette" style="width:16px;height:16px;color:#d97706;"></i>
+        </div>
+        <span class="menu-text">主题外观</span>
+        <i data-lucide="chevron-right" class="menu-arrow" style="width:16px;height:16px;"></i>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon" style="background: #fce7f3;">
+          <i data-lucide="shield" style="width:16px;height:16px;color:#db2777;"></i>
+        </div>
+        <span class="menu-text">隐私设置</span>
+        <i data-lucide="chevron-right" class="menu-arrow" style="width:16px;height:16px;"></i>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon" style="background: #d1fae5;">
+          <i data-lucide="message-circle" style="width:16px;height:16px;color:#059669;"></i>
+        </div>
+        <span class="menu-text">意见反馈</span>
+        <i data-lucide="chevron-right" class="menu-arrow" style="width:16px;height:16px;"></i>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon" style="background: #f3f4f6;">
+          <i data-lucide="info" style="width:16px;height:16px;color:#6b7280;"></i>
+        </div>
+        <span class="menu-text">关于我们</span>
+        <span style="font-size: 11px; color: #9ca3af; margin-right: 4px;">v2.6.0</span>
+        <i data-lucide="chevron-right" class="menu-arrow" style="width:16px;height:16px;"></i>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <a href="01-index.html">
+      <i data-lucide="home" class="tab-icon"></i>
+      <span class="tab-label">首页</span>
+    </a>
+    <a href="02-news.html">
+      <i data-lucide="zap" class="tab-icon"></i>
+      <span class="tab-label">快讯</span>
+    </a>
+    <a href="03-review.html">
+      <i data-lucide="star" class="tab-icon"></i>
+      <span class="tab-label">评测</span>
+    </a>
+    <a href="04-my.html" class="active">
+      <i data-lucide="user" class="tab-icon"></i>
+      <span class="tab-label">我的</span>
+    </a>
+    <div class="safe-area-bottom"></div>
+  </div>
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+  lucide.createIcons();
+</script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="plus.ruoyi.system.core.mapper.SysRoleMapper">
+
+    <resultMap type="plus.ruoyi.system.core.domain.SysRole" id="SysRoleResult">
+    </resultMap>
+
+    <!-- 联表查询：用于需要关联用户/部门信息的场景 -->
+    <sql id="selectRoleWithJoin">
+        select distinct r.role_id,
+                        r.role_name,
+                        r.role_key,
+                        r.role_sort,
+                        r.data_scope,
+                        r.menu_check_strictly,
+                        r.dept_check_strictly,
+                        r.status,
+                        r.is_deleted,
+                        r.create_time,
+                        r.remark
+        from sys_role r
+                 left join sys_user_role sur on sur.role_id = r.role_id
+                 left join sys_user u on u.user_id = sur.user_id
+                 left join sys_dept d on u.dept_id = d.dept_id
+    </sql>
+
+    <!-- 简单查询：用于基于 create_dept/create_by 的数据权限控制 -->
+    <sql id="selectRole">
+        select r.role_id,
+               r.role_name,
+               r.role_key,
+               r.role_sort,
+               r.data_scope,
+               r.menu_check_strictly,
+               r.dept_check_strictly,
+               r.status,
+               r.is_deleted,
+               r.create_time,
+               r.remark
+        from sys_role r
+    </sql>
+
+    <!-- 分页查询(带数据权限) - 使用简单查询 -->
+    <select id="selectRolePageWithJoin" resultMap="SysRoleResult">
+        <include refid="selectRole"/>
+        ${ew.customSqlSegment}
+    </select>
+
+    <!-- 列表查询(带数据权限) - 使用简单查询 -->
+    <select id="selectRoleListWithJoin" resultMap="SysRoleResult">
+        <include refid="selectRole"/>
+        ${ew.customSqlSegment}
+    </select>
+
+    <!-- 根据用户ID查询角色权限 - 需要联表 -->
+    <select id="selectRolePermissionByUserId" parameterType="Long" resultMap="SysRoleResult">
+        <include refid="selectRoleWithJoin"/>
+        WHERE r.is_deleted = '0' and sur.user_id = #{userId}
+    </select>
+
+    <select id="selectRolesByUserId" parameterType="Long" resultMap="SysRoleResult">
+        select r.role_id,
+               r.role_name,
+               r.role_key,
+               r.role_sort,
+               r.data_scope,
+               r.status
+        from sys_role r
+        WHERE r.is_deleted = '0' and r.role_id in (select role_id from sys_user_role where user_id = #{userId})
+    </select>
+
+    <!-- 根据角色ID查询 - 需要联表用于其他场景 -->
+    <select id="selectRoleById" resultMap="SysRoleResult">
+        <include refid="selectRoleWithJoin"/>
+        WHERE r.is_deleted = '0' and r.role_id = #{roleId}
+    </select>
+
+</mapper>

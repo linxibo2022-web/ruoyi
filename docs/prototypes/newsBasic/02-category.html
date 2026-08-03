@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>频道 - 新闻资讯</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f0f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .phone-frame { width: 375px; height: 812px; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; background: #f5f5f5; position: relative; display: flex; flex-direction: column; }
+  .status-bar { height: 44px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }
+  .status-bar .time { color: #1a1a1a; font-size: 14px; font-weight: 600; }
+  .status-bar .icons { display: flex; gap: 6px; color: #1a1a1a; }
+  .screen-content { flex: 1; overflow-y: auto; background: #f5f5f5; }
+  .screen-content::-webkit-scrollbar { display: none; }
+  .tab-bar { height: 56px; background: white; display: flex; border-top: 1px solid #e5e5e5; flex-shrink: 0; }
+  .tab-bar a { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: #999; font-size: 10px; gap: 2px; }
+  .tab-bar a.active { color: #EF4444; }
+  .tab-bar a i { width: 22px; height: 22px; }
+  .safe-area-bottom { height: 20px; background: white; flex-shrink: 0; }
+  .home-indicator { width: 134px; height: 5px; background: #1a1a1a; border-radius: 3px; margin: 0 auto; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); }
+
+  .page-header { background: white; padding: 12px 16px; border-bottom: 1px solid #f0f0f0; }
+  .page-header h1 { font-size: 18px; font-weight: 600; color: #1a1a1a; }
+
+  .section { background: white; margin-bottom: 10px; padding: 16px; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .section-title { font-size: 15px; font-weight: 600; color: #1a1a1a; }
+  .section-action { font-size: 12px; color: #EF4444; display: flex; align-items: center; gap: 2px; }
+
+  .channel-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .channel-tag { position: relative; height: 36px; display: flex; align-items: center; justify-content: center; background: #f5f5f5; border-radius: 6px; font-size: 13px; color: #333; cursor: pointer; }
+  .channel-tag.subscribed { background: #fef2f2; color: #EF4444; border: 1px solid #fecaca; }
+  .channel-tag .remove-btn { position: absolute; top: -4px; right: -4px; width: 16px; height: 16px; background: #ccc; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; }
+  .channel-tag .add-btn { position: absolute; top: -4px; right: -4px; width: 16px; height: 16px; background: #EF4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: white; font-weight: 600; }
+
+  .edit-hint { font-size: 12px; color: #999; margin-left: 8px; font-weight: 400; }
+  .drag-icon { color: #ccc; margin-left: 2px; }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons">
+      <i data-lucide="signal" style="width:14px;height:14px"></i>
+      <i data-lucide="wifi" style="width:14px;height:14px"></i>
+      <i data-lucide="battery-full" style="width:14px;height:14px"></i>
+    </div>
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1>频道管理</h1>
+  </div>
+
+  <!-- Screen Content -->
+  <div class="screen-content">
+
+    <!-- 已订阅频道 -->
+    <div class="section">
+      <div class="section-header">
+        <div style="display:flex;align-items:center">
+          <span class="section-title">我的频道</span>
+          <span class="edit-hint">拖动排序 · 点击删除</span>
+        </div>
+        <span class="section-action">
+          <i data-lucide="pencil" style="width:12px;height:12px"></i>
+          编辑
+        </span>
+      </div>
+      <div class="channel-grid">
+        <div class="channel-tag subscribed">推荐<span class="remove-btn">&times;</span></div>
+        <div class="channel-tag subscribed">热点<span class="remove-btn">&times;</span></div>
+        <div class="channel-tag subscribed">科技<span class="remove-btn">&times;</span></div>
+        <div class="channel-tag subscribed">财经<span class="remove-btn">&times;</span></div>
+        <div class="channel-tag subscribed">体育<span class="remove-btn">&times;</span></div>
+        <div class="channel-tag subscribed">娱乐<span class="remove-btn">&times;</span></div>
+        <div class="channel-tag subscribed">军事<span class="remove-btn">&times;</span></div>
+        <div class="channel-tag subscribed">国际<span class="remove-btn">&times;</span></div>
+        <div class="channel-tag subscribed">教育<span class="remove-btn">&times;</span></div>
+        <div class="channel-tag subscribed">健康<span class="remove-btn">&times;</span></div>
+        <div class="channel-tag subscribed">汽车<span class="remove-btn">&times;</span></div>
+        <div class="channel-tag subscribed">房产<span class="remove-btn">&times;</span></div>
+      </div>
+    </div>
+
+    <!-- 推荐频道 -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">推荐频道</span>
+      </div>
+      <div class="channel-grid">
+        <div class="channel-tag">数码<span class="add-btn">+</span></div>
+        <div class="channel-tag">游戏<span class="add-btn">+</span></div>
+        <div class="channel-tag">美食<span class="add-btn">+</span></div>
+        <div class="channel-tag">旅游<span class="add-btn">+</span></div>
+        <div class="channel-tag">时尚<span class="add-btn">+</span></div>
+        <div class="channel-tag">动漫<span class="add-btn">+</span></div>
+        <div class="channel-tag">历史<span class="add-btn">+</span></div>
+        <div class="channel-tag">搞笑<span class="add-btn">+</span></div>
+        <div class="channel-tag">影视<span class="add-btn">+</span></div>
+        <div class="channel-tag">音乐<span class="add-btn">+</span></div>
+        <div class="channel-tag">三农<span class="add-btn">+</span></div>
+        <div class="channel-tag">宠物<span class="add-btn">+</span></div>
+      </div>
+    </div>
+
+    <!-- 更多频道 -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">更多频道</span>
+      </div>
+      <div class="channel-grid">
+        <div class="channel-tag">星座<span class="add-btn">+</span></div>
+        <div class="channel-tag">育儿<span class="add-btn">+</span></div>
+        <div class="channel-tag">职场<span class="add-btn">+</span></div>
+        <div class="channel-tag">法律<span class="add-btn">+</span></div>
+        <div class="channel-tag">心理<span class="add-btn">+</span></div>
+        <div class="channel-tag">科学<span class="add-btn">+</span></div>
+        <div class="channel-tag">公益<span class="add-btn">+</span></div>
+        <div class="channel-tag">天气<span class="add-btn">+</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <a href="01-index.html">
+      <i data-lucide="home"></i>
+      <span>首页</span>
+    </a>
+    <a href="02-category.html" class="active">
+      <i data-lucide="layout-grid"></i>
+      <span>频道</span>
+    </a>
+    <a href="03-video.html">
+      <i data-lucide="play-circle"></i>
+      <span>视频</span>
+    </a>
+    <a href="04-my.html">
+      <i data-lucide="user"></i>
+      <span>我的</span>
+    </a>
+  </div>
+
+  <!-- Safe Area -->
+  <div class="safe-area-bottom"></div>
+  <div class="home-indicator"></div>
+</div>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>

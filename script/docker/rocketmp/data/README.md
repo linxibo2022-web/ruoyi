@@ -1,0 +1,1 @@
+数据目录 如果容器运行报错(数据卷文件夹没有权限) 请执行 `chmod -R 777 /rocketmq/data` 赋予读写权限后重启docker-compose 否则将无法写入数据

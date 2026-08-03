@@ -1,0 +1,22 @@
+# 代码生成配置
+gen:
+  # 作者
+  author: 抓蛙师
+  # 默认生成方式：0-zip压缩包下载，1-自定义路径直接覆盖（默认：0）
+  defaultGenType: 0
+  # 后端模块名称（默认：ruoyi-business，可改为：ruoyi-system、ruoyi-xxx）
+  backendModuleName: ruoyi-business
+  # 默认生成包路径 默认plus.ruoyi.business.base 需改成自己的模块名称 如 plus.ruoyi.business.mall plus.ruoyi.system
+  packageName: plus.ruoyi.business.base
+  # 前端项目根目录（默认：plus-ui，可改为：plus-uniapp、plus-app）
+  frontendRootDir: plus-ui
+  # 默认菜单图标（可自定义，如：guide、table、tree 等）
+  menuIcon: info
+  # 默认菜单顺序（数值越小越靠前，默认：1）
+  menuOrder: 0
+  # 是否自动导入菜单：0-否，1-是（默认：1）
+  autoImportMenu: 1
+  # 自动去除表前缀，默认是false
+  autoRemovePre: true
+  # 表前缀（生成类名不会包含表前缀，多个用逗号分隔）
+  tablePrefix: sys_,a_,b_,c_,d_,e_,f_,g_,h_,i_,j_,k_,l_,m_,n_,o_,p_,q_,r_,s_,t_,u_,v_,w_,x_,y_,z_,

@@ -1,0 +1,27 @@
+@use './variables' as *;
+
+/**
+ * 导出SCSS变量给JavaScript使用
+ * 通过webpack的:export指令实现SCSS变量到JS的共享
+ */
+:export {
+  menuColor: var(--menu-text);
+  menuLightColor: #333;
+  menuColorActive: var(--menu-text-active);
+  menuBackground: var(--menu-bg);
+  menuLightBackground: white;
+  menuHover: var(--menu-hover);
+  menuLightHover: #f5f7fa;
+  menuHoverText: var(--menu-text);
+  menuLightHoverText: #333;
+  subMenuBackground: var(--submenu-bg);
+  subMenuHover: var(--submenu-hover);
+  sideBarWidth: $base-sidebar-width;
+  logoTitleColor: var(--menu-text-active);
+  logoLightTitleColor: #333;
+  primaryColor: $el-color-primary;
+  successColor: $el-color-success;
+  dangerColor: $el-color-danger;
+  infoColor: $el-color-info;
+  warningColor: $el-color-warning;
+}

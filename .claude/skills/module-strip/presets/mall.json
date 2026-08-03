@@ -1,0 +1,35 @@
+{
+  "name": "商城",
+  "description": "ruoyi-mall 后端模块 + plus-ui 前端商城页面 + 移动端商城 API",
+  "delete_dirs": [
+    "ruoyi-modules/ruoyi-mall",
+    "plus-ui/src/views/business/mall",
+    "plus-ui/src/api/business/mall",
+    "plus-uniapp/src/api/mall",
+    "plus-uniapp/src/pages-sub/mall",
+    "plus-app/api/mall",
+    "plus-app/pages-sub/mall"
+  ],
+  "delete_files": [],
+  "remove_pom_lines": [
+    {
+      "file": "ruoyi-modules/pom.xml",
+      "patterns": [
+        "<module>ruoyi-mall</module>"
+      ]
+    },
+    {
+      "file": "ruoyi-admin/pom.xml",
+      "patterns": [
+        "<artifactId>ruoyi-mall</artifactId>"
+      ]
+    }
+  ],
+  "manual_actions": [
+    "从 script/sql/ry_plus_new.sql 移除以 m_ 开头的建表语句和商城相关菜单/字典初始化（搜索 m_goods、m_order 等）",
+    "若数据库已建过商城表，需手动 DROP TABLE m_*（如有数据请先备份）",
+    "检查前端 plus-ui/src/router 下是否有静态 import mall 路由（一般 vue-router 动态导入会自动失效，不必处理）",
+    "检查移动端 plus-uniapp/src/pages.json 中是否有 mall 子包配置（如 'pages-sub/mall'），有则手动删除"
+  ],
+  "depends_on": []
+}

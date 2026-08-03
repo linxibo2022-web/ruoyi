@@ -1,0 +1,61 @@
+/**
+ * 主题切换动画样式
+ * 使用 View Transition API 实现圆形扩散效果
+ */
+
+// 定义动画时长
+$theme-animation-duration: 0.5s;
+
+html {
+  // View Transition 样式 - 亮色模式切换到暗黑模式
+  &::view-transition-old(root),
+  &::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+
+  // 亮色模式 -> 暗黑模式: 新层(暗黑)从圆心扩散
+  &::view-transition-new(root) {
+    animation: theme-clip-in $theme-animation-duration ease-in both;
+    z-index: 9999;
+  }
+
+  &::view-transition-old(root) {
+    z-index: 1;
+  }
+
+  // 暗黑模式 -> 亮色模式: 旧层(暗黑)从外向圆心收缩
+  &.dark {
+    &::view-transition-old(root) {
+      animation: theme-clip-out $theme-animation-duration ease-in both;
+      z-index: 9999;
+    }
+
+    &::view-transition-new(root) {
+      animation: none;
+      z-index: 1;
+    }
+  }
+}
+
+// 定义圆形扩散动画 (从小到大)
+@keyframes theme-clip-in {
+  from {
+    clip-path: circle(0% at var(--theme-x) var(--theme-y));
+  }
+
+  to {
+    clip-path: circle(var(--theme-r) at var(--theme-x) var(--theme-y));
+  }
+}
+
+// 定义圆形收缩动画 (从大到小)
+@keyframes theme-clip-out {
+  from {
+    clip-path: circle(var(--theme-r) at var(--theme-x) var(--theme-y));
+  }
+
+  to {
+    clip-path: circle(0% at var(--theme-x) var(--theme-y));
+  }
+}

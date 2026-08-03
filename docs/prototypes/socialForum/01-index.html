@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, user-scalable=no">
+<title>社区论坛 - 首页</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#0891B2',
+        'primary-light': '#E0F7FA',
+        'primary-dark': '#0E7490',
+      }
+    }
+  }
+}
+</script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f0f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .phone-frame { width: 375px; height: 812px; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; background: #f5f5f5; position: relative; display: flex; flex-direction: column; }
+  .status-bar { height: 44px; background: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; }
+  .status-bar .time { font-size: 14px; font-weight: 600; }
+  .status-bar .icons { display: flex; gap: 6px; align-items: center; }
+  .screen-content { flex: 1; overflow-y: auto; background: #f5f5f5; }
+  .screen-content::-webkit-scrollbar { display: none; }
+  .tab-bar { height: 83px; background: #fff; border-top: 1px solid #e5e5e5; display: flex; padding-bottom: 34px; flex-shrink: 0; }
+  .tab-bar a { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: #999; font-size: 10px; gap: 2px; }
+  .tab-bar a.active { color: #0891B2; }
+  .tab-bar a i { width: 24px; height: 24px; }
+  .safe-area-bottom { height: 34px; }
+  .home-indicator { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; background: #1a1a1a; border-radius: 3px; }
+  .badge-pin { display: inline-flex; align-items: center; padding: 2px 6px; background: #EF4444; color: #fff; font-size: 10px; border-radius: 4px; font-weight: 600; margin-right: 6px; }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons">
+      <i data-lucide="signal" style="width:16px;height:16px;"></i>
+      <i data-lucide="wifi" style="width:16px;height:16px;"></i>
+      <i data-lucide="battery-full" style="width:16px;height:16px;"></i>
+    </div>
+  </div>
+
+  <!-- Screen Content -->
+  <div class="screen-content">
+    <!-- Header -->
+    <div class="bg-white px-4 pb-3">
+      <div class="flex items-center justify-between mb-3">
+        <h1 class="text-xl font-bold text-gray-900">社区论坛</h1>
+        <div class="flex gap-3">
+          <i data-lucide="bell" class="w-5 h-5 text-gray-600"></i>
+          <i data-lucide="scan" class="w-5 h-5 text-gray-600"></i>
+        </div>
+      </div>
+      <!-- Search Bar -->
+      <div class="flex items-center bg-gray-100 rounded-full px-4 py-2.5">
+        <i data-lucide="search" class="w-4 h-4 text-gray-400 mr-2"></i>
+        <span class="text-sm text-gray-400">搜索帖子、板块、用户...</span>
+      </div>
+    </div>
+
+    <!-- Hot Sections -->
+    <div class="bg-white mt-2 px-4 py-3">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-sm font-semibold text-gray-900">热门板块</h2>
+        <span class="text-xs text-primary">查看全部</span>
+      </div>
+      <div class="flex gap-3 overflow-x-auto pb-1" style="scrollbar-width:none;">
+        <div class="flex-shrink-0 w-16 flex flex-col items-center gap-1.5">
+          <div class="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center">
+            <i data-lucide="code-2" class="w-6 h-6 text-blue-500"></i>
+          </div>
+          <span class="text-xs text-gray-700">技术</span>
+        </div>
+        <div class="flex-shrink-0 w-16 flex flex-col items-center gap-1.5">
+          <div class="w-12 h-12 rounded-2xl bg-green-50 flex items-center justify-center">
+            <i data-lucide="coffee" class="w-6 h-6 text-green-500"></i>
+          </div>
+          <span class="text-xs text-gray-700">生活</span>
+        </div>
+        <div class="flex-shrink-0 w-16 flex flex-col items-center gap-1.5">
+          <div class="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center">
+            <i data-lucide="clapperboard" class="w-6 h-6 text-purple-500"></i>
+          </div>
+          <span class="text-xs text-gray-700">影视</span>
+        </div>
+        <div class="flex-shrink-0 w-16 flex flex-col items-center gap-1.5">
+          <div class="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center">
+            <i data-lucide="gamepad-2" class="w-6 h-6 text-red-500"></i>
+          </div>
+          <span class="text-xs text-gray-700">游戏</span>
+        </div>
+        <div class="flex-shrink-0 w-16 flex flex-col items-center gap-1.5">
+          <div class="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center">
+            <i data-lucide="book-open" class="w-6 h-6 text-amber-500"></i>
+          </div>
+          <span class="text-xs text-gray-700">读书</span>
+        </div>
+        <div class="flex-shrink-0 w-16 flex flex-col items-center gap-1.5">
+          <div class="w-12 h-12 rounded-2xl bg-teal-50 flex items-center justify-center">
+            <i data-lucide="map-pin" class="w-6 h-6 text-teal-500"></i>
+          </div>
+          <span class="text-xs text-gray-700">旅行</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hot Posts -->
+    <div class="bg-white mt-2 px-4 py-3">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-sm font-semibold text-gray-900">热帖推荐</h2>
+        <div class="flex gap-3 text-xs">
+          <span class="text-primary font-medium">最新</span>
+          <span class="text-gray-400">最热</span>
+          <span class="text-gray-400">精华</span>
+        </div>
+      </div>
+
+      <!-- Pinned Post -->
+      <div class="border-b border-gray-100 pb-3 mb-3">
+        <div class="flex items-start gap-3">
+          <div class="flex-1">
+            <div class="flex items-center mb-1.5">
+              <span class="badge-pin">置顶</span>
+              <span class="text-sm font-medium text-gray-900 leading-tight">2026年社区年度评选活动正式开启，快来投票！</span>
+            </div>
+            <div class="flex items-center gap-2 mt-2">
+              <div class="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                <span class="text-white text-[10px] font-bold">管</span>
+              </div>
+              <span class="text-xs text-gray-500">管理员</span>
+              <span class="text-xs text-gray-300">|</span>
+              <span class="inline-block px-1.5 py-0.5 bg-primary-light text-primary text-[10px] rounded">公告</span>
+              <span class="text-xs text-gray-400 ml-auto flex items-center gap-0.5"><i data-lucide="message-circle" class="w-3 h-3"></i> 328</span>
+              <span class="text-xs text-gray-400 flex items-center gap-0.5"><i data-lucide="eye" class="w-3 h-3"></i> 5.2k</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Post 1 -->
+      <div class="border-b border-gray-100 pb-3 mb-3">
+        <div class="text-sm font-medium text-gray-900 mb-2 leading-snug">Vue 3.5 新特性深度解析，这些变化你必须知道</div>
+        <div class="flex items-center gap-2">
+          <div class="w-5 h-5 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400"></div>
+          <span class="text-xs text-gray-500">前端小王子</span>
+          <span class="text-xs text-gray-300">|</span>
+          <span class="inline-block px-1.5 py-0.5 bg-blue-50 text-blue-500 text-[10px] rounded">技术</span>
+          <span class="text-xs text-gray-400 ml-auto flex items-center gap-0.5"><i data-lucide="message-circle" class="w-3 h-3"></i> 86</span>
+          <span class="text-xs text-gray-400 flex items-center gap-0.5"><i data-lucide="eye" class="w-3 h-3"></i> 1.8k</span>
+          <span class="text-xs text-gray-400">2小时前</span>
+        </div>
+      </div>
+
+      <!-- Post 2 -->
+      <div class="border-b border-gray-100 pb-3 mb-3">
+        <div class="text-sm font-medium text-gray-900 mb-2 leading-snug">推荐几部最近看的高分日剧，每部都值得刷三遍</div>
+        <div class="flex items-center gap-2">
+          <div class="w-5 h-5 rounded-full bg-gradient-to-br from-purple-400 to-pink-400"></div>
+          <span class="text-xs text-gray-500">追剧少女</span>
+          <span class="text-xs text-gray-300">|</span>
+          <span class="inline-block px-1.5 py-0.5 bg-purple-50 text-purple-500 text-[10px] rounded">影视</span>
+          <span class="text-xs text-gray-400 ml-auto flex items-center gap-0.5"><i data-lucide="message-circle" class="w-3 h-3"></i> 142</span>
+          <span class="text-xs text-gray-400 flex items-center gap-0.5"><i data-lucide="eye" class="w-3 h-3"></i> 3.6k</span>
+          <span class="text-xs text-gray-400">5小时前</span>
+        </div>
+      </div>
+
+      <!-- Post 3 -->
+      <div class="border-b border-gray-100 pb-3 mb-3">
+        <div class="text-sm font-medium text-gray-900 mb-2 leading-snug">一个人的川西自驾游攻略，附超详细路线图</div>
+        <div class="flex items-center gap-2">
+          <div class="w-5 h-5 rounded-full bg-gradient-to-br from-teal-400 to-green-400"></div>
+          <span class="text-xs text-gray-500">背包客老陈</span>
+          <span class="text-xs text-gray-300">|</span>
+          <span class="inline-block px-1.5 py-0.5 bg-teal-50 text-teal-500 text-[10px] rounded">旅行</span>
+          <span class="text-xs text-gray-400 ml-auto flex items-center gap-0.5"><i data-lucide="message-circle" class="w-3 h-3"></i> 67</span>
+          <span class="text-xs text-gray-400 flex items-center gap-0.5"><i data-lucide="eye" class="w-3 h-3"></i> 2.1k</span>
+          <span class="text-xs text-gray-400">昨天</span>
+        </div>
+      </div>
+
+      <!-- Post 4 -->
+      <div class="border-b border-gray-100 pb-3 mb-3">
+        <div class="text-sm font-medium text-gray-900 mb-2 leading-snug">黑神话悟空二周目全收集心得，隐藏Boss打法分享</div>
+        <div class="flex items-center gap-2">
+          <div class="w-5 h-5 rounded-full bg-gradient-to-br from-red-400 to-orange-400"></div>
+          <span class="text-xs text-gray-500">游戏达人Pro</span>
+          <span class="text-xs text-gray-300">|</span>
+          <span class="inline-block px-1.5 py-0.5 bg-red-50 text-red-500 text-[10px] rounded">游戏</span>
+          <span class="text-xs text-gray-400 ml-auto flex items-center gap-0.5"><i data-lucide="message-circle" class="w-3 h-3"></i> 203</span>
+          <span class="text-xs text-gray-400 flex items-center gap-0.5"><i data-lucide="eye" class="w-3 h-3"></i> 4.7k</span>
+          <span class="text-xs text-gray-400">昨天</span>
+        </div>
+      </div>
+
+      <!-- Post 5 -->
+      <div class="pb-3">
+        <div class="text-sm font-medium text-gray-900 mb-2 leading-snug">分享最近在读的5本好书，改变了我的思维方式</div>
+        <div class="flex items-center gap-2">
+          <div class="w-5 h-5 rounded-full bg-gradient-to-br from-amber-400 to-yellow-400"></div>
+          <span class="text-xs text-gray-500">书虫阿飞</span>
+          <span class="text-xs text-gray-300">|</span>
+          <span class="inline-block px-1.5 py-0.5 bg-amber-50 text-amber-500 text-[10px] rounded">读书</span>
+          <span class="text-xs text-gray-400 ml-auto flex items-center gap-0.5"><i data-lucide="message-circle" class="w-3 h-3"></i> 55</span>
+          <span class="text-xs text-gray-400 flex items-center gap-0.5"><i data-lucide="eye" class="w-3 h-3"></i> 1.2k</span>
+          <span class="text-xs text-gray-400">2天前</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="h-4"></div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <a href="01-index.html" class="active">
+      <i data-lucide="home" class="w-5 h-5"></i>
+      <span>首页</span>
+    </a>
+    <a href="02-discussion.html">
+      <i data-lucide="pen-square" class="w-5 h-5"></i>
+      <span>讨论</span>
+    </a>
+    <a href="03-message.html">
+      <i data-lucide="message-circle" class="w-5 h-5"></i>
+      <span>消息</span>
+    </a>
+    <a href="04-my.html">
+      <i data-lucide="user" class="w-5 h-5"></i>
+      <span>我的</span>
+    </a>
+  </div>
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+  lucide.createIcons();
+</script>
+</body>
+</html>

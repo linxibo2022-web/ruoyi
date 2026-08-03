@@ -1,0 +1,67 @@
+######################################################################
+# Build Tools
+
+.gradle
+/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+######################################################################
+# IDE
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### JRebel ###
+rebel.xml
+
+### NetBeans ###
+nbproject/private/
+build/*
+nbbuild/
+nbdist/
+.nb-gradle/
+
+######################################################################
+# Others
+*.log
+*.xml.versionsBackup
+*.swp
+
+!*/build/*.java
+!*/build/*.html
+!*/build/*.xml
+
+.flattened-pom.xml
+
+
+*local.yml
+
+# uniapp端
+ruoyi-uniapp/unpackage/
+
+# 本地文件（不提交到远程仓库）
+*-local.*
+output/*
+
+# 部署相关（敏感配置和构建产物）
+.deploy-config.json
+*.tar.gz
+
+######################################################################
+# Delivery 交付物管理（本地状态，绝不提交）
+.delivery-sync.json
+.deliveryignore

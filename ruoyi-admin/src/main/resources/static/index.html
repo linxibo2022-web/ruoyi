@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${appTitle} - 系统首页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* 禁止滚动条 */
+        }
+
+        body {
+            font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #eef3ff 0%, #dee7ff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            position: relative;
+        }
+
+        /* 几何装饰元素 */
+        .geometric-decorations {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .geo-element {
+            position: absolute;
+            opacity: 0;
+            animation-fill-mode: forwards;
+            animation-duration: 0.8s;
+            animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* 圆形轮廓 */
+        .circle-outline {
+            top: 10%;
+            left: 25%;
+            width: 42px;
+            height: 42px;
+            border: 2px solid #dee7ff;
+            border-radius: 50%;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        /* 旋转方块 */
+        .square-rotated {
+            top: 50%;
+            left: 16%;
+            width: 60px;
+            height: 60px;
+            background-color: #dee7ff;
+            transform: rotate(-25deg);
+            animation: fadeInLeft 0.8s ease forwards;
+        }
+
+        /* 小圆点 */
+        .circle-small {
+            bottom: 26%;
+            left: 30%;
+            width: 18px;
+            height: 18px;
+            background-color: #dee7ff;
+            border-radius: 50%;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        /* 右下方块 */
+        .square-bottom-right {
+            right: 10%;
+            bottom: 10%;
+            width: 50px;
+            height: 50px;
+            background-color: #dee7ff;
+            transform: rotate(45deg);
+            animation: fadeInRight 0.8s ease forwards;
+        }
+
+        /* 背景泡泡 */
+        .bg-bubble {
+            top: -120px;
+            right: -120px;
+            width: 360px;
+            height: 360px;
+            background-color: #dee7ff;
+            border-radius: 50%;
+            animation: scaleIn 1.2s ease forwards;
+        }
+
+        /* 装饰点 */
+        .dot {
+            width: 14px;
+            height: 14px;
+            background-color: #cedbff;
+            border-radius: 50%;
+            animation: bounceIn 0.6s ease forwards;
+        }
+
+        .dot-top-left {
+            top: 140px;
+            left: 100px;
+        }
+
+        .dot-top-right {
+            top: 140px;
+            right: 120px;
+        }
+
+        .dot-center-right {
+            top: 46%;
+            right: 22%;
+            background-color: #dee7ff;
+        }
+
+        /* 叠加方块组 */
+        .squares-group {
+            position: absolute;
+            bottom: 18px;
+            left: 20px;
+            width: 140px;
+            height: 140px;
+        }
+
+        .square {
+            position: absolute;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(64, 87, 167, 0.12);
+        }
+
+        .square-blue {
+            top: 12px;
+            left: 30px;
+            z-index: 2;
+            width: 50px;
+            height: 50px;
+            background-color: rgba(93, 135, 255, 0.3);
+            transform: rotate(-10deg);
+            animation: fadeInLeft 0.8s ease forwards 0.2s;
+        }
+
+        .square-pink {
+            top: 30px;
+            left: 48px;
+            z-index: 1;
+            width: 70px;
+            height: 70px;
+            background-color: rgba(93, 135, 255, 0.15);
+            transform: rotate(10deg);
+            animation: fadeInLeft 0.8s ease forwards 0.2s;
+        }
+
+        .square-purple {
+            top: 66px;
+            left: 86px;
+            z-index: 3;
+            width: 32px;
+            height: 32px;
+            background-color: rgba(93, 135, 255, 0.45);
+            animation: fadeInLeft 0.8s ease forwards 0.4s;
+        }
+
+        /* 装饰线条 */
+        .squares-group::after {
+            content: '';
+            position: absolute;
+            top: 86px;
+            left: 72px;
+            width: 80px;
+            height: 1px;
+            background: linear-gradient(90deg, #becfff, transparent);
+            opacity: 0;
+            transform: rotate(50deg);
+            animation: lineGrow 0.8s ease forwards 1.2s;
+        }
+
+        /* 动画定义 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes lineGrow {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .container {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow:
+                0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            max-width: 800px;
+            min-width: 770px; /* 最小宽度,防止内容被挤压 */
+            width: 90%;
+            max-height: 90vh; /* 限制最大高度 */
+            overflow-y: auto; /* 内容溢出时内部滚动 */
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out;
+            position: relative;
+            z-index: 2;
+            margin: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #5d87ff, #4169e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .info-grid {
+            display: grid;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .info-item {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #334155;
+            padding: 15px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .info-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(71, 85, 105, 0.15);
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+        }
+
+        .info-item:nth-child(2) {
+            background: linear-gradient(135deg, #fef3f2 0%, #fecaca 100%);
+        }
+
+        .info-item:nth-child(3) {
+            background: linear-gradient(135deg, #f0f9ff 0%, #bae6fd 100%);
+        }
+
+        .info-item:nth-child(4) {
+            background: linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%);
+        }
+
+        .info-item:nth-child(5) {
+            background: linear-gradient(135deg, #fefce8 0%, #fde68a 100%);
+        }
+
+        .info-label {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-value {
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* API文档区域样式 */
+        .api-docs-section {
+            margin: 30px 0 15px 0;
+            padding-top: 20px;
+        }
+
+        .api-docs-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 15px;
+        }
+
+        .api-docs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin: 15px 0;
+        }
+
+        .api-doc-item {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .api-doc-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(93, 135, 255, 0.2);
+            background: linear-gradient(135deg, #5d87ff 0%, #4169e1 100%);
+        }
+
+        .api-doc-item:hover .api-doc-name {
+            color: white;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .api-doc-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2d3436;
+            transition: all 0.3s ease;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+        }
+
+        .footer-text {
+            color: #636e72;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #5d87ff;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(93, 135, 255, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(93, 135, 255, 0.4);
+            background: #4169e1;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #00b894;
+            border-radius: 50%;
+            margin-left: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                box-shadow: 0 0 8px rgba(0, 184, 148, 0.6);
+            }
+            50% {
+                opacity: 0.7;
+                box-shadow: 0 0 15px rgba(0, 184, 148, 0.8);
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+                margin: 10px;
+                width: 95%;
+                max-height: 95vh;
+            }
+
+            .title {
+                font-size: 2rem;
+            }
+
+            .info-item {
+                padding: 12px 15px;
+            }
+
+            .api-docs-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .api-doc-item {
+                padding: 15px;
+            }
+
+            .api-doc-icon {
+                font-size: 2rem;
+                width: 50px;
+                height: 50px;
+            }
+
+            .api-docs-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- 几何装饰元素 -->
+<div class="geometric-decorations">
+    <!-- 基础几何形状 -->
+    <div class="geo-element circle-outline"></div>
+    <div class="geo-element square-rotated"></div>
+    <div class="geo-element circle-small"></div>
+    <div class="geo-element square-bottom-right"></div>
+
+    <!-- 背景泡泡 -->
+    <div class="geo-element bg-bubble"></div>
+
+    <!-- 装饰点 -->
+    <div class="geo-element dot dot-top-left"></div>
+    <div class="geo-element dot dot-top-right"></div>
+    <div class="geo-element dot dot-center-right"></div>
+
+    <!-- 叠加方块组 -->
+    <div class="squares-group">
+        <i class="geo-element square square-blue"></i>
+        <i class="geo-element square square-pink"></i>
+        <i class="geo-element square square-purple"></i>
+    </div>
+</div>
+
+<div class="container">
+    <div class="header">
+        <h1 class="title">${appTitle}</h1>
+    </div>
+
+    <div class="info-grid">
+        <div class="info-item">
+            <span class="info-label">🏷️ 应用名称</span>
+            <span class="info-value">${appName}<span class="status-indicator"></span></span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">🌍 运行环境</span>
+            <span class="info-value">${activeProfiles}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">🚀 服务端口</span>
+            <span class="info-value">${serverPort}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">📦 当前版本</span>
+            <span class="info-value">${appVersion}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">⏰ 当前时间</span>
+            <span class="info-value" id="currentTime"></span>
+        </div>
+    </div>
+
+    <!-- API文档区域占位符，由后端动态替换 -->
+    ${apiDocsSection}
+
+    <div class="footer">
+        <p class="footer-text">请通过前端地址访问系统完整功能</p>
+        <a href="#" class="btn" onclick="goToFrontend(); return false;">
+            🏠 返回前端系统
+        </a>
+    </div>
+</div>
+
+<script>
+    function goToFrontend() {
+        // 获取当前域名和协议，去掉端口号
+        const protocol = window.location.protocol;
+        const hostname = window.location.hostname;
+        const frontendUrl = protocol + '//' + hostname;
+
+        // 在新标签页中打开前端系统
+        window.open(frontendUrl, '_blank');
+    }
+
+    function updateTime() {
+        const now = new Date();
+        const timeString = now.toLocaleString('zh-CN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+        document.getElementById('currentTime').textContent = timeString;
+    }
+
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const items = document.querySelectorAll('.info-item');
+        items.forEach((item, index) => {
+            item.style.animationDelay = (index * 0.1) + 's';
+            item.style.animation = 'fadeInUp 0.6s ease-out forwards';
+        });
+
+        // API文档项动画
+        const apiItems = document.querySelectorAll('.api-doc-item');
+        apiItems.forEach((item, index) => {
+            item.style.animationDelay = ((items.length + index) * 0.1) + 's';
+            item.style.animation = 'fadeInUp 0.6s ease-out forwards';
+        });
+    });
+</script>
+</body>
+</html>

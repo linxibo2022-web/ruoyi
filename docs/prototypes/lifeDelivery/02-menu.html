@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>外卖配送 - 点餐</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#F97316',
+            'primary-light': '#FFF7ED',
+            'primary-dark': '#EA580C',
+            accent: '#1A1A2E',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    .phone-frame {
+      width: 375px; height: 812px; margin: 20px auto;
+      border: 8px solid #1a1a1a; border-radius: 44px;
+      overflow: hidden; position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .status-bar {
+      height: 44px; padding: 0 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 12px; font-weight: 600;
+    }
+    .safe-area-bottom { padding-bottom: 34px; }
+    .home-indicator { width: 134px; height: 5px; background: #000; border-radius: 3px; margin: 8px auto; }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    a { text-decoration: none; color: inherit; }
+    .cat-active { background: #FFF7ED; color: #F97316; font-weight: 600; border-right: 3px solid #F97316; }
+    .qty-btn { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; cursor: pointer; user-select: none; }
+  </style>
+</head>
+<body class="bg-gray-200 flex items-start justify-center min-h-screen py-8">
+
+  <div class="phone-frame bg-gray-50 flex flex-col">
+
+    <!-- 状态栏 -->
+    <div class="status-bar bg-white">
+      <span>9:41</span>
+      <div class="flex items-center gap-1">
+        <i data-lucide="signal" class="w-4 h-4"></i>
+        <i data-lucide="wifi" class="w-4 h-4"></i>
+        <i data-lucide="battery-full" class="w-4 h-4"></i>
+      </div>
+    </div>
+
+    <!-- 商家头部 -->
+    <div class="bg-white px-4 py-3 border-b border-gray-100">
+      <div class="flex items-center gap-2 mb-2">
+        <a href="01-index.html"><i data-lucide="arrow-left" class="w-5 h-5 text-gray-600"></i></a>
+        <span class="font-bold text-base">老王黄焖鸡米饭</span>
+      </div>
+      <div class="flex items-center gap-3 text-xs text-gray-500 ml-7">
+        <span class="text-primary font-bold">4.8分</span>
+        <span>月销1285</span>
+        <span>配送约28分钟</span>
+        <span>配送费￥3</span>
+      </div>
+      <div class="flex items-center gap-1.5 ml-7 mt-1.5">
+        <span class="text-[10px] text-primary bg-primary-light px-1.5 py-0.5 rounded">满20减5</span>
+        <span class="text-[10px] text-primary bg-primary-light px-1.5 py-0.5 rounded">满40减10</span>
+      </div>
+    </div>
+
+    <!-- 菜单主体：左分类 + 右商品 -->
+    <div class="flex flex-1 overflow-hidden">
+
+      <!-- 左侧分类栏 -->
+      <div class="w-20 bg-gray-100 overflow-y-auto hide-scrollbar flex-shrink-0">
+        <div class="cat-active py-3 px-2 text-xs text-center">热销</div>
+        <div class="py-3 px-2 text-xs text-center text-gray-600 hover:bg-gray-50">招牌菜</div>
+        <div class="py-3 px-2 text-xs text-center text-gray-600 hover:bg-gray-50">主食</div>
+        <div class="py-3 px-2 text-xs text-center text-gray-600 hover:bg-gray-50">小吃</div>
+        <div class="py-3 px-2 text-xs text-center text-gray-600 hover:bg-gray-50">饮品</div>
+        <div class="py-3 px-2 text-xs text-center text-gray-600 hover:bg-gray-50">套餐</div>
+      </div>
+
+      <!-- 右侧商品列表 -->
+      <div class="flex-1 overflow-y-auto hide-scrollbar px-3 py-2">
+
+        <p class="text-xs text-gray-400 mb-2 font-medium">热销 TOP</p>
+
+        <!-- 商品1 -->
+        <div class="flex gap-2.5 mb-4">
+          <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-orange-300 to-red-400 flex items-center justify-center text-2xl flex-shrink-0">🍗</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-gray-800 truncate">招牌黄焖鸡米饭</p>
+            <p class="text-[10px] text-gray-400 mt-0.5 truncate">鲜嫩鸡腿肉，秘制酱汁焖制</p>
+            <div class="flex items-center justify-between mt-1.5">
+              <span class="text-primary font-bold text-sm">￥18</span>
+              <div class="flex items-center gap-2">
+                <div class="qty-btn bg-white border border-primary text-primary">-</div>
+                <span class="text-xs font-medium w-4 text-center">1</span>
+                <div class="qty-btn bg-primary text-white">+</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 商品2 -->
+        <div class="flex gap-2.5 mb-4">
+          <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-yellow-300 to-orange-400 flex items-center justify-center text-2xl flex-shrink-0">🍖</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-gray-800 truncate">大份黄焖鸡+米饭</p>
+            <p class="text-[10px] text-gray-400 mt-0.5 truncate">超大份量，肉多菜多</p>
+            <div class="flex items-center justify-between mt-1.5">
+              <span class="text-primary font-bold text-sm">￥25</span>
+              <div class="flex items-center gap-2">
+                <div class="qty-btn bg-primary text-white">+</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 商品3 -->
+        <div class="flex gap-2.5 mb-4">
+          <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-green-300 to-teal-400 flex items-center justify-center text-2xl flex-shrink-0">🥬</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-gray-800 truncate">时蔬黄焖鸡</p>
+            <p class="text-[10px] text-gray-400 mt-0.5 truncate">加量蔬菜，健康之选</p>
+            <div class="flex items-center justify-between mt-1.5">
+              <span class="text-primary font-bold text-sm">￥22</span>
+              <div class="flex items-center gap-2">
+                <div class="qty-btn bg-primary text-white">+</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 商品4 -->
+        <div class="flex gap-2.5 mb-4">
+          <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-amber-300 to-yellow-500 flex items-center justify-center text-2xl flex-shrink-0">🥚</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-gray-800 truncate">卤蛋（加购）</p>
+            <p class="text-[10px] text-gray-400 mt-0.5 truncate">秘制卤蛋，入味醇香</p>
+            <div class="flex items-center justify-between mt-1.5">
+              <span class="text-primary font-bold text-sm">￥3</span>
+              <div class="flex items-center gap-2">
+                <div class="qty-btn bg-primary text-white">+</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 商品5 -->
+        <div class="flex gap-2.5 mb-4">
+          <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-300 to-cyan-400 flex items-center justify-center text-2xl flex-shrink-0">🥤</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-gray-800 truncate">冰镇酸梅汤</p>
+            <p class="text-[10px] text-gray-400 mt-0.5 truncate">自制酸梅汤，解腻爽口</p>
+            <div class="flex items-center justify-between mt-1.5">
+              <span class="text-primary font-bold text-sm">￥5</span>
+              <div class="flex items-center gap-2">
+                <div class="qty-btn bg-primary text-white">+</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 商品6 -->
+        <div class="flex gap-2.5 mb-4">
+          <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-red-300 to-rose-500 flex items-center justify-center text-2xl flex-shrink-0">🍲</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-gray-800 truncate">麻辣黄焖鸡套餐</p>
+            <p class="text-[10px] text-gray-400 mt-0.5 truncate">含米饭+卤蛋+酸梅汤</p>
+            <div class="flex items-center justify-between mt-1.5">
+              <div>
+                <span class="text-primary font-bold text-sm">￥28</span>
+                <span class="text-[10px] text-gray-400 line-through ml-1">￥36</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="qty-btn bg-primary text-white">+</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 商品7 -->
+        <div class="flex gap-2.5 mb-4">
+          <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-purple-300 to-violet-400 flex items-center justify-center text-2xl flex-shrink-0">🍚</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-gray-800 truncate">额外加米饭</p>
+            <p class="text-[10px] text-gray-400 mt-0.5 truncate">优质东北大米</p>
+            <div class="flex items-center justify-between mt-1.5">
+              <span class="text-primary font-bold text-sm">￥2</span>
+              <div class="flex items-center gap-2">
+                <div class="qty-btn bg-primary text-white">+</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 底部购物车栏 -->
+    <div class="bg-gray-800 px-4 py-2.5 flex items-center">
+      <div class="relative mr-3">
+        <div class="w-11 h-11 bg-primary rounded-full flex items-center justify-center -mt-4 border-4 border-gray-800">
+          <i data-lucide="shopping-cart" class="w-5 h-5 text-white"></i>
+        </div>
+        <div class="absolute -top-5 -right-1 w-5 h-5 bg-red-500 rounded-full text-white text-[10px] font-bold flex items-center justify-center">1</div>
+      </div>
+      <div class="flex-1">
+        <span class="text-white font-bold text-lg">￥18</span>
+        <span class="text-gray-400 text-xs ml-1">另需配送费￥3</span>
+      </div>
+      <div class="bg-primary text-white text-sm font-bold px-5 py-2 rounded-full">去结算</div>
+    </div>
+
+    <!-- 底部 Tab 栏 -->
+    <div class="bg-white border-t border-gray-100 safe-area-bottom">
+      <div class="flex items-center justify-around py-2">
+        <a href="01-index.html" class="flex flex-col items-center gap-0.5">
+          <i data-lucide="home" class="w-5 h-5 text-gray-400"></i>
+          <span class="text-[10px] text-gray-400">首页</span>
+        </a>
+        <a href="02-menu.html" class="flex flex-col items-center gap-0.5">
+          <i data-lucide="utensils-crossed" class="w-5 h-5 text-primary"></i>
+          <span class="text-[10px] text-primary font-medium">点餐</span>
+        </a>
+        <a href="03-my.html" class="flex flex-col items-center gap-0.5">
+          <i data-lucide="user" class="w-5 h-5 text-gray-400"></i>
+          <span class="text-[10px] text-gray-400">我的</span>
+        </a>
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+
+  </div>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>

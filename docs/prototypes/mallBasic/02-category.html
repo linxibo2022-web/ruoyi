@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>基础商城 - 分类</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { primary: '#FF6B35', 'primary-light': '#FFF3ED', accent: '#1A1A2E' } } }
+    }
+  </script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    .phone-frame { width: 375px; height: 812px; margin: 20px auto; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .status-bar { height: 44px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 600; }
+    .safe-area-bottom { padding-bottom: 34px; }
+    .home-indicator { width: 134px; height: 5px; background: #000; border-radius: 3px; margin: 8px auto; }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    a { text-decoration: none; color: inherit; }
+    .sidebar-item { padding: 14px 0; text-align: center; font-size: 13px; color: #666; position: relative; transition: all 0.2s; }
+    .sidebar-item.active { color: #FF6B35; font-weight: 600; background: #fff; }
+    .sidebar-item.active::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 3px; height: 20px; background: #FF6B35; border-radius: 0 2px 2px 0; }
+  </style>
+</head>
+<body class="bg-gray-200 flex items-start justify-center min-h-screen py-8">
+
+  <div class="phone-frame bg-gray-50 flex flex-col">
+
+    <div class="status-bar bg-white">
+      <span>9:41</span>
+      <div class="flex items-center gap-1">
+        <i data-lucide="signal" class="w-4 h-4"></i>
+        <i data-lucide="wifi" class="w-4 h-4"></i>
+        <i data-lucide="battery-full" class="w-4 h-4"></i>
+      </div>
+    </div>
+
+    <!-- 搜索栏 -->
+    <div class="bg-white px-4 py-2.5 border-b border-gray-100">
+      <div class="flex items-center bg-gray-100 rounded-full px-4 py-2">
+        <i data-lucide="search" class="w-4 h-4 text-gray-400 mr-2"></i>
+        <span class="text-sm text-gray-400">搜索商品</span>
+      </div>
+    </div>
+
+    <!-- 分类主体：左侧栏 + 右侧内容 -->
+    <div class="flex flex-1 overflow-hidden">
+
+      <!-- 左侧分类栏 -->
+      <div class="w-[88px] bg-gray-100 overflow-y-auto hide-scrollbar flex-shrink-0">
+        <div class="sidebar-item active">手机通讯</div>
+        <div class="sidebar-item">电脑办公</div>
+        <div class="sidebar-item">数码配件</div>
+        <div class="sidebar-item">智能家居</div>
+        <div class="sidebar-item">摄影摄像</div>
+        <div class="sidebar-item">游戏设备</div>
+        <div class="sidebar-item">穿戴设备</div>
+        <div class="sidebar-item">生活电器</div>
+      </div>
+
+      <!-- 右侧内容 -->
+      <div class="flex-1 overflow-y-auto hide-scrollbar bg-white">
+
+        <!-- 分类 Banner -->
+        <div class="px-3 pt-3">
+          <div class="h-[80px] rounded-xl bg-gradient-to-r from-primary to-orange-400 flex items-center px-4">
+            <div class="text-white">
+              <div class="text-sm font-bold">手机通讯</div>
+              <div class="text-[10px] opacity-80 mt-0.5">精选品牌 品质保障</div>
+            </div>
+            <div class="ml-auto">
+              <i data-lucide="smartphone" class="w-10 h-10 text-white/40"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- 二级分类：苹果手机 -->
+        <div class="px-3 pt-4">
+          <div class="text-sm font-bold text-gray-800 mb-3">苹果手机</div>
+          <div class="grid grid-cols-3 gap-2">
+            <a href="05-detail.html" class="flex flex-col items-center">
+              <div class="w-[72px] h-[72px] rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden">
+                <img src="https://picsum.photos/144/144?random=11" class="w-full h-full object-cover" alt="">
+              </div>
+              <span class="text-[11px] text-gray-600 mt-1.5 text-center">iPhone 15 Pro</span>
+              <span class="text-[10px] text-primary font-medium">¥8,999</span>
+            </a>
+            <a href="05-detail.html" class="flex flex-col items-center">
+              <div class="w-[72px] h-[72px] rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden">
+                <img src="https://picsum.photos/144/144?random=12" class="w-full h-full object-cover" alt="">
+              </div>
+              <span class="text-[11px] text-gray-600 mt-1.5 text-center">iPhone 15</span>
+              <span class="text-[10px] text-primary font-medium">¥5,999</span>
+            </a>
+            <a href="05-detail.html" class="flex flex-col items-center">
+              <div class="w-[72px] h-[72px] rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden">
+                <img src="https://picsum.photos/144/144?random=13" class="w-full h-full object-cover" alt="">
+              </div>
+              <span class="text-[11px] text-gray-600 mt-1.5 text-center">iPhone SE</span>
+              <span class="text-[10px] text-primary font-medium">¥3,299</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 二级分类：安卓手机 -->
+        <div class="px-3 pt-4">
+          <div class="text-sm font-bold text-gray-800 mb-3">安卓手机</div>
+          <div class="grid grid-cols-3 gap-2">
+            <a href="05-detail.html" class="flex flex-col items-center">
+              <div class="w-[72px] h-[72px] rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden">
+                <img src="https://picsum.photos/144/144?random=21" class="w-full h-full object-cover" alt="">
+              </div>
+              <span class="text-[11px] text-gray-600 mt-1.5 text-center">小米 14 Pro</span>
+              <span class="text-[10px] text-primary font-medium">¥4,999</span>
+            </a>
+            <a href="05-detail.html" class="flex flex-col items-center">
+              <div class="w-[72px] h-[72px] rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden">
+                <img src="https://picsum.photos/144/144?random=22" class="w-full h-full object-cover" alt="">
+              </div>
+              <span class="text-[11px] text-gray-600 mt-1.5 text-center">华为 Mate60</span>
+              <span class="text-[10px] text-primary font-medium">¥5,999</span>
+            </a>
+            <a href="05-detail.html" class="flex flex-col items-center">
+              <div class="w-[72px] h-[72px] rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden">
+                <img src="https://picsum.photos/144/144?random=23" class="w-full h-full object-cover" alt="">
+              </div>
+              <span class="text-[11px] text-gray-600 mt-1.5 text-center">OPPO Find X7</span>
+              <span class="text-[10px] text-primary font-medium">¥3,999</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 二级分类：手机配件 -->
+        <div class="px-3 pt-4 pb-4">
+          <div class="text-sm font-bold text-gray-800 mb-3">手机配件</div>
+          <div class="grid grid-cols-3 gap-2">
+            <a href="05-detail.html" class="flex flex-col items-center">
+              <div class="w-[72px] h-[72px] rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden">
+                <img src="https://picsum.photos/144/144?random=31" class="w-full h-full object-cover" alt="">
+              </div>
+              <span class="text-[11px] text-gray-600 mt-1.5 text-center">手机壳</span>
+              <span class="text-[10px] text-primary font-medium">¥99</span>
+            </a>
+            <a href="05-detail.html" class="flex flex-col items-center">
+              <div class="w-[72px] h-[72px] rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden">
+                <img src="https://picsum.photos/144/144?random=32" class="w-full h-full object-cover" alt="">
+              </div>
+              <span class="text-[11px] text-gray-600 mt-1.5 text-center">充电器</span>
+              <span class="text-[10px] text-primary font-medium">¥199</span>
+            </a>
+            <a href="05-detail.html" class="flex flex-col items-center">
+              <div class="w-[72px] h-[72px] rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden">
+                <img src="https://picsum.photos/144/144?random=33" class="w-full h-full object-cover" alt="">
+              </div>
+              <span class="text-[11px] text-gray-600 mt-1.5 text-center">无线充电</span>
+              <span class="text-[10px] text-primary font-medium">¥299</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 底部 Tab 栏 -->
+    <nav class="border-t bg-white safe-area-bottom">
+      <div class="flex justify-around py-1.5">
+        <a href="01-index.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1">
+          <i data-lucide="home" class="w-5 h-5 text-gray-400"></i>
+          <span class="text-[10px] text-gray-400">首页</span>
+        </a>
+        <a href="02-category.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1">
+          <i data-lucide="grid-2x2" class="w-5 h-5 text-primary"></i>
+          <span class="text-[10px] text-primary font-medium">分类</span>
+        </a>
+        <a href="03-cart.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 relative">
+          <i data-lucide="shopping-cart" class="w-5 h-5 text-gray-400"></i>
+          <span class="absolute -top-0.5 right-3 w-4 h-4 bg-red-500 rounded-full text-white text-[10px] flex items-center justify-center">2</span>
+          <span class="text-[10px] text-gray-400">购物车</span>
+        </a>
+        <a href="04-my.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1">
+          <i data-lucide="user" class="w-5 h-5 text-gray-400"></i>
+          <span class="text-[10px] text-gray-400">我的</span>
+        </a>
+      </div>
+      <div class="home-indicator"></div>
+    </nav>
+
+  </div>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>

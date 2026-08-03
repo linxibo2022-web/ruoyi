@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>基础商城 - 我的订单</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { primary: '#FF6B35', 'primary-light': '#FFF3ED', accent: '#1A1A2E' } } }
+    }
+  </script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    .phone-frame { width: 375px; height: 812px; margin: 20px auto; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .status-bar { height: 44px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 600; }
+    .safe-area-bottom { padding-bottom: 34px; }
+    .home-indicator { width: 134px; height: 5px; background: #000; border-radius: 3px; margin: 8px auto; }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    a { text-decoration: none; color: inherit; }
+    .tab-item { font-size: 14px; color: #999; padding: 10px 0; position: relative; cursor: pointer; }
+    .tab-item.active { color: #FF6B35; font-weight: 600; }
+    .tab-item.active::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 24px; height: 3px; background: #FF6B35; border-radius: 2px; }
+  </style>
+</head>
+<body class="bg-gray-200 flex items-start justify-center min-h-screen py-8">
+
+  <div class="phone-frame bg-gray-50 flex flex-col">
+
+    <div class="status-bar bg-white">
+      <span>9:41</span>
+      <div class="flex items-center gap-1">
+        <i data-lucide="signal" class="w-4 h-4"></i>
+        <i data-lucide="wifi" class="w-4 h-4"></i>
+        <i data-lucide="battery-full" class="w-4 h-4"></i>
+      </div>
+    </div>
+
+    <!-- 顶部导航 -->
+    <div class="h-11 flex items-center justify-between px-4 bg-white">
+      <a href="04-my.html" class="w-8 h-8 flex items-center justify-center">
+        <i data-lucide="arrow-left" class="w-5 h-5 text-gray-700"></i>
+      </a>
+      <span class="font-medium text-base">我的订单</span>
+      <div class="w-8 h-8"></div>
+    </div>
+
+    <!-- Tab 切换 -->
+    <div class="bg-white border-b border-gray-100">
+      <div class="flex justify-around">
+        <div class="tab-item active">全部</div>
+        <div class="tab-item">待付款</div>
+        <div class="tab-item">待发货</div>
+        <div class="tab-item">待收货</div>
+        <div class="tab-item">已完成</div>
+      </div>
+    </div>
+
+    <main class="flex-1 overflow-y-auto hide-scrollbar">
+
+      <!-- 订单卡片 1 - 待收货 -->
+      <div class="mx-4 mt-3 bg-white rounded-2xl overflow-hidden">
+        <!-- 订单头 -->
+        <div class="flex items-center justify-between px-4 py-3 border-b border-gray-50">
+          <div class="flex items-center">
+            <i data-lucide="store" class="w-4 h-4 text-gray-500 mr-1.5"></i>
+            <span class="text-sm font-medium">Apple 官方旗舰店</span>
+          </div>
+          <span class="text-sm text-primary font-medium">待收货</span>
+        </div>
+
+        <!-- 商品 -->
+        <a href="05-detail.html" class="flex p-4 block">
+          <div class="w-[72px] h-[72px] rounded-xl bg-gray-100 overflow-hidden flex-shrink-0">
+            <img src="https://picsum.photos/144/144?random=11" class="w-full h-full object-cover" alt="">
+          </div>
+          <div class="ml-3 flex-1">
+            <div class="text-[13px] font-medium leading-snug line-clamp-2 text-gray-800">iPhone 15 Pro Max 512GB 原色钛金属</div>
+            <div class="flex items-end justify-between mt-2">
+              <span class="text-[11px] text-gray-400">原色钛金属 / 512GB</span>
+              <div class="text-right">
+                <span class="text-sm font-bold">¥8,999</span>
+                <span class="text-[11px] text-gray-400 ml-0.5">x1</span>
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <!-- 订单底部 -->
+        <div class="px-4 py-3 border-t border-gray-50 flex items-center justify-between">
+          <span class="text-xs text-gray-400">共1件 实付 <span class="text-gray-800 font-medium">¥8,999.00</span></span>
+          <div class="flex gap-2">
+            <button class="px-4 py-1.5 rounded-full border border-gray-300 text-xs text-gray-600">查看物流</button>
+            <button class="px-4 py-1.5 rounded-full bg-primary text-white text-xs font-medium">确认收货</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 订单卡片 2 - 待付款 -->
+      <div class="mx-4 mt-3 bg-white rounded-2xl overflow-hidden">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-gray-50">
+          <div class="flex items-center">
+            <i data-lucide="store" class="w-4 h-4 text-gray-500 mr-1.5"></i>
+            <span class="text-sm font-medium">Apple 官方旗舰店</span>
+          </div>
+          <span class="text-sm text-red-500 font-medium">待付款</span>
+        </div>
+
+        <a href="05-detail.html" class="flex p-4 block">
+          <div class="w-[72px] h-[72px] rounded-xl bg-gray-100 overflow-hidden flex-shrink-0">
+            <img src="https://picsum.photos/144/144?random=14" class="w-full h-full object-cover" alt="">
+          </div>
+          <div class="ml-3 flex-1">
+            <div class="text-[13px] font-medium leading-snug line-clamp-2 text-gray-800">AirPods Max 空间音频头戴式耳机</div>
+            <div class="flex items-end justify-between mt-2">
+              <span class="text-[11px] text-gray-400">银色</span>
+              <div class="text-right">
+                <span class="text-sm font-bold">¥3,999</span>
+                <span class="text-[11px] text-gray-400 ml-0.5">x1</span>
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <div class="px-4 py-3 border-t border-gray-50 flex items-center justify-between">
+          <div>
+            <span class="text-xs text-gray-400">共1件 实付 <span class="text-gray-800 font-medium">¥3,999.00</span></span>
+            <div class="text-[10px] text-red-400 mt-0.5">剩余 29:58 自动取消</div>
+          </div>
+          <div class="flex gap-2">
+            <button class="px-4 py-1.5 rounded-full border border-gray-300 text-xs text-gray-600">取消订单</button>
+            <button class="px-4 py-1.5 rounded-full bg-primary text-white text-xs font-medium">去付款</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 订单卡片 3 - 已完成 -->
+      <div class="mx-4 mt-3 bg-white rounded-2xl overflow-hidden">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-gray-50">
+          <div class="flex items-center">
+            <i data-lucide="store" class="w-4 h-4 text-gray-500 mr-1.5"></i>
+            <span class="text-sm font-medium">Apple 官方旗舰店</span>
+          </div>
+          <span class="text-sm text-green-500 font-medium">已完成</span>
+        </div>
+
+        <a href="05-detail.html" class="block">
+          <div class="flex p-4 border-b border-gray-50">
+            <div class="w-[72px] h-[72px] rounded-xl bg-gray-100 overflow-hidden flex-shrink-0">
+              <img src="https://picsum.photos/144/144?random=12" class="w-full h-full object-cover" alt="">
+            </div>
+            <div class="ml-3 flex-1">
+              <div class="text-[13px] font-medium leading-snug line-clamp-2 text-gray-800">MacBook Pro 14 M3 Pro 芯片</div>
+              <div class="flex items-end justify-between mt-2">
+                <span class="text-[11px] text-gray-400">深空灰 / 标准版</span>
+                <div class="text-right">
+                  <span class="text-sm font-bold">¥17,999</span>
+                  <span class="text-[11px] text-gray-400 ml-0.5">x1</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex p-4">
+            <div class="w-[72px] h-[72px] rounded-xl bg-gray-100 overflow-hidden flex-shrink-0">
+              <img src="https://picsum.photos/144/144?random=13" class="w-full h-full object-cover" alt="">
+            </div>
+            <div class="ml-3 flex-1">
+              <div class="text-[13px] font-medium leading-snug line-clamp-2 text-gray-800">Apple Watch Series 9 GPS 45mm</div>
+              <div class="flex items-end justify-between mt-2">
+                <span class="text-[11px] text-gray-400">午夜色 / 45mm</span>
+                <div class="text-right">
+                  <span class="text-sm font-bold">¥2,999</span>
+                  <span class="text-[11px] text-gray-400 ml-0.5">x2</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <div class="px-4 py-3 border-t border-gray-50 flex items-center justify-between">
+          <span class="text-xs text-gray-400">共3件 实付 <span class="text-gray-800 font-medium">¥23,997.00</span></span>
+          <div class="flex gap-2">
+            <button class="px-4 py-1.5 rounded-full border border-gray-300 text-xs text-gray-600">再次购买</button>
+            <button class="px-4 py-1.5 rounded-full border border-gray-300 text-xs text-gray-600">评价</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部提示 -->
+      <div class="py-6 text-center">
+        <span class="text-xs text-gray-400">— 没有更多订单了 —</span>
+      </div>
+
+    </main>
+
+    <!-- 底部安全区 -->
+    <div class="safe-area-bottom bg-gray-50">
+      <div class="home-indicator"></div>
+    </div>
+
+  </div>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>

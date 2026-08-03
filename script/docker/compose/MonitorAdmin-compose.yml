@@ -1,0 +1,58 @@
+services:
+  monitor:
+    image: monitor:5.6.1
+    container_name: monitor
+    environment:
+      # ==================== 基础运行环境配置 ====================
+      # 时区设置 - 统一使用上海时区
+      TZ: Asia/Shanghai
+      # Spring环境配置 - 指定运行环境(dev/test/prod)
+      SPRING_PROFILES_ACTIVE: prod
+      # 监控中心服务端口 - Spring Boot Admin管理界面端口
+      SERVER_PORT: 9090
+
+      # ==================== 日志级别配置 ====================
+      # 监控中心日志级别 - 控制Spring Boot Admin日志输出详细程度(debug/info/warn/error)
+      LOG_LEVEL: info
+
+      # ==================== 监控中心认证配置 ====================
+      # 监控中心登录用户名 - 访问Spring Boot Admin界面的用户名
+      MONITOR_USERNAME: ruoyi
+      # 监控中心登录密码 - 访问Spring Boot Admin界面的密码（生产环境必须修改）
+      MONITOR_PASSWORD: 123456
+      # 监控中心界面标题 - 在管理界面显示的标题名称
+      MONITOR_TITLE: Spring Boot Admin服务监控中心
+
+      # ==================== 自监控配置 ====================
+      # 自监控开关 - 是否将监控中心自身也注册为被监控应用
+      MONITOR_SELF_ENABLED: true
+      # 监控中心访问地址 - 用于自监控注册的完整URL地址
+      MONITOR_URL: http://127.0.0.1:9090/admin
+
+      # ==================== 邮件通知配置（可选）====================
+      # 邮件通知开关 - 是否启用服务状态变化的邮件通知
+      NOTIFY_MAIL_ENABLED: false
+      # 通知收件人 - 接收监控告警邮件的邮箱地址
+      NOTIFY_MAIL_TO: ""
+      # 邮件主题 - 监控告警邮件的主题（可自定义）
+      NOTIFY_MAIL_SUBJECT: admin监控通知
+
+      # ==================== Webhook通知配置（可选）====================
+      # Webhook通知开关 - 是否启用钉钉等第三方平台的消息推送
+      NOTIFY_WEBHOOK_ENABLED: false
+      # 钉钉机器人Webhook地址 - 钉钉群机器人的完整Webhook URL
+      DINGTALK_WEBHOOK_URL: ""
+      # 钉钉机器人密钥 - 钉钉机器人的加签密钥（安全设置）
+      DINGTALK_SECRET: ""
+      # 钉钉关键词 - 钉钉机器人触发的关键词列表（逗号分隔）
+      DINGTALK_KEYWORDS: ""
+
+    volumes:
+      # 日志文件映射 - 将容器内日志目录映射到宿主机，便于查看和管理
+      - /home/ubuntu/apps/monitor/logs/:/ruoyi/monitor/logs/
+    # 特权模式 - 允许容器访问宿主机设备，某些监控功能可能需要
+    privileged: true
+    # 网络模式 - 使用宿主机网络，简化与被监控应用的网络连接
+    network_mode: "host"
+    # 重启策略 - 容器异常退出时自动重启，确保监控服务持续可用
+    restart: always

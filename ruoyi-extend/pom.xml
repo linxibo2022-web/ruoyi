@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>ruoyi-plus-uniapp</artifactId>
+        <groupId>plus.ruoyi</groupId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>ruoyi-extend</artifactId>
+    <packaging>pom</packaging>
+
+    <description>
+        扩展模块 - 提供系统监控、任务调度等独立服务组件
+    </description>
+
+    <!-- 模块列表 - 按功能分类 -->
+    <modules>
+        <!-- 应用监控服务 - 基于Spring Boot Admin的监控中心 -->
+        <module>ruoyi-monitor-admin</module>
+        <!-- 任务调度服务 - 基于SnailJob的分布式任务调度中心 -->
+        <module>ruoyi-snailjob-server</module>
+    </modules>
+</project>

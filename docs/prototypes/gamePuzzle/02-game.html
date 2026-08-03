@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>益智游戏 - 游戏</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { primary: '#EC4899', 'primary-dark': '#DB2777' } } } }
+  </script>
+  <style>
+    .phone-frame { width: 375px; height: 812px; margin: 20px auto; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .status-bar { height: 44px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 600; }
+    .safe-area-bottom { padding-bottom: 34px; }
+    .home-indicator { width: 134px; height: 5px; background: #000; border-radius: 3px; margin: 8px auto; }
+  </style>
+</head>
+<body class="bg-gray-200 flex items-start justify-center min-h-screen py-8">
+  <div class="phone-frame bg-gray-50 flex flex-col">
+    <div class="status-bar bg-white">
+      <span>9:41</span>
+      <div class="flex items-center gap-1"><i data-lucide="signal" class="w-4 h-4"></i><i data-lucide="wifi" class="w-4 h-4"></i><i data-lucide="battery-full" class="w-4 h-4"></i></div>
+    </div>
+
+    <main class="flex-1 overflow-y-auto">
+      <div class="bg-white px-5 pt-3 pb-4">
+        <p class="text-2xl font-bold text-gray-800 mb-3">游戏大厅</p>
+        <!-- 分类 Tab -->
+        <div class="flex gap-2 overflow-x-auto pb-1">
+          <span class="bg-primary text-white text-xs px-4 py-1.5 rounded-full font-medium whitespace-nowrap">全部</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-4 py-1.5 rounded-full whitespace-nowrap">拼图</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-4 py-1.5 rounded-full whitespace-nowrap">数字</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-4 py-1.5 rounded-full whitespace-nowrap">记忆</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-4 py-1.5 rounded-full whitespace-nowrap">策略</span>
+        </div>
+      </div>
+
+      <!-- 游戏列表 -->
+      <div class="px-5 mt-4 space-y-3 mb-4">
+        <!-- 游戏卡片 1 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm flex gap-3">
+          <div class="w-20 h-20 rounded-2xl flex items-center justify-center shrink-0" style="background: linear-gradient(135deg, #EC4899, #F472B6);">
+            <span class="text-4xl">🧩</span>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <p class="text-sm font-bold text-gray-800">经典拼图</p>
+              <span class="bg-pink-50 text-primary text-[10px] px-2 py-0.5 rounded-full font-medium">热门</span>
+            </div>
+            <p class="text-[10px] text-gray-400 mt-1">将打乱的图片复原，锻炼空间思维</p>
+            <div class="flex items-center justify-between mt-2">
+              <div class="flex items-center gap-1">
+                <span class="text-yellow-400 text-xs">★ 4.9</span>
+                <span class="text-[10px] text-gray-400">· 12k人</span>
+              </div>
+              <span class="bg-primary text-white text-[10px] px-3 py-1 rounded-full font-medium">开始</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 游戏卡片 2 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm flex gap-3">
+          <div class="w-20 h-20 rounded-2xl flex items-center justify-center shrink-0" style="background: linear-gradient(135deg, #8B5CF6, #A78BFA);">
+            <span class="text-4xl">🔢</span>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <p class="text-sm font-bold text-gray-800">数独大师</p>
+              <span class="bg-purple-50 text-purple-500 text-[10px] px-2 py-0.5 rounded-full font-medium">经典</span>
+            </div>
+            <p class="text-[10px] text-gray-400 mt-1">逻辑推理填数，从入门到地狱级</p>
+            <div class="flex items-center justify-between mt-2">
+              <div class="flex items-center gap-1">
+                <span class="text-yellow-400 text-xs">★ 4.8</span>
+                <span class="text-[10px] text-gray-400">· 8.5k人</span>
+              </div>
+              <span class="bg-primary text-white text-[10px] px-3 py-1 rounded-full font-medium">开始</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 游戏卡片 3 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm flex gap-3">
+          <div class="w-20 h-20 rounded-2xl flex items-center justify-center shrink-0" style="background: linear-gradient(135deg, #3B82F6, #60A5FA);">
+            <span class="text-4xl">🎯</span>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <p class="text-sm font-bold text-gray-800">消消乐</p>
+              <span class="bg-blue-50 text-blue-500 text-[10px] px-2 py-0.5 rounded-full font-medium">休闲</span>
+            </div>
+            <p class="text-[10px] text-gray-400 mt-1">三消玩法，200+关卡等你挑战</p>
+            <div class="flex items-center justify-between mt-2">
+              <div class="flex items-center gap-1">
+                <span class="text-yellow-400 text-xs">★ 4.6</span>
+                <span class="text-[10px] text-gray-400">· 15k人</span>
+              </div>
+              <span class="bg-primary text-white text-[10px] px-3 py-1 rounded-full font-medium">开始</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 游戏卡片 4 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm flex gap-3">
+          <div class="w-20 h-20 rounded-2xl flex items-center justify-center shrink-0" style="background: linear-gradient(135deg, #10B981, #34D399);">
+            <span class="text-4xl">🧠</span>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <p class="text-sm font-bold text-gray-800">记忆翻牌</p>
+              <span class="bg-green-50 text-green-500 text-[10px] px-2 py-0.5 rounded-full font-medium">益智</span>
+            </div>
+            <p class="text-[10px] text-gray-400 mt-1">翻开配对，挑战你的记忆极限</p>
+            <div class="flex items-center justify-between mt-2">
+              <div class="flex items-center gap-1">
+                <span class="text-yellow-400 text-xs">★ 4.7</span>
+                <span class="text-[10px] text-gray-400">· 6.2k人</span>
+              </div>
+              <span class="bg-primary text-white text-[10px] px-3 py-1 rounded-full font-medium">开始</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 游戏卡片 5 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm flex gap-3">
+          <div class="w-20 h-20 rounded-2xl flex items-center justify-center shrink-0" style="background: linear-gradient(135deg, #F59E0B, #FBBF24);">
+            <span class="text-4xl">♟️</span>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <p class="text-sm font-bold text-gray-800">五子棋</p>
+              <span class="bg-amber-50 text-amber-500 text-[10px] px-2 py-0.5 rounded-full font-medium">对战</span>
+            </div>
+            <p class="text-[10px] text-gray-400 mt-1">支持人机对战和双人对战</p>
+            <div class="flex items-center justify-between mt-2">
+              <div class="flex items-center gap-1">
+                <span class="text-yellow-400 text-xs">★ 4.5</span>
+                <span class="text-[10px] text-gray-400">· 3.8k人</span>
+              </div>
+              <span class="bg-primary text-white text-[10px] px-3 py-1 rounded-full font-medium">开始</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 游戏卡片 6 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm flex gap-3">
+          <div class="w-20 h-20 rounded-2xl flex items-center justify-center shrink-0" style="background: linear-gradient(135deg, #EF4444, #F87171);">
+            <span class="text-4xl">🎲</span>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <p class="text-sm font-bold text-gray-800">2048</p>
+              <span class="bg-red-50 text-red-500 text-[10px] px-2 py-0.5 rounded-full font-medium">烧脑</span>
+            </div>
+            <p class="text-[10px] text-gray-400 mt-1">滑动合并数字，挑战最高分</p>
+            <div class="flex items-center justify-between mt-2">
+              <div class="flex items-center gap-1">
+                <span class="text-yellow-400 text-xs">★ 4.8</span>
+                <span class="text-[10px] text-gray-400">· 9.6k人</span>
+              </div>
+              <span class="bg-primary text-white text-[10px] px-3 py-1 rounded-full font-medium">开始</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="h-4"></div>
+    </main>
+
+    <nav class="border-t bg-white safe-area-bottom">
+      <div class="flex justify-around py-1.5">
+        <a href="01-index.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline"><i data-lucide="home" class="w-5 h-5 text-gray-400"></i><span class="text-[10px] text-gray-400">首页</span></a>
+        <a href="02-game.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline"><i data-lucide="gamepad-2" class="w-5 h-5 text-primary"></i><span class="text-[10px] text-primary font-medium">游戏</span></a>
+        <a href="03-rank.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline"><i data-lucide="trophy" class="w-5 h-5 text-gray-400"></i><span class="text-[10px] text-gray-400">排行</span></a>
+        <a href="04-my.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline"><i data-lucide="user" class="w-5 h-5 text-gray-400"></i><span class="text-[10px] text-gray-400">我的</span></a>
+      </div>
+      <div class="home-indicator"></div>
+    </nav>
+  </div>
+  <script>lucide.createIcons();</script>
+</body>
+</html>

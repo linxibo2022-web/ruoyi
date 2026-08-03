@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>plus.ruoyi</groupId>
+        <artifactId>ruoyi-modules</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ruoyi-system</artifactId>
+
+    <description>
+        系统模块 - 提供用户、角色、菜单等系统核心功能
+    </description>
+
+    <dependencies>
+        <!-- ================ 核心基础依赖 ================ -->
+        <!-- 核心模块 - 提供基础工具类与通用功能 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-core</artifactId>
+        </dependency>
+
+        <!-- Web服务模块 - 提供Web应用支持 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-web</artifactId>
+        </dependency>
+
+        <!-- ================ 安全与认证依赖 ================ -->
+        <!-- 安全模块 - 提供权限控制 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-security</artifactId>
+        </dependency>
+
+        <!-- 社交登录模块 - 提供第三方账号登录 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-social</artifactId>
+        </dependency>
+
+        <!-- 数据加密模块 - 提供敏感数据加密 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-encrypt</artifactId>
+        </dependency>
+
+        <!-- 数据脱敏模块 - 提供敏感信息处理 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-sensitive</artifactId>
+        </dependency>
+
+        <!-- ================ 数据处理依赖 ================ -->
+        <!-- 数据库服务模块 - 提供数据库访问 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-mybatis</artifactId>
+        </dependency>
+
+        <!-- Excel处理模块 - 提供Excel导入导出 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-excel</artifactId>
+        </dependency>
+
+        <!-- 对象存储模块 - 提供文件上传功能 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-oss</artifactId>
+        </dependency>
+
+        <!-- 序列化映射模块 - 提供数据字典翻译 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-serialmap</artifactId>
+        </dependency>
+
+        <!-- 多租户模块 - 提供租户数据隔离 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-tenant</artifactId>
+        </dependency>
+
+        <!-- ================ 系统功能依赖 ================ -->
+        <!-- 日志模块 - 提供操作日志记录 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-log</artifactId>
+        </dependency>
+
+        <!-- 接口文档模块 - 提供API文档 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-doc</artifactId>
+        </dependency>
+
+        <!-- 幂等控制模块 - 防止重复提交 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-idempotent</artifactId>
+        </dependency>
+
+        <!-- 限流模块 - 提供接口限流能力 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-ratelimiter</artifactId>
+        </dependency>
+
+        <!-- ================ 通信与消息依赖 ================ -->
+        <!-- 短信模块 - 提供短信发送功能 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-sms</artifactId>
+        </dependency>
+
+        <!-- 邮件模块 - 提供邮件发送功能 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-mail</artifactId>
+        </dependency>
+
+        <!-- WebSocket模块 - 提供实时通信支持 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-websocket</artifactId>
+        </dependency>
+
+        <!-- SSE模块 - 提供服务器推送支持 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-sse</artifactId>
+        </dependency>
+
+        <!-- OpenAPI模块 - 提供开放平台API认证 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-openapi</artifactId>
+        </dependency>
+
+        <!--   需要授权控制时开启     -->
+<!--        <dependency>-->
+<!--            <groupId>plus.ruoyi</groupId>-->
+<!--            <artifactId>ruoyi-common-license</artifactId>-->
+<!--            <version>5.5.0</version>-->
+<!--        </dependency>-->
+    </dependencies>
+</project>

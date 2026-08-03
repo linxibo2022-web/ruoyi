@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, user-scalable=no">
+<title>天气工具 - 天气图</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f0f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .phone-frame { width: 375px; height: 812px; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; background: #ffffff; position: relative; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+  .status-bar { height: 44px; background: #ffffff; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }
+  .status-bar span { color: #1e293b; font-size: 12px; font-weight: 600; }
+  .screen { flex: 1; overflow-y: auto; padding-bottom: 80px; display: flex; flex-direction: column; }
+  .screen::-webkit-scrollbar { display: none; }
+  .tab-bar { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); display: flex; border-top: 1px solid #e5e7eb; padding-bottom: 20px; z-index: 50; }
+  .tab-bar a { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 8px 0 4px; text-decoration: none; color: #9ca3af; font-size: 10px; gap: 2px; }
+  .tab-bar a.active { color: #0EA5E9; }
+  .tab-bar a i { width: 22px; height: 22px; }
+  .home-indicator { width: 134px; height: 5px; background: #000; border-radius: 3px; margin: 0 auto; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); opacity: 0.2; }
+
+  .page-header { padding: 4px 20px 12px; }
+  .page-header h1 { font-size: 28px; font-weight: 700; color: #0f172a; }
+  .page-header p { font-size: 13px; color: #64748b; margin-top: 2px; }
+
+  .map-area { flex: 1; margin: 0 16px 12px; border-radius: 16px; background: linear-gradient(135deg, #0c4a6e 0%, #0369a1 40%, #0EA5E9 100%); position: relative; overflow: hidden; min-height: 380px; }
+
+  /* Simulated cloud/weather elements */
+  .map-cloud { position: absolute; font-size: 40px; opacity: 0.6; animation: float 6s ease-in-out infinite; }
+  .map-cloud:nth-child(1) { top: 15%; left: 10%; animation-delay: 0s; }
+  .map-cloud:nth-child(2) { top: 35%; left: 55%; animation-delay: 2s; font-size: 50px; }
+  .map-cloud:nth-child(3) { top: 60%; left: 25%; animation-delay: 4s; font-size: 35px; }
+  .map-cloud:nth-child(4) { top: 20%; left: 70%; animation-delay: 1s; }
+  .map-cloud:nth-child(5) { top: 50%; left: 65%; animation-delay: 3s; font-size: 30px; }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .map-sun { position: absolute; top: 8%; right: 15%; font-size: 56px; animation: pulse 3s ease-in-out infinite; }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.1); opacity: 1; }
+  }
+
+  /* Radar rings */
+  .radar-ring { position: absolute; border: 1px solid rgba(255,255,255,0.15); border-radius: 50%; }
+  .radar-ring:nth-child(6) { width: 120px; height: 120px; bottom: 20%; left: 20%; }
+  .radar-ring:nth-child(7) { width: 200px; height: 200px; bottom: 10%; left: 10%; }
+  .radar-ring:nth-child(8) { width: 280px; height: 280px; bottom: 0%; left: 0%; }
+
+  /* City markers */
+  .city-marker { position: absolute; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .city-marker .dot { width: 8px; height: 8px; background: white; border-radius: 50%; box-shadow: 0 0 8px rgba(255,255,255,0.6); }
+  .city-marker .city-label { font-size: 10px; color: white; font-weight: 500; text-shadow: 0 1px 3px rgba(0,0,0,0.4); white-space: nowrap; }
+  .city-marker .city-temp { font-size: 12px; color: #fde68a; font-weight: 600; }
+
+  .map-legend { position: absolute; bottom: 12px; left: 12px; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 6px; }
+  .map-legend .legend-bar { width: 100px; height: 6px; border-radius: 3px; background: linear-gradient(90deg, #22d3ee, #34d399, #facc15, #f97316, #ef4444); }
+  .map-legend .legend-text { font-size: 9px; color: rgba(255,255,255,0.8); }
+
+  .layer-section { padding: 0 16px 16px; }
+  .layer-section .section-title { font-size: 13px; color: #64748b; font-weight: 500; margin-bottom: 10px; display: flex; align-items: center; gap: 4px; }
+  .layer-section .section-title i { width: 14px; height: 14px; }
+  .layer-buttons { display: flex; gap: 8px; }
+  .layer-btn { flex: 1; padding: 10px 4px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: white; text-align: center; cursor: pointer; transition: all 0.2s; }
+  .layer-btn.active { border-color: #0EA5E9; background: #f0f9ff; }
+  .layer-btn .lb-icon { font-size: 20px; margin-bottom: 2px; }
+  .layer-btn .lb-name { font-size: 11px; color: #475569; font-weight: 500; }
+  .layer-btn.active .lb-name { color: #0EA5E9; }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span>9:41</span>
+    <span>●●●●○ ⚡ 85%</span>
+  </div>
+
+  <div class="screen">
+    <!-- Header -->
+    <div class="page-header">
+      <h1>天气图</h1>
+      <p>实时气象雷达 · 华北地区</p>
+    </div>
+
+    <!-- Map Area -->
+    <div class="map-area">
+      <!-- Clouds -->
+      <div class="map-cloud">☁️</div>
+      <div class="map-cloud">☁️</div>
+      <div class="map-cloud">⛅</div>
+      <div class="map-cloud">🌤️</div>
+      <div class="map-cloud">☁️</div>
+
+      <!-- Sun -->
+      <div class="map-sun">☀️</div>
+
+      <!-- Radar rings -->
+      <div class="radar-ring"></div>
+      <div class="radar-ring"></div>
+      <div class="radar-ring"></div>
+
+      <!-- City markers -->
+      <div class="city-marker" style="top:30%;left:45%;">
+        <div class="city-label">北京</div>
+        <div class="dot"></div>
+        <div class="city-temp">28°</div>
+      </div>
+      <div class="city-marker" style="top:38%;left:68%;">
+        <div class="city-label">天津</div>
+        <div class="dot"></div>
+        <div class="city-temp">27°</div>
+      </div>
+      <div class="city-marker" style="top:55%;left:52%;">
+        <div class="city-label">石家庄</div>
+        <div class="dot"></div>
+        <div class="city-temp">30°</div>
+      </div>
+      <div class="city-marker" style="top:22%;left:25%;">
+        <div class="city-label">张家口</div>
+        <div class="dot"></div>
+        <div class="city-temp">22°</div>
+      </div>
+      <div class="city-marker" style="top:70%;left:72%;">
+        <div class="city-label">济南</div>
+        <div class="dot"></div>
+        <div class="city-temp">29°</div>
+      </div>
+
+      <!-- Legend -->
+      <div class="map-legend">
+        <span class="legend-text">-10°</span>
+        <div class="legend-bar"></div>
+        <span class="legend-text">40°</span>
+      </div>
+    </div>
+
+    <!-- Layer Buttons -->
+    <div class="layer-section">
+      <div class="section-title"><i data-lucide="layers"></i> 图层切换</div>
+      <div class="layer-buttons">
+        <div class="layer-btn active">
+          <div class="lb-icon">🌡️</div>
+          <div class="lb-name">温度</div>
+        </div>
+        <div class="layer-btn">
+          <div class="lb-icon">🌧️</div>
+          <div class="lb-name">降水</div>
+        </div>
+        <div class="layer-btn">
+          <div class="lb-icon">💨</div>
+          <div class="lb-name">风力</div>
+        </div>
+        <div class="layer-btn">
+          <div class="lb-icon">🫁</div>
+          <div class="lb-name">空气质量</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <a href="01-index.html">
+      <i data-lucide="cloud-sun"></i>
+      <span>天气</span>
+    </a>
+    <a href="02-forecast.html">
+      <i data-lucide="calendar-days"></i>
+      <span>预报</span>
+    </a>
+    <a href="03-map.html" class="active">
+      <i data-lucide="map"></i>
+      <span>天气图</span>
+    </a>
+    <a href="04-setting.html">
+      <i data-lucide="settings"></i>
+      <span>设置</span>
+    </a>
+  </div>
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+  lucide.createIcons();
+</script>
+</body>
+</html>

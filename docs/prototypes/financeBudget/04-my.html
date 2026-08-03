@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>预算管理 - 我的</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#F59E0B',
+            'primary-dark': '#D97706',
+            'primary-light': '#FEF3C7',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .phone-frame {
+      width: 375px;
+      height: 812px;
+      margin: 20px auto;
+      border: 8px solid #1a1a1a;
+      border-radius: 44px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .status-bar {
+      height: 44px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .safe-area-bottom { padding-bottom: 34px; }
+    .home-indicator {
+      width: 134px;
+      height: 5px;
+      background: #000;
+      border-radius: 3px;
+      margin: 8px auto;
+    }
+  </style>
+</head>
+<body class="bg-gray-200 flex items-start justify-center min-h-screen py-8">
+  <div class="phone-frame bg-gray-50 flex flex-col">
+
+    <!-- 状态栏 -->
+    <div class="status-bar" style="background: linear-gradient(135deg, #F59E0B, #D97706);">
+      <span class="text-white">9:41</span>
+      <div class="flex items-center gap-1 text-white">
+        <i data-lucide="signal" class="w-4 h-4"></i>
+        <i data-lucide="wifi" class="w-4 h-4"></i>
+        <i data-lucide="battery-full" class="w-4 h-4"></i>
+      </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <main class="flex-1 overflow-y-auto">
+
+      <!-- 金色渐变头部 -->
+      <div class="relative overflow-hidden px-5 pt-5 pb-16" style="background: linear-gradient(135deg, #F59E0B, #D97706);">
+        <!-- 装饰圆 -->
+        <div class="absolute w-48 h-48 rounded-full bg-white/10 -top-10 -right-10"></div>
+        <div class="absolute w-40 h-40 rounded-full bg-white/10 -bottom-16 right-16"></div>
+        <div class="absolute w-32 h-32 rounded-full bg-white/10 top-5 -left-10"></div>
+
+        <div class="flex justify-between items-start relative z-10">
+          <div class="flex gap-3 items-center">
+            <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center" style="border: 3px solid rgba(255,255,255,0.4);">
+              <span class="text-3xl">💰</span>
+            </div>
+            <div>
+              <p class="text-white text-lg font-bold">理财小能手</p>
+              <div class="flex gap-2 mt-1">
+                <span class="bg-white/20 text-white text-[10px] px-2.5 py-0.5 rounded-full">记账128天</span>
+                <span class="bg-white/20 text-white text-[10px] px-2.5 py-0.5 rounded-full">Lv.5</span>
+              </div>
+            </div>
+          </div>
+          <button class="w-9 h-9 flex items-center justify-center">
+            <i data-lucide="settings" class="w-5 h-5 text-white/80"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 资产统计卡片 -->
+      <div class="mx-5 -mt-10 bg-white rounded-2xl p-5 shadow-sm relative z-20">
+        <div class="grid grid-cols-3 gap-4 text-center">
+          <div>
+            <p class="text-lg font-bold text-gray-800">¥86.5k</p>
+            <p class="text-[11px] text-gray-400 mt-1">总资产</p>
+          </div>
+          <div>
+            <p class="text-lg font-bold text-green-500">¥12.0k</p>
+            <p class="text-[11px] text-gray-400 mt-1">本月收入</p>
+          </div>
+          <div>
+            <p class="text-lg font-bold text-red-500">¥3.3k</p>
+            <p class="text-[11px] text-gray-400 mt-1">本月支出</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 功能宫格 -->
+      <div class="mx-5 mt-5 bg-white rounded-2xl p-5 shadow-sm">
+        <div class="grid grid-cols-4 gap-y-5 text-center">
+          <div class="flex flex-col items-center gap-1.5">
+            <div class="w-11 h-11 rounded-2xl bg-amber-50 flex items-center justify-center">
+              <span class="text-xl">📋</span>
+            </div>
+            <span class="text-[11px] text-gray-600">预算设置</span>
+          </div>
+          <div class="flex flex-col items-center gap-1.5">
+            <div class="w-11 h-11 rounded-2xl bg-blue-50 flex items-center justify-center">
+              <span class="text-xl">🏦</span>
+            </div>
+            <span class="text-[11px] text-gray-600">账户管理</span>
+          </div>
+          <div class="flex flex-col items-center gap-1.5">
+            <div class="w-11 h-11 rounded-2xl bg-green-50 flex items-center justify-center">
+              <span class="text-xl">🔄</span>
+            </div>
+            <span class="text-[11px] text-gray-600">定期账单</span>
+          </div>
+          <div class="flex flex-col items-center gap-1.5">
+            <div class="w-11 h-11 rounded-2xl bg-purple-50 flex items-center justify-center">
+              <span class="text-xl">🏷️</span>
+            </div>
+            <span class="text-[11px] text-gray-600">标签管理</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 记账成就 -->
+      <div class="mx-5 mt-5 bg-white rounded-2xl p-5 shadow-sm">
+        <div class="flex justify-between items-center mb-4">
+          <span class="text-sm font-semibold text-gray-800">记账成就</span>
+          <span class="text-xs text-primary">查看全部 ›</span>
+        </div>
+        <div class="grid grid-cols-3 gap-3">
+          <div class="text-center rounded-2xl py-4 px-2" style="background: linear-gradient(135deg, #FEF3C7, #FDE68A);">
+            <span class="text-3xl block mb-1">🏅</span>
+            <p class="text-[11px] font-semibold text-amber-800">连续记账</p>
+            <p class="text-[10px] text-amber-600 mt-0.5">30天达成</p>
+          </div>
+          <div class="text-center rounded-2xl py-4 px-2" style="background: linear-gradient(135deg, #ECFDF5, #D1FAE5);">
+            <span class="text-3xl block mb-1">💎</span>
+            <p class="text-[11px] font-semibold text-green-800">预算达人</p>
+            <p class="text-[10px] text-green-600 mt-0.5">连续3月</p>
+          </div>
+          <div class="text-center rounded-2xl py-4 px-2" style="background: linear-gradient(135deg, #EFF6FF, #DBEAFE);">
+            <span class="text-3xl block mb-1">📊</span>
+            <p class="text-[11px] font-semibold text-blue-800">分析专家</p>
+            <p class="text-[10px] text-blue-600 mt-0.5">查看50次</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 更多功能列表 -->
+      <div class="mx-5 mt-5 mb-4 bg-white rounded-2xl overflow-hidden shadow-sm">
+        <div class="flex items-center px-5 py-3.5 border-b border-gray-50">
+          <div class="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center mr-3">
+            <span class="text-lg">📤</span>
+          </div>
+          <span class="flex-1 text-sm text-gray-700">数据导出</span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        </div>
+        <div class="flex items-center px-5 py-3.5 border-b border-gray-50">
+          <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center mr-3">
+            <span class="text-lg">☁️</span>
+          </div>
+          <span class="flex-1 text-sm text-gray-700">云端备份</span>
+          <span class="text-[11px] text-green-500 mr-2">已同步</span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        </div>
+        <div class="flex items-center px-5 py-3.5 border-b border-gray-50">
+          <div class="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center mr-3">
+            <span class="text-lg">🔔</span>
+          </div>
+          <span class="flex-1 text-sm text-gray-700">提醒设置</span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        </div>
+        <div class="flex items-center px-5 py-3.5 border-b border-gray-50">
+          <div class="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center mr-3">
+            <span class="text-lg">🎨</span>
+          </div>
+          <span class="flex-1 text-sm text-gray-700">主题设置</span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        </div>
+        <div class="flex items-center px-5 py-3.5">
+          <div class="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center mr-3">
+            <span class="text-lg">💬</span>
+          </div>
+          <span class="flex-1 text-sm text-gray-700">意见反馈</span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        </div>
+      </div>
+
+      <div class="h-4"></div>
+    </main>
+
+    <!-- 底部导航 -->
+    <nav class="border-t bg-white safe-area-bottom">
+      <div class="flex justify-around py-1.5">
+        <a href="01-index.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline">
+          <i data-lucide="home" class="w-5 h-5 text-gray-400"></i>
+          <span class="text-[10px] text-gray-400">首页</span>
+        </a>
+        <a href="02-record.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline">
+          <i data-lucide="pencil" class="w-5 h-5 text-gray-400"></i>
+          <span class="text-[10px] text-gray-400">记账</span>
+        </a>
+        <a href="03-chart.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline">
+          <i data-lucide="bar-chart-3" class="w-5 h-5 text-gray-400"></i>
+          <span class="text-[10px] text-gray-400">统计</span>
+        </a>
+        <a href="04-my.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline">
+          <i data-lucide="user" class="w-5 h-5 text-primary"></i>
+          <span class="text-[10px] text-primary font-medium">我的</span>
+        </a>
+      </div>
+      <div class="home-indicator"></div>
+    </nav>
+
+  </div>
+  <script>lucide.createIcons();</script>
+</body>
+</html>

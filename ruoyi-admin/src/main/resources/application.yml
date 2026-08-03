@@ -1,0 +1,360 @@
+############################################################
+# 系统应用总体配置文件
+# 包含应用基础信息、环境配置、安全设置、框架参数等关键配置
+############################################################
+
+################## 应用基础配置 ##################
+# 项目相关配置
+app:
+  # 应用id (标识符 每个项目唯一)
+  id: erp_sys
+  # 应用名称/标题
+  title: ERP系统
+  # 授权码 （前往https://license.ruoyi.plus登录进行生成）
+  license: ${APP_LICENSE:YOUR0LICENSE0KEY0HERE}
+  # 离线授权码（ 内网环境配置授权码后启动，根据提示提供设备指纹给开发人员生成离线授权码）
+  offline-license: ${APP_OFFLINE_LICENSE:}
+  # 应用版本
+  version: ${revision}
+  # 应用版权年份
+  copyright-year: 2025
+
+################## 多租户配置 ##################
+# 多租户配置
+tenant:
+  # 是否开启
+  enable: true
+
+  # 全局排除表（应用到所有数据源）
+  # 系统核心表已硬编码，这里只需配置业务表
+  excludes:
+  # 如果有需要全局共享的业务表，在这里添加
+  # - business_config
+
+  # 数据源级别排除表配置（可选）
+  # 使用场景：当切换数据源后，需要在全局配置基础上额外排除某些表
+  # 配置模式：累加模式（数据源配置 + 全局配置）
+  # 示例：
+#  datasource-excludes:
+#    master:                    # 主数据源
+#       - sys_menu             # master 数据源额外忽略 sys_config
+#    slave:               # 第三方数据源
+#       - b_platform              # slave 数据源额外忽略 b_bind
+  #
+  # 说明：
+  # 1. 全局 excludes 配置始终生效（应用到所有数据源）
+  # 2. datasource-excludes 是在全局配置基础上的补充（不是替换）
+  # 3. 最终效果：表在全局配置中 OR 表在当前数据源配置中 → 忽略租户隔离
+  # 4. 示例：如果全局配置了 sys_tenant，master 配置了 sys_menu
+  #    则 master 数据源会忽略：sys_tenant（全局）+ sys_menu（数据源）
+
+################## 服务器和运行环境配置 ##################
+# 开发环境配置
+server:
+  # 服务器的HTTP端口，默认为5500
+  port: ${SERVER_PORT:5504}
+  servlet:
+    # 应用的访问路径
+    context-path: /
+  # undertow 配置
+  undertow:
+    # HTTP post内容的最大大小。Undertow 2.3.21+ multipart默认限制2MB，需配置正数覆盖
+    max-http-post-size: 100MB
+    # 以下的配置会影响buffer,这些buffer会用于服务器连接的IO操作,有点类似netty的池化内存管理
+    # 每块buffer的空间大小,越小的空间被利用越充分
+    buffer-size: 512
+    # 是否分配的直接内存
+    direct-buffers: true
+    threads:
+      # 设置IO线程数, 它主要执行非阻塞的任务,它们会负责多个连接, 默认设置每个CPU核心一个线程
+      io: 8
+      # 阻塞任务线程池, 当执行类似servlet请求阻塞操作, undertow会从这个线程池中取得线程,它的值设置取决于系统的负载
+      worker: 256
+
+################## Spring框架配置 ##################
+# Spring配置
+spring:
+  # 应用名称
+  application:
+    name: ${app.id}
+  # 激活的环境配置
+  profiles:
+    active: @profiles.active@
+  # 线程配置
+  threads:
+    # 开启虚拟线程 仅jdk21可用
+    virtual:
+         enabled: true
+  task:
+    execution:
+      # 从 springboot 3.5 开始 spring自带线程池
+      # 不再需要 AsyncConfig与ThreadPoolConfig 可直接注入线程池使用
+      thread-name-prefix: async-
+      # 由spring自己初始化线程池
+      mode: force
+  # 资源信息
+  messages:
+    # 国际化资源文件路径
+    basename: i18n/messages
+  # 文件上传
+  servlet:
+    multipart:
+      # 单个文件大小
+      max-file-size: 10MB
+      # 设置总上传的文件大小
+      max-request-size: 20MB
+      # 文件上传临时目录
+      location: ${app.upload-path}
+  # MVC配置
+  mvc:
+    # 设置静态资源路径 防止所有请求都去查静态资源
+    static-path-pattern: /static/**
+    format:
+      # 日期时间格式
+      date-time: yyyy-MM-dd HH:mm:ss
+  # JSON序列化配置
+  jackson:
+    # 日期格式化
+    date-format: yyyy-MM-dd HH:mm:ss
+    serialization:
+      # 格式化输出
+      indent_output: false
+      # 忽略无法转换的对象
+      fail_on_empty_beans: false
+    deserialization:
+      # 允许对象忽略json中不存在的属性
+      fail_on_unknown_properties: false
+
+################## 日志配置 ##################
+# 日志配置
+logging:
+  level:
+    # 自定义包的日志级别
+    plus.ruoyi: ${LOG_LEVEL:info}
+    # Spring框架日志级别
+    org.springframework: warn
+    # MyBatis日志级别
+    org.mybatis.spring.mapper: error
+    # Apache Fury日志级别
+    org.apache.fury: warn
+    # 隐藏Forest客户端与BeanPostProcessor的兼容性警告
+    org.springframework.context.support.PostProcessorRegistrationDelegate: error
+  # 日志配置文件路径
+  config: classpath:logback-plus.xml
+
+################## 安全认证配置 ##################
+# Sa-Token配置
+sa-token:
+  # token名称 (同时也是cookie名称)
+  token-name: Authorization
+  # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
+  is-share: false
+  # jwt秘钥 - 使用环境变量
+  jwt-secret-key: ${JWT_SECRET_KEY:uDkkASPQVN5iR4eN}
+
+# security配置
+security:
+  # 排除路径
+  excludes:
+    #本地文件路径/resources/**
+    - /resources/**
+    - /*.html
+    - /**/*.html
+    - /**/*.css
+    - /**/*.js
+    - /favicon.ico
+    - /error
+    - /*/api-docs
+    - /*/api-docs/**
+
+################## 用户安全配置 ##################
+# 用户配置
+user:
+  password:
+    # 密码最大错误次数
+    maxRetryCount: 5
+    # 密码锁定时间（默认10分钟）
+    lockTime: 10
+
+################## 验证码配置 ##################
+captcha:
+  # 页面 <参数设置> 可开启关闭 验证码校验
+  # 验证码类型 math 数组计算 char 字符验证
+  type: MATH
+  # line 线段干扰 circle 圆圈干扰 shear 扭曲干扰
+  category: CIRCLE
+  # 数字验证码位数
+  numberLength: 1
+  # 字符验证码长度
+  charLength: 4
+
+################## 数据加密配置 ##################
+# 数据加密
+mybatis-encryptor:
+  # 是否开启加密
+  enable: false
+  # 默认加密算法
+  algorithm: BASE64
+  # 编码方式 BASE64/HEX。默认BASE64
+  encode: BASE64
+  # 安全秘钥 对称算法的秘钥 如：AES，SM4
+  password: ${ENCRYPT_PASSWORD:}
+  # 公私钥 非对称算法的公私钥 如：SM2，RSA
+  publicKey: ${ENCRYPT_PUBLIC_KEY:}
+  privateKey: ${ENCRYPT_PRIVATE_KEY:}
+
+################## API接口加密配置 ##################
+# api接口加密
+api-decrypt:
+  # 是否开启全局接口加密
+  enabled: ${API_ENCRYPT_ENABLED:true}
+  # AES 加密头标识
+  headerFlag: encrypt-key
+  # 响应加密公钥 非对称算法的公私钥 如：SM2，RSA 使用者请自行更换
+  # 对应前端解密私钥 MIIBOwIBAAJBAIrZxEhzVAHKJm7BJpXIHWGU3sHJYgRiOOTw3Auj/iNDTL+RExEW2Y0dg/IC71DKxcjvVEA9GdDp0/5nph+4dIMCAwEAAQJAIyPdwyA84H8SnvEPHNUaannMrmqS/d0F3Rr/9Yo5ZR7htKMON9zDgixHOZb+MQmpXapvl8NgQazUsLtya/pX4QIhAMGq7rIFz2OXce1KsQ7nVj+6fAjguW4mDEcgXKUnQn9bAiEAt4o8KELUNEFNuVJs89QMrDiuyo1PQQc9pB5nUP4wz/kCIFJ/StCgsvg8kfY/4+5yUwYwnRd3CuZF5OMDgROFBsmTAiEAgycdq6ttldWgY7A5uNarI5nxlT37Bz3UV2V+cIrjeIkCIQCAJS0PinuXxvX9Sqr+1+n0gMB+nU0frif1icnKWGQzRw==
+  publicKey: ${API_RESPONSE_PUBLIC_KEY:MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIrZxEhzVAHKJm7BJpXIHWGU3sHJYgRiOOTw3Auj/iNDTL+RExEW2Y0dg/IC71DKxcjvVEA9GdDp0/5nph+4dIMCAwEAAQ==}
+  # 请求解密私钥 非对称算法的公私钥 如：SM2，RSA 使用者请自行更换
+  # 对应前端加密公钥 MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAK9s1Pbnn5W+l1hx3ukHLtevayF5nOFIb140zvIPksw8h7bZWY05zyWdsQ2I51ypiC53KnyfhibPk3AJ2yr+qnkCAwEAAQ==
+  privateKey: ${API_REQUEST_PRIVATE_KEY:MIIBOgIBAAJBAK9s1Pbnn5W+l1hx3ukHLtevayF5nOFIb140zvIPksw8h7bZWY05zyWdsQ2I51ypiC53KnyfhibPk3AJ2yr+qnkCAwEAAQJAfqWhsodSLTel6BJ9jdrDtK9ONqKn4fT7ghW5+gPIRW2S1tQYQlVpq/yM1eDAk+DfyNKMEX8Z9Hr1nXPTyh+bKQIhAOU2bI2SIMfWRqxlkhI3Ae2DWiwpDIj5yqmPv20GM20XAiEAw+0yI6yta9qkPtnR+8lfmdY5Pjyou2JtpE260xiZ/u8CIQCo4MZuMEISup9rmZJb9UdoVaT0cHIZ4eEduRmTHER7lQIgN1GZfokazgEFrtlBeJ366CycLP5jhcTcwC9SOJgRovECIGmK/KwZ4k7Uycktqseo9LjMsNYxTyNNeyxPuaNN0sgg}
+
+################## 安全防护配置 ##################
+# 防止XSS攻击
+xss:
+  # 过滤开关
+  enabled: true
+  # 排除链接（多个用逗号分隔）
+  excludeUrls:
+    - /system/notice/*
+    - /mall/goods/*
+
+################## 数据库及ORM配置 ##################
+# MyBatisPlus配置
+# https://baomidou.com/config/
+mybatis-plus:
+  # 自定义配置 是否全局开启逻辑删除 关闭后 所有逻辑删除功能将失效
+  enableLogicDelete: true
+  # 多包名使用 例如 plus.ruoyi.**.mapper,org.xxx.**.mapper
+  mapperPackage: plus.ruoyi.**.mapper
+  # 对应的 XML 文件位置
+  mapperLocations: classpath*:mapper/**/*Mapper.xml
+  # 实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: plus.ruoyi.**.domain
+  global-config:
+    dbConfig:
+      # 主键类型
+      # AUTO 自增 NONE 空 INPUT 用户输入 ASSIGN_ID 雪花 ASSIGN_UUID 唯一 UUID
+      # 如需改为自增 需要将数据库表全部设置为自增
+      idType: ASSIGN_ID
+
+################## 全局线程池配置 ##################
+# 全局线程池相关配置
+# 如使用JDK21请直接使用虚拟线程 不要开启此配置
+thread-pool:
+  # 是否开启线程池
+  enabled: false
+  # 队列最大长度
+  queueCapacity: 128
+  # 线程池维护线程所允许的空闲时间
+  keepAliveSeconds: 300
+
+################## 分布式锁配置 ##################
+--- # 分布式锁 lock4j 全局配置
+lock4j:
+  # 获取分布式锁超时时间，默认为 3000 毫秒
+  acquire-timeout: 3000
+  # 分布式锁的超时时间，默认为 30 秒
+  expire: 30000
+
+################## 消息推送配置 ##################
+--- # 默认/推荐使用sse推送
+sse:
+  # 是否启用SSE
+  enabled: false
+  # SSE访问路径
+  path: /resource/sse
+
+--- # websocket
+websocket:
+  # 如果关闭 需要和前端开关一起关闭
+  enabled: true
+  # 路径
+  path: /resource/websocket
+  # 设置访问源地址
+  allowedOrigins: '*'
+
+################## 开放平台配置 ##################
+--- # 开放API配置
+openapi:
+  # 是否启用开放平台
+  enabled: ${OPEN_API_ENABLED:false}
+  # 时间戳过期时间(秒) 用于防重放攻击
+  timestamp-expire-seconds: 60
+  # 每个用户最大密钥数量
+  max-keys: 5
+  # AppSecret加密密钥（AES-256需要32字节） 项目运营中再更换会导致之前的加密无法解密
+  secret-encrypt-key: ${OPEN_API_SECRET_KEY:q3XA19UeJExvCqynPOnyYUcr4zwOVCyi}
+  # 访问控制配置
+  access-control:
+    # 访问模式: all(所有用户) | roles(指定角色) | admin(仅管理员) | super_admin(仅超管)
+    mode: ${OPEN_API_ACCESS_MODE:all}
+    # 允许访问的角色列表(当mode=roles时生效,多个用逗号分隔)
+    allowed-roles: ${OPEN_API_ALLOWED_ROLES:admin,pc_user}
+
+################## API文档配置 ##################
+springdoc:
+  api-docs:
+    # 是否开启接口文档 - 开发环境默认开启，生产环境建议关闭
+    enabled: ${SPRINGDOC_ENABLED:true}
+  info:
+    # 标题
+    title: '${app.title}_接口文档'
+    # 描述
+    description: '接口文档包括business(主业务)、system(系统)、generator(代码生成)等模块'
+    # 版本
+    version: '版本号: ${app.version}'
+    # 作者信息
+    contact:
+      name: 抓蛙师
+      email: 770492966@qq.com
+      url: https://space.bilibili.com/520725002
+  #这里定义了多个分组，也可以不定义 。api管理平台建议使用apifox：https://apifox.com/
+  # api管理访问 http://localhost:5500/v3/api-docs 、 http://localhost:5500/v3/api-docs/business 、
+  # http://localhost:5500/v3/api-docs/system 、 http://localhost:5500/v3/api-docs/generator
+  group-configs:
+    - group: business
+      packages-to-scan: plus.ruoyi.business
+    - group: system
+      packages-to-scan: plus.ruoyi.system
+    - group: generator
+      packages-to-scan: plus.ruoyi.generator
+
+################## 系统监控配置 ##################
+--- # Actuator 监控端点的配置项
+management:
+  endpoints:
+    web:
+      exposure:
+        # 暴露所有端点
+        include: '*'
+  endpoint:
+    health:
+      # 显示详细健康信息
+      show-details: ALWAYS
+    logfile:
+      # 外部日志文件路径
+      external-file: ./logs/sys-console.log
+
+################## 模块功能开关配置 ##################
+--- # 模块功能开关（可选模块的启用控制）
+module:
+  # 支付模块开关 (默认启用)
+  # false: 禁用支付模块，相关控制器和监听器不会被加载
+  pay-enabled: true
+  # 小程序模块开关 (默认启用)
+  # false: 禁用小程序模块，相关策略和控制器不会被加载
+  miniapp-enabled: true
+  # 公众号模块开关 (默认启用)
+  # false: 禁用公众号模块，相关控制器不会被加载
+  mp-enabled: true

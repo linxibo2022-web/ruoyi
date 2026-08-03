@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>生鲜商城 - 购物车</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { primary: '#22C55E', 'primary-light': '#F0FDF4', accent: '#F97316' } } } }
+  </script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    .phone-frame { width: 375px; height: 812px; margin: 20px auto; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .status-bar { height: 44px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 600; }
+    .safe-area-bottom { padding-bottom: 34px; }
+    .home-indicator { width: 134px; height: 5px; background: #000; border-radius: 3px; margin: 8px auto; }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    a { text-decoration: none; color: inherit; }
+    .qty-btn { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px; color: #333; background: #fff; }
+  </style>
+</head>
+<body class="bg-gray-200 flex items-start justify-center min-h-screen py-8">
+
+  <div class="phone-frame bg-gray-50 flex flex-col">
+
+    <div class="status-bar bg-white">
+      <span>9:41</span>
+      <div class="flex items-center gap-1">
+        <i data-lucide="signal" class="w-4 h-4"></i>
+        <i data-lucide="wifi" class="w-4 h-4"></i>
+        <i data-lucide="battery-full" class="w-4 h-4"></i>
+      </div>
+    </div>
+
+    <!-- 导航 -->
+    <div class="h-11 flex items-center justify-between px-4 bg-white border-b border-gray-100">
+      <span class="font-bold text-base">购物车 <span class="text-gray-400 font-normal text-sm">(5)</span></span>
+      <span class="text-sm text-gray-500">清空</span>
+    </div>
+
+    <!-- 配送提示 -->
+    <div class="bg-primary-light px-4 py-2 flex items-center">
+      <i data-lucide="truck" class="w-4 h-4 text-primary mr-2"></i>
+      <span class="text-xs text-primary">再加 ¥18.1 即可免配送费</span>
+    </div>
+
+    <main class="flex-1 overflow-y-auto hide-scrollbar pb-[130px]">
+      <div class="px-4 pt-3">
+        <!-- 商品项 1 -->
+        <div class="bg-white rounded-2xl p-3 flex items-start mb-2.5">
+          <div class="w-5 h-5 rounded border-2 border-primary flex items-center justify-center mt-5 mr-3 flex-shrink-0 bg-primary">
+            <i data-lucide="check" class="w-3 h-3 text-white"></i>
+          </div>
+          <div class="w-[72px] h-[72px] rounded-xl bg-green-50 flex items-center justify-center text-3xl flex-shrink-0">🥦</div>
+          <div class="ml-3 flex-1 flex flex-col justify-between min-h-[72px]">
+            <div>
+              <div class="text-[13px] font-medium text-gray-800">有机西蓝花</div>
+              <div class="text-[10px] text-gray-400">约300g/份</div>
+            </div>
+            <div class="flex items-end justify-between">
+              <span class="text-primary font-bold text-sm">¥8.9</span>
+              <div class="flex items-center gap-1.5">
+                <button class="qty-btn">-</button>
+                <span class="text-sm w-6 text-center">2</span>
+                <button class="qty-btn">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 商品项 2 -->
+        <div class="bg-white rounded-2xl p-3 flex items-start mb-2.5">
+          <div class="w-5 h-5 rounded border-2 border-primary flex items-center justify-center mt-5 mr-3 flex-shrink-0 bg-primary">
+            <i data-lucide="check" class="w-3 h-3 text-white"></i>
+          </div>
+          <div class="w-[72px] h-[72px] rounded-xl bg-red-50 flex items-center justify-center text-3xl flex-shrink-0">🍓</div>
+          <div class="ml-3 flex-1 flex flex-col justify-between min-h-[72px]">
+            <div>
+              <div class="text-[13px] font-medium text-gray-800">丹东99草莓</div>
+              <div class="text-[10px] text-gray-400">300g/盒</div>
+            </div>
+            <div class="flex items-end justify-between">
+              <span class="text-primary font-bold text-sm">¥29.9</span>
+              <div class="flex items-center gap-1.5">
+                <button class="qty-btn">-</button>
+                <span class="text-sm w-6 text-center">1</span>
+                <button class="qty-btn">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 商品项 3 -->
+        <div class="bg-white rounded-2xl p-3 flex items-start mb-2.5">
+          <div class="w-5 h-5 rounded border-2 border-primary flex items-center justify-center mt-5 mr-3 flex-shrink-0 bg-primary">
+            <i data-lucide="check" class="w-3 h-3 text-white"></i>
+          </div>
+          <div class="w-[72px] h-[72px] rounded-xl bg-yellow-50 flex items-center justify-center text-3xl flex-shrink-0">🥚</div>
+          <div class="ml-3 flex-1 flex flex-col justify-between min-h-[72px]">
+            <div>
+              <div class="text-[13px] font-medium text-gray-800">农家土鸡蛋</div>
+              <div class="text-[10px] text-gray-400">10枚/盒</div>
+            </div>
+            <div class="flex items-end justify-between">
+              <span class="text-primary font-bold text-sm">¥15.8</span>
+              <div class="flex items-center gap-1.5">
+                <button class="qty-btn">-</button>
+                <span class="text-sm w-6 text-center">1</span>
+                <button class="qty-btn">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 换购推荐 -->
+        <div class="bg-white rounded-2xl p-3 mt-3">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center">
+              <span class="text-accent text-[10px] font-bold bg-orange-50 px-1.5 py-0.5 rounded mr-2">换购</span>
+              <span class="text-xs text-gray-700 font-medium">满59元可换购</span>
+            </div>
+            <span class="text-xs text-gray-400">去凑单 ›</span>
+          </div>
+          <div class="flex gap-3">
+            <div class="flex items-center bg-gray-50 rounded-xl p-2 flex-1">
+              <div class="text-2xl mr-2">🧃</div>
+              <div class="flex-1">
+                <div class="text-[11px] text-gray-700">鲜榨橙汁</div>
+                <div class="text-[10px]"><span class="text-primary">¥1.0</span> <span class="text-gray-400 line-through">¥9.9</span></div>
+              </div>
+            </div>
+            <div class="flex items-center bg-gray-50 rounded-xl p-2 flex-1">
+              <div class="text-2xl mr-2">🍪</div>
+              <div class="flex-1">
+                <div class="text-[11px] text-gray-700">奶油曲奇</div>
+                <div class="text-[10px]"><span class="text-primary">¥2.0</span> <span class="text-gray-400 line-through">¥15.0</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- 底部结算 -->
+    <div class="bg-white border-t border-gray-100 safe-area-bottom" style="position: absolute; bottom: 0; left: 0; right: 0;">
+      <div class="flex items-center px-4 py-3">
+        <div class="flex items-center mr-3">
+          <div class="w-5 h-5 rounded border-2 border-primary flex items-center justify-center bg-primary">
+            <i data-lucide="check" class="w-3 h-3 text-white"></i>
+          </div>
+          <span class="text-sm text-gray-600 ml-2">全选</span>
+        </div>
+        <div class="flex-1 text-right mr-3">
+          <span class="text-sm text-gray-500">合计: </span>
+          <span class="text-primary font-bold text-lg">¥63.5</span>
+          <div class="text-[10px] text-gray-400">配送费 ¥5.0</div>
+        </div>
+        <button class="bg-primary text-white text-sm font-medium px-6 py-2.5 rounded-full">去结算(5)</button>
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+
+  </div>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>

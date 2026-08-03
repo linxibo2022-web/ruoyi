@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, user-scalable=no">
+<title>计算器 - 科学</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f0f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .phone-frame { width: 375px; height: 812px; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; background: #1c1c1e; position: relative; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+  .status-bar { height: 44px; background: #1c1c1e; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }
+  .status-bar span { color: white; font-size: 12px; font-weight: 600; }
+  .screen { flex: 1; display: flex; flex-direction: column; padding-bottom: 80px; }
+  .tab-bar { position: absolute; bottom: 0; left: 0; right: 0; background: #2c2c2e; display: flex; border-top: 1px solid #3a3a3c; padding-bottom: 20px; z-index: 50; }
+  .tab-bar a { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 8px 0 4px; text-decoration: none; color: #8e8e93; font-size: 10px; gap: 2px; }
+  .tab-bar a.active { color: #0EA5E9; }
+  .tab-bar a i { width: 22px; height: 22px; }
+  .home-indicator { width: 134px; height: 5px; background: #fff; border-radius: 3px; margin: 0 auto; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); opacity: 0.3; }
+
+  .display { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 0 16px 12px; }
+  .display .expression { color: #8e8e93; font-size: 16px; text-align: right; margin-bottom: 2px; min-height: 22px; }
+  .display .result { color: white; font-size: 48px; font-weight: 300; text-align: right; line-height: 1.1; }
+
+  .keypad { padding: 0 8px 6px; display: flex; flex-direction: column; gap: 6px; }
+  .key-row { display: grid; gap: 6px; }
+  .row-sci { grid-template-columns: repeat(5, 1fr); }
+  .row-std { grid-template-columns: repeat(4, 1fr); }
+
+  .key { height: 48px; border-radius: 24px; border: none; font-size: 18px; font-weight: 400; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: opacity 0.1s; }
+  .key:active { opacity: 0.7; }
+  .key-num { background: #333333; color: white; }
+  .key-op { background: #0EA5E9; color: white; }
+  .key-func { background: #a5a5a5; color: #1c1c1e; font-size: 16px; }
+  .key-sci { background: #2c2c2e; color: #0EA5E9; font-size: 14px; font-weight: 500; }
+  .key-zero { grid-column: span 2; justify-content: flex-start; padding-left: 20px; }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span>9:41</span>
+    <span>●●●●○ ⚡ 85%</span>
+  </div>
+
+  <!-- Display -->
+  <div class="screen">
+    <div class="display">
+      <div class="expression">sin(30)</div>
+      <div class="result">0.5</div>
+    </div>
+
+    <!-- Scientific Function Rows -->
+    <div class="keypad">
+      <div class="key-row row-sci">
+        <button class="key key-sci">sin</button>
+        <button class="key key-sci">cos</button>
+        <button class="key key-sci">tan</button>
+        <button class="key key-sci">log</button>
+        <button class="key key-sci">ln</button>
+      </div>
+      <div class="key-row row-sci">
+        <button class="key key-sci">x²</button>
+        <button class="key key-sci">xⁿ</button>
+        <button class="key key-sci">√</button>
+        <button class="key key-sci">π</button>
+        <button class="key key-sci">e</button>
+      </div>
+      <div class="key-row row-sci">
+        <button class="key key-sci">(</button>
+        <button class="key key-sci">)</button>
+        <button class="key key-sci">x!</button>
+        <button class="key key-sci">1/x</button>
+        <button class="key key-sci">|x|</button>
+      </div>
+
+      <!-- Standard Rows -->
+      <div class="key-row row-std">
+        <button class="key key-func">AC</button>
+        <button class="key key-func">±</button>
+        <button class="key key-func">%</button>
+        <button class="key key-op">÷</button>
+      </div>
+      <div class="key-row row-std">
+        <button class="key key-num">7</button>
+        <button class="key key-num">8</button>
+        <button class="key key-num">9</button>
+        <button class="key key-op">×</button>
+      </div>
+      <div class="key-row row-std">
+        <button class="key key-num">4</button>
+        <button class="key key-num">5</button>
+        <button class="key key-num">6</button>
+        <button class="key key-op">−</button>
+      </div>
+      <div class="key-row row-std">
+        <button class="key key-num">1</button>
+        <button class="key key-num">2</button>
+        <button class="key key-num">3</button>
+        <button class="key key-op">+</button>
+      </div>
+      <div class="key-row row-std">
+        <button class="key key-num key-zero">0</button>
+        <button class="key key-num">.</button>
+        <button class="key key-op">=</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <a href="01-index.html">
+      <i data-lucide="calculator"></i>
+      <span>计算器</span>
+    </a>
+    <a href="02-science.html" class="active">
+      <i data-lucide="flask-conical"></i>
+      <span>科学</span>
+    </a>
+    <a href="03-history.html">
+      <i data-lucide="history"></i>
+      <span>历史</span>
+    </a>
+    <a href="04-converter.html">
+      <i data-lucide="arrow-left-right"></i>
+      <span>转换</span>
+    </a>
+  </div>
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+  lucide.createIcons();
+</script>
+</body>
+</html>

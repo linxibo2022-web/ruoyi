@@ -1,0 +1,607 @@
+<!-- ${functionName} -->
+<template>
+  <div>
+    <!-- ${functionName}搜索栏 -->
+    <ASearchForm ref="queryFormRef" v-model="queryParams" :visible="showSearch">
+      <AFormInput label="模糊搜索" prop="searchValue" v-model="queryParams.searchValue" @input="handleQuery"></AFormInput>
+#if($isSubTable)
+      <!-- 父表外键搜索 -->
+      <AFormSelect label="${parentTableSubTableFkComment}" v-model="queryParams.${parentTableSubTableFkclassName}" prop="${parentTableSubTableFkclassName}" :options="${parentclassName}Options" clearable @change="handleQuery"></AFormSelect>
+      <!-- 其他外键字段搜索(排除父表外键) -->
+#foreach($column in $columns)
+#if($column.javaField.endsWith("Id") && $column.javaField != "id" && !$column.isPk() && $column.query && $column.javaField != $parentTableSubTableFkclassName)
+#set($foreignTableName = $column.javaField.substring(0, $column.javaField.length() - 2))
+      <AFormSelect label="${column.columnLabel}" v-model="queryParams.${column.javaField}" prop="${column.javaField}" :options="${foreignTableName}Options" clearable @change="handleQuery"></AFormSelect>
+#end
+#end
+#end
+#foreach($column in $columns)
+#if($column.query)
+#set($isParentFk = false)
+#if($isSubTable && $column.javaField == $parentTableSubTableFkclassName)
+#set($isParentFk = true)
+#end
+#if(!$isParentFk)
+#set($dictType=$column.dictType)
+#set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
+#if($column.htmlType == "input" || $column.htmlType == "textarea")
+      <AFormInput label="${column.columnLabel}" v-model="queryParams.${column.javaField}" prop="${column.javaField}" @input="handleQuery"></AFormInput>
+#elseif($column.htmlType == "numberInput")
+      <AFormInput label="${column.columnLabel}" v-model.number="queryParams.${column.javaField}" type="number" prop="${column.javaField}" @input="handleQuery"></AFormInput>
+#elseif(($column.htmlType == "select" || $column.htmlType == "radio") && "" != $dictType)
+      <AFormSelect label="${column.columnLabel}" v-model="queryParams.${column.javaField}" prop="${column.javaField}" :options="${dictType}" @change="handleQuery"></AFormSelect>
+#elseif(($column.htmlType == "select" || $column.htmlType == "radio") && $dictType)
+      <AFormSelect label="${column.columnLabel}" v-model="queryParams.${column.javaField}" prop="${column.javaField}" @change="handleQuery"></AFormSelect>
+#elseif($column.htmlType == "datetime" && $column.queryType != "BETWEEN")
+      <AFormDate v-model="queryParams.${column.javaField}" type="date" label="${column.columnLabel}" @change="handleQuery"></AFormDate>
+#elseif($column.htmlType == "datetime" && $column.queryType == "BETWEEN")
+      <AFormDate v-model="dateRange${AttrName}" prop="${column.javaField}" type="daterange" label="${column.columnLabel}" @change="handleQuery"></AFormDate>
+#elseif($column.htmlType == "numberInput" && $column.queryType == "BETWEEN")
+      <AFormInput label="${column.columnLabel}(起)" v-model.number="queryParams.params.begin${AttrName}" type="number" placeholder="最小值" @input="handleQuery"></AFormInput>
+      <AFormInput label="${column.columnLabel}(止)" v-model.number="queryParams.params.end${AttrName}" type="number" placeholder="最大值" @input="handleQuery"></AFormInput>
+#end
+#end
+#end
+#end
+    </ASearchForm>
+
+    <el-card shadow="hover">
+      <!-- ${functionName}工具栏 -->
+      <template #header>
+        <el-row :gutter="10" class="mb-2">
+          <el-col :span="1.5" v-permi="['${moduleName}:${businessName}:add']">
+            <el-button type="primary" plain icon="Plus" @click="handleAdd">
+              {{ t('新增') }}
+            </el-button>
+          </el-col>
+          <el-col :span="1.5" v-permi="['${moduleName}:${businessName}:update']">
+            <el-button type="success" plain icon="Edit" :disabled="selectionItems.length !== 1" @click="handleUpdate()">
+              {{ t('修改') }}
+            </el-button>
+          </el-col>
+          <el-col :span="1.5" v-permi="['${moduleName}:${businessName}:delete']">
+            <el-button type="danger" plain icon="Delete" :disabled="selectionItems.length === 0" @click="handleDelete()">
+              {{ t('删除') }}
+            </el-button>
+          </el-col>
+          <el-col :span="1.5" v-permi="['${moduleName}:${businessName}:import']">
+            <AImportExcel
+              v-slot="{ openImportExcel }"
+              :title="t('${BusinessName} Data', '${functionName}')"
+              templateUrl="/${moduleName}/${businessName}/template${BusinessName}${pluralSuffix}"
+              importUrl="/${moduleName}/${businessName}/import${BusinessName}${pluralSuffix}"
+              @import-success="getList"
+            >
+              <el-button type="info" plain icon="Top" @click="openImportExcel">
+                {{ t('导入') }}
+              </el-button>
+            </AImportExcel>
+          </el-col>
+          <el-col :span="1.5" v-permi="['${moduleName}:${businessName}:export']">
+            <el-button type="warning" plain icon="Download" @click="handleExport">
+              {{ t('导出') }}
+            </el-button>
+          </el-col>
+
+          <TableToolbar
+              v-model:showSearch="showSearch"
+              @reset-query="resetQuery"
+              @query-table="getList"
+              :table-columns="detailFields"
+              :table-data="${businessName}List"
+          ></TableToolbar>
+        </el-row>
+
+        <!-- 显示已选项 -->
+        <!-- <ASelectionTags :items="selectionItems" :on-clear="selectionClear" @close="selectionRemove" /> -->
+      </template>
+
+      <!-- ${functionName}表格数据 -->
+      <el-table ref="${businessName}TableRef" v-loading="isLoading" :data="${businessName}List" :height="tableHeight" stripe @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="50" align="center" />
+#foreach ($column in $columns)
+#set($javaField=$column.javaField)
+#if($column.pk)
+        <el-table-column v-if="true" :label="t('${javaField}', '${column.columnLabel}')" prop="${javaField}" align="center" min-width="105" />
+#elseif($column.list && $column.htmlType == "datetime")
+        <el-table-column :label="t('${javaField}', '${column.columnLabel}')" prop="${javaField}" align="center" width="105" />
+#elseif($column.list && $column.htmlType == "imageUpload")
+        <el-table-column :label="t('${javaField}', '${column.columnLabel}')" prop="${javaField}" align="center" width="80">
+          <template #default="{ row }">
+            <ImagePreview :src="row.${javaField}" />
+          </template>
+        </el-table-column>
+#elseif($column.list && $column.htmlType == "fileUpload")
+        <el-table-column :label="t('${javaField}', '${column.columnLabel}')" prop="${javaField}" align="center">
+          <template #default="{ row }">
+            <el-link v-if="row.${javaField}" type="primary" :href="row.${javaField}" target="_blank">查看附件</el-link>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+#elseif($column.list && $column.javaField == "status")
+        <el-table-column :label="t('${javaField}', '${column.columnLabel}')" prop="${javaField}" align="center">
+          <template #default="{ row }">
+            <AFormSwitch v-model="row.${javaField}" @change="handleStatusChange(row)" />
+          </template>
+        </el-table-column>
+#elseif($column.list && $column.dictType && "" != $column.dictType)
+        <el-table-column :label="t('${javaField}', '${column.columnLabel}')" prop="${javaField}" align="center">
+          <template #default="{ row }">
+            <DictTag :options="${column.dictType}" :value="row.${javaField}" />
+          </template>
+        </el-table-column>
+#elseif($column.list && "" != $javaField)
+        <el-table-column :label="t('${javaField}', '${column.columnLabel}')" prop="${javaField}" align="center" />
+#end
+#end
+        <el-table-column :label="t('操作')" align="center" fixed="right" width="120">
+          <template #default="{ row }">
+            <el-tooltip :content="t('查看')" placement="top">
+              <el-button v-permi="['${moduleName}:${businessName}:query']" link type="primary" icon="View" @click="handleView(row)"></el-button>
+            </el-tooltip>
+            <el-tooltip :content="t('修改')" placement="top">
+              <el-button v-permi="['${moduleName}:${businessName}:update']" link type="success" icon="Edit" @click="handleUpdate(row)"></el-button>
+            </el-tooltip>
+            <el-tooltip :content="t('删除')" placement="top">
+              <el-button v-permi="['${moduleName}:${businessName}:delete']" link type="danger" icon="Delete" @click="handleDelete(row)"></el-button>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <Pagination v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" :total="total" @pagination="getList" />
+    </el-card>
+
+    <!-- 添加或修改${functionName}对话框 -->
+    <AModal v-model="dialog.visible" :title="dialog.title" :loading="buttonLoading" @confirm="submitForm" @cancel="cancel">
+      <el-form ref="${businessName}FormRef" :model="form" :rules="rules" label-width="auto">
+        <el-row :gutter="10">
+#foreach($column in $columns)
+#set($field=$column.javaField)
+#if(($column.insert || $column.edit) && !$column.pk)
+#set($dictType=$column.dictType)
+#if("" != $treeParentCode && $column.javaField == $treeParentCode)
+          <AFormSelect label="${column.columnLabel}" v-model="form.${treeParentCode}" prop="${treeParentCode}" :options="${businessName}Options" span="auto"></AFormSelect>
+#elseif($column.htmlType == "input")
+#if($column.columnLength)
+          <AFormInput label="${column.columnLabel}" v-model="form.${field}" :maxlength="$column.columnLength" prop="${field}" span="auto"></AFormInput>
+#else
+          <AFormInput label="${column.columnLabel}" v-model="form.${field}" prop="${field}" span="auto"></AFormInput>
+#end
+#elseif($column.htmlType == "numberInput")
+#if($column.columnLength)
+          <AFormInput label="${column.columnLabel}" v-model.number="form.${field}" type="number" :maxlength="$column.columnLength" prop="${field}" span="auto"></AFormInput>
+#else
+          <AFormInput label="${column.columnLabel}" v-model.number="form.${field}" type="number" prop="${field}" span="auto"></AFormInput>
+#end
+#elseif($column.htmlType == "imageUpload")
+          <AFormImgUpload label="${column.columnLabel}" v-model="form.${field}" prop="${field}" span="auto"></AFormImgUpload>
+#elseif($column.htmlType == "fileUpload")
+          <AFormFileUpload label="${column.columnLabel}" v-model="form.${field}" prop="${field}" span="auto"></AFormFileUpload>
+#elseif($column.htmlType == "editor")
+          <AFormEditor label="${column.columnLabel}" v-model="form.${field}" prop="${field}" :span="24"></AFormEditor>
+#elseif($column.htmlType == "select" && "" != $dictType)
+          <AFormSelect label="${column.columnLabel}" v-model="form.${field}" prop="${field}" :options="${dictType}" span="auto"></AFormSelect>
+#elseif($column.htmlType == "select" && $dictType)
+          <AFormSelect label="${column.columnLabel}" v-model="form.${field}" prop="${field}" span="auto"></AFormSelect>
+#elseif($column.htmlType == "checkbox" && "" != $dictType)
+          <AFormCheckbox label="${column.columnLabel}" v-model="form.${field}" prop="${field}" :options="${dictType}" span="auto"></AFormCheckbox>
+#elseif($column.htmlType == "checkbox" && $dictType)
+          <AFormCheckbox label="${column.columnLabel}" v-model="form.${field}" prop="${field}" span="auto"></AFormCheckbox>
+#elseif($column.htmlType == "radio" && "" != $dictType)
+          <AFormRadio label="${column.columnLabel}" v-model="form.${field}" prop="${field}" :options="${dictType}" span="auto"></AFormRadio>
+#elseif($column.htmlType == "radio" && $dictType)
+          <AFormRadio label="${column.columnLabel}" v-model="form.${field}" prop="${field}" span="auto"></AFormRadio>
+#elseif($column.htmlType == "datetime")
+          <AFormDate label="${column.columnLabel}" v-model="form.${field}" type="datetime" prop="${field}" span="auto"></AFormDate>
+#elseif($column.htmlType == "textarea")
+#if($column.columnLength)
+          <AFormInput label="${column.columnLabel}" v-model="form.${field}" type="textarea" :maxlength="$column.columnLength" prop="${field}" span="auto"></AFormInput>
+#else
+          <AFormInput label="${column.columnLabel}" v-model="form.${field}" type="textarea" prop="${field}" span="auto"></AFormInput>
+#end
+#end
+#end
+#end
+        </el-row>
+      </el-form>
+#if($table.sub)
+      <!-- 子表:${subTable.functionName} -->
+      <${subClassName}Child :parent-id="form.${pkColumn.javaField}" />
+#end
+    </AModal>
+
+    <!-- 查看${functionName}详情对话框 -->
+    <ADetail v-model="viewDialog.visible" :title="viewDialog.title" :data="viewData" :fields="detailFields" />
+  </div>
+</template>
+
+<script setup lang="ts" name="${BusinessName}">
+#if($table.sub)
+import ${subClassName}Child from './${subClassName}Child.vue'
+#end
+import { page${BusinessName}${pluralSuffix}, get${BusinessName}, add${BusinessName}, update${BusinessName}, delete${BusinessName}${pluralSuffix} } from '@/api/${frontendPath}/${businessName}/${businessName}Api'
+import type { ${ClassName}Query, ${ClassName}Bo, ${ClassName}Vo } from '@/api/${frontendPath}/${businessName}/${businessName}Types'
+#if($isSubTable)
+import { option${ParentClassName}${parentPluralSuffix} } from '@/api/${parentFrontendPath}/${parentBusinessName}/${parentBusinessName}Api'
+#foreach($column in $columns)
+#if($column.javaField.endsWith("Id") && $column.javaField != "id" && !$column.isPk() && $column.query && $column.javaField != $parentTableSubTableFkclassName)
+#set($foreignTableName = $column.javaField.substring(0, $column.javaField.length() - 2))
+#set($ForeignTableName = $foreignTableName.substring(0,1).toUpperCase() + $foreignTableName.substring(1))
+#if($foreignTableName.toLowerCase().endsWith("s"))#set($foreignPluralSuffix = "")#else#set($foreignPluralSuffix = "s")#end
+import { option${ForeignTableName}${foreignPluralSuffix} } from '@/api/${frontendPath}/${foreignTableName}/${foreignTableName}Api'
+#end
+#end
+#end
+import { isTrue, toggleStatus } from '@/utils/boolean'
+import { addDateRange } from '@/utils/date'
+import { toValidate } from '@/utils/to'
+import { showMsgSuccess, showConfirm } from '@/utils/modal'
+#if(${dicts} != '')
+
+#set($dictsNoSymbol=$dicts.replace("'", ""))
+#set($hasCustomDict = false)
+#foreach($dict in $dictsNoSymbol.split(", "))
+#if(!$dict.startsWith("sys_"))
+#set($hasCustomDict = true)
+#break
+#end
+#end
+#if($hasCustomDict)
+/**
+ * 🔴 请将以下字典类型添加到 src/composables/useDict.ts 的 DictTypes 枚举中：
+ *
+ * export enum DictTypes {
+ *   // ... 现有字典 ...
+#foreach($dict in $dictsNoSymbol.split(", "))
+#if(!$dict.startsWith("sys_"))
+#if($dictComments.get($dict))
+ *  // ${dictComments.get($dict)}
+#else
+ *   // 补充字典注释
+#end
+ *   ${dict} = '${dict}',
+#end
+#end
+ * }
+ */
+#end
+/** ${functionName}字典数据 */
+const { ${dictsNoSymbol} } = useDict(#foreach($dict in $dictsNoSymbol.split(", "))DictTypes.${dict}#if($foreach.hasNext), #end#end)
+#end
+
+const { t } = useI18n()
+
+// 使用表格高度处理钩子
+const { tableHeight, queryFormRef, showSearch } = useTableHeight()
+
+#if($isSubTable)
+// =========== 父表选项数据 ===========
+/**父表选项数据*/
+const ${parentclassName}Options = ref<DictItem[]>([])
+
+/**加载父表选项数据*/
+const load${ParentClassName}Options = async () => {
+  const [err, data] = await option${ParentClassName}${parentPluralSuffix}()
+  if (!err) ${parentclassName}Options.value = data
+}
+
+#set($hasOtherForeignKey = false)
+#foreach($column in $columns)
+#if($column.javaField.endsWith("Id") && $column.javaField != "id" && !$column.isPk() && $column.query && $column.javaField != $parentTableSubTableFkclassName)
+#set($hasOtherForeignKey = true)
+#break
+#end
+#end
+#if($hasOtherForeignKey)
+// =========== 其他外键选项数据(排除父表外键) ===========
+#foreach($column in $columns)
+#if($column.javaField.endsWith("Id") && $column.javaField != "id" && !$column.isPk() && $column.query && $column.javaField != $parentTableSubTableFkclassName)
+#set($foreignTableName = $column.javaField.substring(0, $column.javaField.length() - 2))
+#set($ForeignTableName = $foreignTableName.substring(0,1).toUpperCase() + $foreignTableName.substring(1))
+/**${column.columnLabel}选项数据*/
+const ${foreignTableName}Options = ref<DictItem[]>([])
+#end
+#end
+
+/**加载所有外键选项数据*/
+const loadForeignKeyOptions = async () => {
+#foreach($column in $columns)
+#if($column.javaField.endsWith("Id") && $column.javaField != "id" && !$column.isPk() && $column.query && $column.javaField != $parentTableSubTableFkclassName)
+#set($foreignTableName = $column.javaField.substring(0, $column.javaField.length() - 2))
+#set($ForeignTableName = $foreignTableName.substring(0,1).toUpperCase() + $foreignTableName.substring(1))
+#if($foreignTableName.toLowerCase().endsWith("s"))#set($foreignPluralSuffix = "")#else#set($foreignPluralSuffix = "s")#end
+  const [err${ForeignTableName}, data${ForeignTableName}] = await option${ForeignTableName}${foreignPluralSuffix}()
+  if (!err${ForeignTableName}) ${foreignTableName}Options.value = data${ForeignTableName}
+#end
+#end
+}
+#end
+#end
+
+// =========== ${functionName}查询相关 ===========
+
+/**查询参数对象*/
+const queryParams = ref<${ClassName}Query>({
+  pageNum: 1,
+  pageSize: 10,
+  orderByColumn: '${pkColumn.javaField}',
+  isAsc: 'desc',
+#if($isSubTable)
+  ${parentTableSubTableFkclassName}: undefined,
+#end
+#foreach ($column in $columns)
+#if($column.query)
+#if($column.queryType != 'BETWEEN')
+  $column.javaField: undefined,
+#end
+#end
+#end
+  params: {}
+})
+
+#foreach ($column in $columns)
+#if($column.htmlType == 'datetime' && $column.queryType == 'BETWEEN')
+#set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
+/**日期范围选择器*/
+const dateRange${AttrName} = ref<[ElDateModelType, ElDateModelType]>(['', ''])
+#end
+#end
+
+/** ${functionName}搜索按钮操作 */
+const handleQuery = () => {
+  queryParams.value.pageNum = 1
+  getList()
+}
+
+/** ${functionName}重置按钮操作 */
+const resetQuery = () => {
+#foreach ($column in $columns)
+#if($column.htmlType == 'datetime' && $column.queryType == 'BETWEEN')
+#set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
+  dateRange${AttrName}.value = ['', '']
+#end
+#end
+  queryParams.value.params = {}
+  queryFormRef.value?.resetFields()
+  handleQuery()
+}
+
+// =========== ${functionName}表格数据相关 ===========
+/**表格加载状态*/
+const isLoading = ref(true)
+/**数据列表*/
+const ${businessName}List = ref<${ClassName}Vo[]>([])
+/**总记录数*/
+const total = ref(0)
+/**表格实例*/
+const ${businessName}TableRef = ref()
+/**选中的数据项*/
+const selectionItems = ref<${ClassName}Vo[]>([])
+
+/** 表格多选事件处理 */
+const handleSelectionChange = (selection: ${ClassName}Vo[]) => {
+  selectionItems.value = selection
+}
+
+/** 查询${functionName}列表 */
+const getList = async () => {
+  isLoading.value = true
+  if (!queryParams.value.params) {
+    queryParams.value.params = {}
+  }
+#foreach ($column in $columns)
+#if($column.htmlType == 'datetime' && $column.queryType == 'BETWEEN')
+#set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
+  addDateRange(queryParams.value, dateRange${AttrName}.value, '${column.javaField}')
+#end
+#end
+  const [err, data] = await page${BusinessName}${pluralSuffix}(queryParams.value)
+  if (!err) {
+    ${businessName}List.value = data.records
+    total.value = data.total
+  }
+  isLoading.value = false
+}
+
+/** 导出${functionName}数据 */
+const handleExport = () => {
+  useDownload().exportExcel(t('${BusinessName} Data', '${functionName}'), '/${moduleName}/${businessName}/export${BusinessName}${pluralSuffix}', queryParams.value)
+}
+
+/** 删除${functionName}操作 */
+const handleDelete = async (row?: ${ClassName}Vo) => {
+  const idsToDelete = row ? [row.${pkColumn.javaField}] : selectionItems.value.map((item) => item.${pkColumn.javaField})
+  if (idsToDelete.length === 0) return
+  const itemsToDelete = row
+      ? row.${columns[2].javaField} || row.${pkColumn.javaField}
+      : selectionItems.value.map((item) => item.${columns[2].javaField} || item.${pkColumn.javaField}).join(', ')
+
+  const [confirmErr] = await showConfirm(#[[`${t('是否确认删除')}${itemsToDelete}`]]#)
+  if (confirmErr) return
+
+  const [deleteErr] = await delete${BusinessName}${pluralSuffix}(idsToDelete)
+  if (!deleteErr) {
+    showMsgSuccess(t('message.deleteSuccess'))
+    await getList()
+  }
+}
+
+// =========== ${functionName}表单相关 ===========
+/**初始表单数据*/
+const initFormData: ${ClassName}Bo = {
+#foreach ($column in $columns)
+#if($column.insert || $column.edit)
+#if($column.htmlType == 'checkbox')
+  $column.javaField: []#if($foreach.count != $columns.size()),#end
+#else
+  $column.javaField: #if($column.columnDefault && $column.columnDefault != '')$column.columnDefault#{else}undefined#end#if($foreach.count != $columns.size()),#end
+#end
+#end
+#end
+}
+
+/**表单引用*/
+const ${businessName}FormRef = ref<ElFormInstance>()
+/**表单提交按钮加载状态*/
+const buttonLoading = ref(false)
+/**对话框配置对象*/
+const dialog = ref<DialogState>({
+  visible: false,
+  title: ''
+})
+/**表单数据对象*/
+const form = ref<${ClassName}Bo>({ ...initFormData })
+/**表单校验规则*/
+const rules = ref<ElFormRules>({
+#foreach ($column in $columns)
+#if(($column.insert || $column.edit) && $column.required)
+  $column.javaField: [{ required: true, message: t('$column.javaField cannot be empty', '$column.columnLabel不能为空'), trigger: #if($column.htmlType == 'select' || $column.htmlType == 'radio')'change'#else'blur'#end }]#if($foreach.count != $columns.size()),#end
+#end
+#end
+})
+
+/** ${functionName}表单重置 */
+const reset = () => {
+  form.value = { ...initFormData }
+  ${businessName}FormRef.value?.resetFields()
+}
+
+/** 取消${functionName}编辑 */
+const cancel = () => {
+  reset()
+  dialog.value.visible = false
+}
+
+/** 新增${functionName}操作 */
+const handleAdd = () => {
+  reset()
+  dialog.value.visible = true
+  dialog.value.title = #[[`${t('新增')}${t(']]#${businessName}#[[', ']]#${functionName}#[[')}`]]#
+}
+
+/** 修改${functionName}操作 */
+const handleUpdate = async (row?: ${ClassName}Vo) => {
+  reset()
+  const itemToEdit = row || selectionItems.value[0]
+  const [err, data] = await get${BusinessName}(itemToEdit.${pkColumn.javaField})
+  if (!err) {
+    Object.assign(form.value, data)
+    dialog.value.visible = true
+    dialog.value.title = #[[`${t('修改')}${t(']]#${businessName}#[[', ']]#${functionName}#[[')}`]]#
+  }
+}
+
+/** 提交${functionName}表单 */
+const submitForm = async () => {
+  const [validateErr] = await toValidate(${businessName}FormRef)
+  if (validateErr) return
+
+  buttonLoading.value = true
+  let err: Error | null, data: any
+  if (form.value.${pkColumn.javaField}) {
+    ;[err, data] = await update${BusinessName}(form.value)
+  } else {
+    ;[err, data] = await add${BusinessName}(form.value)
+  }
+  if (!err) {
+    showMsgSuccess(form.value.${pkColumn.javaField} ? t('message.updateSuccess') : t('message.addSuccess'))
+
+#if($table.sub)
+    // 如果是新增且有子表，保存成功后更新表单ID，保持弹窗打开以便编辑子表
+    if (!form.value.${pkColumn.javaField} && data) {
+      form.value.${pkColumn.javaField} = data
+      buttonLoading.value = false
+      return
+    }
+#end
+    dialog.value.visible = false
+    await getList()
+  }
+  buttonLoading.value = false
+}
+
+#set($hasStatusField = false)
+#foreach($column in $columns)
+#if($column.javaField == "status")
+#set($hasStatusField = true)
+#break
+#end
+#end
+#if($hasStatusField)
+/** ${functionName}启用禁用状态修改 */
+const handleStatusChange = async (row: ${ClassName}Vo) => {
+  const text = isTrue(row.status) ? t('启用') : t('停用')
+  const [confirmErr] = await showConfirm(#[[`${t('是否确认')}${text}${row.]]#${pkColumn.javaField}#[[}?`]]#)
+  if (confirmErr) {
+    row.status = toggleStatus(row.status)
+    return
+  }
+  const [updateErr] = await update${BusinessName}(row)
+  if (!updateErr) {
+    await getList()
+    showMsgSuccess(#[[`${text}${t('成功')}`]]#)
+  } else {
+     row.status = toggleStatus(row.status)
+  }
+}
+#end
+
+/**查看对话框配置*/
+const viewDialog = ref<DialogState>({
+  visible: false,
+  title: ''
+})
+
+/**查看数据*/
+const viewData = ref<${ClassName}Vo>({} as ${ClassName}Vo)
+
+/**详情字段配置 */
+const detailFields = computed<FieldConfig[]>(() => [
+#foreach ($column in $columns)
+#set($javaField=$column.javaField)
+#if($column.list)
+#if($column.pk)
+  { prop: '${javaField}', label: t('${javaField}', '${column.columnLabel}') },
+#elseif($column.htmlType == "imageUpload")
+  { prop: '${javaField}', label: t('${javaField}', '${column.columnLabel}'), type: 'image' },
+#elseif($column.htmlType == "fileUpload")
+  { prop: '${javaField}', label: t('${javaField}', '${column.columnLabel}'), type: 'file' },
+#elseif($column.dictType && "" != $column.dictType)
+  { prop: '${javaField}', label: t('${javaField}', '${column.columnLabel}'), type: 'dict', dictOptions: ${column.dictType} },
+#elseif($column.htmlType == "datetime")
+  { prop: '${javaField}', label: t('${javaField}', '${column.columnLabel}'), type: 'datetime' },
+#else
+  { prop: '${javaField}', label: t('${javaField}', '${column.columnLabel}') },
+#end
+#end
+#end
+])
+
+/** 查看${functionName}详情操作 */
+const handleView = async (row: ${ClassName}Vo) => {
+  const [err, data] = await get${BusinessName}(row.${pkColumn.javaField})
+  if (!err) {
+      viewData.value = data
+      viewDialog.value.title = #[[`${t('查看')}${t(']]#${businessName}#[[', ']]#${functionName}#[[')}`]]#
+      viewDialog.value.visible = true
+  }
+}
+
+// =========== 生命周期 ===========
+/**初始化${functionName}数据列表*/
+onMounted(() => {
+#if($isSubTable)
+  load${ParentClassName}Options()
+#end
+#if($hasOtherForeignKey)
+  loadForeignKeyOptions()
+#end
+  getList()
+})
+/**页面激活时刷新${functionName}列表*/
+onActivated(() => {
+  if (isLoading.value) return
+  getList()
+})
+</script>

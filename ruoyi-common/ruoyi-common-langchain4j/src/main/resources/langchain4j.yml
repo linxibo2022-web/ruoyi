@@ -1,0 +1,134 @@
+langchain4j:
+  # 是否启用 - 使用环境变量控制，默认 false
+  enabled: ${LANGCHAIN4J_ENABLED:false}
+
+  # 默认模型提供商: openai, deepseek, qianwen, claude, ollama
+  default-provider: deepseek
+
+  # 默认模型名称
+  default-model: deepseek-chat
+
+  # 请求超时时间（文档转换等场景需要较长超时）
+  timeout: 300s
+
+  # 最大重试次数
+  max-retries: 1
+
+  # DeepSeek配置
+  deepseek:
+    enabled: true
+    api-key: ${LANGCHAIN4J_DEEPSEEK_API_KEY:sk-618bfe88c5bc444aa447b42ba827b452}
+    base-url: https://api.deepseek.com
+    model-name: deepseek-reasoner
+    temperature: 0.7
+    top-p: 1.0
+    max-tokens: 8192
+    # ===== 深度思考（reasoning）=====
+    # 是否开启深度思考。注意：要真正出思考内容，需把上面 model-name 改成 deepseek-reasoner，
+    # 否则 deepseek-chat 即便开了也不会返回 reasoning_content
+    enable-thinking: true
+    # 是否把思考内容回传给前端（false 则只能在服务端日志看到）
+    return-thinking: true
+    # 说明：DeepSeek 经 reasoning_content 字段返回思考、无预算参数，thinking-budget-tokens / reasoning-effort 对其不生效
+
+    # 通义千问配置
+  qianwen:
+    enabled: false
+    api-key: ${LANGCHAIN4J_QIANWEN_API_KEY:sk-xxxxxxxxxxxxxxxxxxxx}
+    model-name: qwen-turbo
+    temperature: 0.7
+    top-p: 1.0
+    max-tokens: 2048
+    # ===== 深度思考（reasoning）=====
+    # Qwen3-Thinking / qwq 系列必须 enable-thinking=true 才会工作
+    enable-thinking: false
+    # 思考预算 token 数（Qwen 生效，越大思考越深；前端"深度"档会临时上调到 16384）
+    thinking-budget-tokens: 1024
+    return-thinking: true
+
+  # OpenAI配置
+  openai:
+    enabled: true
+    api-key: ${LANGCHAIN4J_OPENAI_API_KEY:sk-xxxxxxxxxxxxxxxxxxxx}
+    base-url: https://api.openai.com/v1
+    model-name: gpt-4o-mini
+    temperature: 0.7
+    top-p: 1.0
+    max-tokens: 2048
+    # ===== 深度思考（reasoning）=====
+    # 仅 o1 / o3 / gpt-5-thinking 等推理模型生效
+    enable-thinking: false
+    # 推理强度：low | medium | high（OpenAI 推理模型用它控制"思考深度"，无预算参数）
+    reasoning-effort: medium
+    return-thinking: true
+
+  # Claude配置(Anthropic) —— 默认未启用，需要时填好 api-key 再把 enabled 改 true
+  claude:
+    enabled: false
+    api-key: ${LANGCHAIN4J_CLAUDE_API_KEY:sk-ant-xxxxxxxxxxxxxxxxxxxx}
+    base-url: https://api.anthropic.com/v1
+    model-name: claude-3-7-sonnet-20250219
+    temperature: 0.7
+    top-p: 1.0
+    max-tokens: 16384
+    # ===== 深度思考（reasoning）=====
+    # claude-3-7-sonnet 及更新版本支持；enable-thinking=true 等价于 Anthropic 的 thinkingType=enabled
+    enable-thinking: false
+    # 思考预算 token 数，必须 < max-tokens（超过会被自动调整为 max-tokens/2）；前端"深度"档会临时上调到 16384
+    thinking-budget-tokens: 1024
+    return-thinking: true
+
+  # Ollama配置(本地部署)
+  ollama:
+    enabled: false
+    base-url: http://localhost:11434
+    model-name: llama3.2
+    temperature: 0.7
+    max-tokens: 2048
+    # ===== 深度思考（reasoning）=====
+    # 仅 deepseek-r1 / qwq 等本地推理模型支持
+    enable-thinking: false
+    return-thinking: true
+
+  # 对话配置
+  chat:
+    # 是否启用流式响应
+    stream-enabled: true
+    # 历史消息保留数量
+    history-size: 10
+    # 会话超时时间(分钟)
+    session-timeout: 30
+    # 是否启用内存管理
+    memory-enabled: true
+    # 内存存储类型: memory, redis
+    memory-store-type: redis
+
+  # 嵌入配置
+  embedding:
+    # 嵌入模型名称
+    model-name: text-embedding-3-small
+    # 向量维度
+    dimension: 1536
+    # 批处理大小
+    batch-size: 100
+
+  # RAG配置
+  rag:
+    # 是否启用RAG
+    enabled: false
+    # 检索结果数量
+    max-results: 5
+    # 最小相似度分数
+    min-score: 0.7
+    # 文档分块大小
+    chunk-size: 500
+    # 分块重叠大小
+    chunk-overlap: 50
+    # 向量存储类型: memory, milvus, pgvector
+    vector-store-type: memory
+    # Milvus配置
+    milvus:
+      host: localhost
+      port: 19530
+      collection-name: documents
+      database-name: default

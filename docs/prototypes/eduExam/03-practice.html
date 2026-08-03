@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, user-scalable=no">
+<title>在线考试 - 练习</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f0f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .phone-frame { width: 375px; height: 812px; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; background: #f5f7fa; display: flex; flex-direction: column; position: relative; }
+  .status-bar { height: 44px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }
+  .status-bar span { color: #1a1a1a; font-size: 12px; font-weight: 600; }
+  .page-content { flex: 1; overflow-y: auto; }
+  .page-content::-webkit-scrollbar { display: none; }
+  .tab-bar { display: flex; background: white; border-top: 1px solid #e5e7eb; padding: 6px 0; flex-shrink: 0; }
+  .tab-bar a { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; text-decoration: none; color: #9ca3af; font-size: 10px; padding: 4px 0; }
+  .tab-bar a.active { color: #3B82F6; }
+  .tab-bar a i { width: 22px; height: 22px; }
+  .safe-area-bottom { height: 20px; background: white; flex-shrink: 0; }
+  .home-indicator { width: 134px; height: 5px; background: #1a1a1a; border-radius: 3px; margin: 0 auto 8px; }
+  .progress-ring { transform: rotate(-90deg); }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span>9:41</span>
+    <span>●●●●● ⚡ 100%</span>
+  </div>
+
+  <!-- Page Content -->
+  <div class="page-content">
+    <!-- Header -->
+    <div class="bg-white px-4 pb-4">
+      <h1 class="text-lg font-bold text-gray-800 mb-1">练习</h1>
+      <p class="text-xs text-gray-400">每日坚持，进步看得见</p>
+    </div>
+
+    <!-- Today Progress -->
+    <div class="px-4 mt-4">
+      <div class="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-4">
+        <!-- Circle Progress -->
+        <div class="relative w-20 h-20 flex-shrink-0">
+          <svg class="progress-ring w-20 h-20" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="34" fill="none" stroke="#e5e7eb" stroke-width="6"/>
+            <circle cx="40" cy="40" r="34" fill="none" stroke="#3B82F6" stroke-width="6" stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="64"/>
+          </svg>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <span class="text-lg font-bold text-blue-600">70%</span>
+          </div>
+        </div>
+        <div class="flex-1">
+          <h3 class="text-sm font-bold text-gray-800">今日练习进度</h3>
+          <p class="text-xs text-gray-400 mt-1">已完成 35/50 题</p>
+          <div class="flex items-center gap-3 mt-2">
+            <div class="flex items-center gap-1">
+              <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+              <span class="text-[10px] text-gray-500">正确 28</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <div class="w-2 h-2 bg-red-400 rounded-full"></div>
+              <span class="text-[10px] text-gray-500">错误 7</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Practice Modes -->
+    <div class="px-4 mt-5">
+      <h2 class="text-sm font-bold text-gray-800 mb-3">练习模式</h2>
+      <div class="grid grid-cols-2 gap-3">
+        <!-- Mode 1 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm">
+          <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center mb-2">
+            <i data-lucide="list-ordered" class="w-5 h-5 text-blue-500"></i>
+          </div>
+          <h3 class="text-sm font-bold text-gray-800">顺序练习</h3>
+          <p class="text-[10px] text-gray-400 mt-1">按章节顺序刷题</p>
+        </div>
+        <!-- Mode 2 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm">
+          <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center mb-2">
+            <i data-lucide="shuffle" class="w-5 h-5 text-green-500"></i>
+          </div>
+          <h3 class="text-sm font-bold text-gray-800">随机练习</h3>
+          <p class="text-[10px] text-gray-400 mt-1">随机抽取题目</p>
+        </div>
+        <!-- Mode 3 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm">
+          <div class="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center mb-2">
+            <i data-lucide="rotate-ccw" class="w-5 h-5 text-red-500"></i>
+          </div>
+          <h3 class="text-sm font-bold text-gray-800">错题重练</h3>
+          <p class="text-[10px] text-gray-400 mt-1">巩固薄弱知识点</p>
+        </div>
+        <!-- Mode 4 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm">
+          <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center mb-2">
+            <i data-lucide="timer" class="w-5 h-5 text-purple-500"></i>
+          </div>
+          <h3 class="text-sm font-bold text-gray-800">模拟考试</h3>
+          <p class="text-[10px] text-gray-400 mt-1">限时模拟真实考试</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Practice Records -->
+    <div class="px-4 mt-5 mb-4">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-sm font-bold text-gray-800">练习记录</h2>
+        <span class="text-xs text-blue-500">全部记录</span>
+      </div>
+
+      <!-- Record 1 -->
+      <div class="bg-white rounded-2xl p-3.5 shadow-sm mb-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center">
+              <span class="text-sm">🔢</span>
+            </div>
+            <div>
+              <h3 class="text-xs font-bold text-gray-800">高等数学</h3>
+              <div class="text-[10px] text-gray-400 mt-0.5">今天 14:30</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-sm font-bold text-green-500">92%</div>
+            <div class="text-[10px] text-gray-400">用时 25min</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Record 2 -->
+      <div class="bg-white rounded-2xl p-3.5 shadow-sm mb-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 bg-green-50 rounded-lg flex items-center justify-center">
+              <span class="text-sm">🔤</span>
+            </div>
+            <div>
+              <h3 class="text-xs font-bold text-gray-800">大学英语</h3>
+              <div class="text-[10px] text-gray-400 mt-0.5">今天 11:20</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-sm font-bold text-blue-500">78%</div>
+            <div class="text-[10px] text-gray-400">用时 40min</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Record 3 -->
+      <div class="bg-white rounded-2xl p-3.5 shadow-sm mb-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 bg-purple-50 rounded-lg flex items-center justify-center">
+              <span class="text-sm">⚛️</span>
+            </div>
+            <div>
+              <h3 class="text-xs font-bold text-gray-800">大学物理</h3>
+              <div class="text-[10px] text-gray-400 mt-0.5">昨天 16:45</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-sm font-bold text-orange-500">65%</div>
+            <div class="text-[10px] text-gray-400">用时 35min</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Record 4 -->
+      <div class="bg-white rounded-2xl p-3.5 shadow-sm">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 bg-orange-50 rounded-lg flex items-center justify-center">
+              <span class="text-sm">🧪</span>
+            </div>
+            <div>
+              <h3 class="text-xs font-bold text-gray-800">有机化学</h3>
+              <div class="text-[10px] text-gray-400 mt-0.5">昨天 10:00</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-sm font-bold text-green-500">88%</div>
+            <div class="text-[10px] text-gray-400">用时 30min</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <a href="01-index.html">
+      <i data-lucide="home"></i>
+      <span>首页</span>
+    </a>
+    <a href="02-bank.html">
+      <i data-lucide="database"></i>
+      <span>题库</span>
+    </a>
+    <a href="03-practice.html" class="active">
+      <i data-lucide="pen-tool"></i>
+      <span>练习</span>
+    </a>
+    <a href="04-my.html">
+      <i data-lucide="user"></i>
+      <span>我的</span>
+    </a>
+  </div>
+
+  <!-- Safe Area -->
+  <div class="safe-area-bottom">
+    <div class="home-indicator"></div>
+  </div>
+</div>
+
+<script>
+  lucide.createIcons();
+</script>
+</body>
+</html>

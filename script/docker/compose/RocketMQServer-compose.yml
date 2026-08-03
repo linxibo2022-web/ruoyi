@@ -1,0 +1,168 @@
+# ==================== RocketMQ 集群服务编排配置 ====================
+# 架构：1 NameServer + 1 Master Broker + 1 Slave Broker + 1 Dashboard
+# 网络模式：宿主机网络（network_mode: host）
+# 说明：使用宿主机网络时，容器直接使用宿主机的网络栈，端口直接绑定到宿主机
+#      无需 ports 端口映射配置，服务监听的端口即为对外开放的端口
+#
+# 部署方式：
+#   1. 将 rocketmp 文件夹上传到服务器
+#   2. 进入 rocketmp 目录：cd rocketmp
+#   3. 启动服务：docker-compose -f RocketMQServer-compose.yml up -d
+#   4. 查看状态：docker-compose -f RocketMQServer-compose.yml ps
+#   5. 查看日志：docker-compose -f RocketMQServer-compose.yml logs -f
+#   6. 停止服务：docker-compose -f RocketMQServer-compose.yml down
+#
+# 端口说明：
+#   - NameServer: 9876
+#   - Broker Master: 10909, 10911, 10912
+#   - Broker Slave: 10919, 10921, 10922
+#   - Dashboard: 8088
+
+services:
+  # ==================== NameServer 服务 ====================
+  # 名称服务器：负责 Broker 注册、路由信息管理
+  rmq-namesrv:
+    image: apache/rocketmq:${ROCKETMQ_VERSION:-5.3.1}
+    container_name: rmq-namesrv
+    environment:
+      # 时区设置 - 统一使用上海时区
+      TZ: ${TZ:-Asia/Shanghai}
+      # JVM参数配置 - NameServer内存设置
+      JAVA_OPT_EXT: ${NAMESRV_JAVA_OPTS:--Xms512m -Xmx512m -Xmn256m}
+    volumes:
+      # 日志目录映射 - NameServer运行日志（映射到父目录，让容器管理子目录结构）
+      - ${DATA_DIR:-./data}/namesrv/logs:/home/rocketmq/logs/rocketmqlogs
+    command: sh mqnamesrv
+    privileged: true
+    network_mode: "host"
+    restart: unless-stopped
+    # 注意：使用 host 网络模式时不需要 ports 配置
+    # NameServer 默认监听 9876 端口，直接绑定到宿主机
+
+  # ==================== Broker Master 服务 ====================
+  # 主 Broker：负责接收、存储、投递消息
+  rmq-broker-master:
+    image: apache/rocketmq:${ROCKETMQ_VERSION:-5.3.1}
+    container_name: rmq-broker-master
+    depends_on:
+      - rmq-namesrv
+    environment:
+      # 时区设置 - 统一使用上海时区
+      TZ: ${TZ:-Asia/Shanghai}
+      # NameServer地址 - Broker连接的NameServer地址（宿主机网络使用127.0.0.1）
+      NAMESRV_ADDR: ${NAMESRV_ADDR:-127.0.0.1:9876}
+      # JVM参数配置 - Broker内存设置
+      JAVA_OPT_EXT: ${BROKER_MASTER_JAVA_OPTS:--Xms1g -Xmx1g -Xmn512m}
+    volumes:
+      # 日志目录映射 - Broker运行日志（映射到父目录，让容器管理子目录结构）
+      - ${DATA_DIR:-./data}/broker-master/logs:/home/rocketmq/logs/rocketmqlogs
+      # 数据目录映射 - 消息存储数据持久化
+      - ${DATA_DIR:-./data}/broker-master/store:/home/rocketmq/store
+      # Broker配置文件 - Broker启动配置
+      - ./conf/broker-a.conf:/home/rocketmq/conf/broker.conf
+    command: sh mqbroker -c /home/rocketmq/conf/broker.conf
+    privileged: true
+    network_mode: "host"
+    restart: unless-stopped
+    # 注意：使用 host 网络模式时不需要 ports 配置
+    # Broker Master 端口由 broker-a.conf 配置文件指定：
+    #   - listenPort: 10911 (主监听端口)
+    #   - haListenPort: 10912 (HA端口，用于主从同步)
+    #   - VIP端口: 10909 (listenPort - 2)
+
+  # ==================== Broker Slave 服务 ====================
+  # 从 Broker：从主 Broker 同步数据，提供消息备份和读负载均衡
+  rmq-broker-slave:
+    image: apache/rocketmq:${ROCKETMQ_VERSION:-5.3.1}
+    container_name: rmq-broker-slave
+    depends_on:
+      - rmq-namesrv
+      - rmq-broker-master
+    environment:
+      # 时区设置 - 统一使用上海时区
+      TZ: ${TZ:-Asia/Shanghai}
+      # NameServer地址 - Broker连接的NameServer地址（宿主机网络使用127.0.0.1）
+      NAMESRV_ADDR: ${NAMESRV_ADDR:-127.0.0.1:9876}
+      # JVM参数配置 - Broker内存设置
+      JAVA_OPT_EXT: ${BROKER_SLAVE_JAVA_OPTS:--Xms1g -Xmx1g -Xmn512m}
+    volumes:
+      # 日志目录映射 - Broker运行日志（映射到父目录，让容器管理子目录结构）
+      - ${DATA_DIR:-./data}/broker-slave/logs:/home/rocketmq/logs/rocketmqlogs
+      # 数据目录映射 - 消息存储数据持久化
+      - ${DATA_DIR:-./data}/broker-slave/store:/home/rocketmq/store
+      # Broker配置文件 - Broker启动配置
+      - ./conf/broker-a-s.conf:/home/rocketmq/conf/broker.conf
+    command: sh mqbroker -c /home/rocketmq/conf/broker.conf
+    privileged: true
+    network_mode: "host"
+    restart: unless-stopped
+    # 注意：使用 host 网络模式时不需要 ports 配置
+    # Broker Slave 端口由 broker-a-s.conf 配置文件指定：
+    #   - listenPort: 10921 (主监听端口)
+    #   - haListenPort: 10922 (HA端口，用于主从同步)
+    #   - VIP端口: 10919 (listenPort - 2)
+
+  # ==================== Dashboard 控制台 ====================
+  # 可视化管理控制台：监控集群状态、管理主题、查看消息
+  rmq-dashboard:
+    image: apacherocketmq/rocketmq-dashboard:${DASHBOARD_VERSION:-latest}
+    container_name: rmq-dashboard
+    depends_on:
+      - rmq-namesrv
+    environment:
+      # 时区设置 - 统一使用上海时区
+      TZ: ${TZ:-Asia/Shanghai}
+      # Spring Boot 端口配置 - 使用环境变量（优先级最高）
+      SERVER_PORT: ${DASHBOARD_PORT:-8088}
+      # JVM参数配置 - Dashboard内存设置和NameServer地址
+      JAVA_OPTS: ${DASHBOARD_JAVA_OPTS:--Xms256m -Xmx256m} -Drocketmq.namesrv.addr=${NAMESRV_ADDR:-127.0.0.1:9876} -Drocketmq.config.loginRequired=${DASHBOARD_LOGIN_ENABLED:-false}
+      # Dashboard数据存储路径
+      rocketmq.config.dataPath: /tmp/rocketmq-console/data
+    volumes:
+      # 数据目录映射 - Dashboard配置和数据存储
+      - ${DATA_DIR:-./data}/dashboard:/tmp/rocketmq-console/data
+    privileged: true
+    network_mode: "host"
+    restart: unless-stopped
+    # 注意：使用 host 网络模式时不需要 ports 配置
+    # Dashboard 通过环境变量 SERVER_PORT 指定监听端口（默认 8088）
+    # 可通过 .env 文件的 DASHBOARD_PORT 变量修改
+
+# ==================== 配置说明 ====================
+# 1. 主从架构：
+#    - broker-a (Master): 主节点，处理写请求和读请求
+#    - broker-a-s (Slave): 从节点，从主节点同步数据，只处理读请求
+#    - 主从同步通过 HA 端口进行（10912 <-> 10922）
+#
+# 2. 数据持久化：
+#    - 所有数据存储在 ./data 目录下，包含：
+#      * namesrv/logs: NameServer 日志
+#      * broker-master/logs: 主 Broker 日志
+#      * broker-master/store: 主 Broker 消息存储
+#      * broker-slave/logs: 从 Broker 日志
+#      * broker-slave/store: 从 Broker 消息存储
+#      * dashboard: Dashboard 配置
+#
+# 3. 环境变量配置：
+#    - 可通过 .env 文件或环境变量覆盖默认配置
+#    - 主要配置项：
+#      * ROCKETMQ_VERSION: RocketMQ 版本（默认 5.3.1）
+#      * DASHBOARD_VERSION: Dashboard 版本（默认 latest）
+#      * TZ: 时区（默认 Asia/Shanghai）
+#      * DATA_DIR: 数据目录（默认 ./data）
+#      * NAMESRV_ADDR: NameServer 地址（默认 127.0.0.1:9876）
+#      * DASHBOARD_PORT: Dashboard 端口（默认 8088）
+#      * DASHBOARD_LOGIN_ENABLED: Dashboard 登录认证（默认 false）
+#
+# 4. 性能调优：
+#    - 可通过环境变量调整 JVM 参数：
+#      * NAMESRV_JAVA_OPTS: NameServer JVM 参数
+#      * BROKER_MASTER_JAVA_OPTS: Master Broker JVM 参数
+#      * BROKER_SLAVE_JAVA_OPTS: Slave Broker JVM 参数
+#      * DASHBOARD_JAVA_OPTS: Dashboard JVM 参数
+#
+# 5. 访问地址：
+#    - Dashboard: http://服务器IP:8088
+#    - NameServer: 服务器IP:9876
+#    - Broker Master: 服务器IP:10911
+#    - Broker Slave: 服务器IP:10921

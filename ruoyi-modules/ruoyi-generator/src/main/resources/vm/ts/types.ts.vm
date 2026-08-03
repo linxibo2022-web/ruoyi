@@ -1,0 +1,45 @@
+/** ${functionName}查询类型 */
+export interface ${ClassName}Query #if(!${treeCode})extends PageQuery #end{
+#foreach ($column in $columns)
+#if($column.query)
+  /** $column.columnComment */
+  $column.javaField?:#if($column.javaField.indexOf("id") != -1 || $column.javaField.indexOf("Id") != -1) string | number
+#elseif($column.javaType == 'Long' || $column.javaType == 'Integer' || $column.javaType == 'Double' || $column.javaType == 'Float') number
+#elseif($column.javaType == 'Boolean') boolean
+#else string
+#end
+#end
+#end
+}
+
+/** ${functionName}表单类型 */
+export interface ${ClassName}Bo {
+#foreach ($column in $columns)
+#if($column.insert || $column.edit)
+  /** $column.columnComment */
+  $column.javaField?:#if($column.javaField.indexOf("id") != -1 || $column.javaField.indexOf("Id") != -1) string | number
+#elseif($column.javaType == 'Long' || $column.javaType == 'Integer' || $column.javaType == 'Double' || $column.javaType == 'Float') number
+#elseif($column.javaType == 'Boolean') boolean
+#else string
+#end
+#end
+#end
+}
+
+/** ${functionName}视图类型 */
+export interface ${ClassName}Vo {
+#foreach ($column in $columns)
+#if($column.list)
+  /** $column.columnComment */
+  $column.javaField:#if($column.javaField.indexOf("id") != -1 || $column.javaField.indexOf("Id") != -1) string | number
+#elseif($column.javaType == 'Long' || $column.javaType == 'Integer' || $column.javaType == 'Double' || $column.javaType == 'Float') number
+#elseif($column.javaType == 'Boolean') boolean
+#else string
+#end
+#end
+#end
+#if ($table.tree)
+  /** 子对象 */
+  children: ${ClassName}Vo[]
+#end
+}

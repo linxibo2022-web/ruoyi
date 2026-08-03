@@ -1,0 +1,78 @@
+# HTTP客户端开发环境配置
+forest:
+  # 支持okhttp3和httpclient两种后端 HTTP API（默认为 okhttp3）
+  backend: okhttp3
+  # 连接池最大连接数（默认为 500）
+  max-connections: 1000
+  # 每个路由的最大连接数（默认为 500）
+  max-route-connections: 500
+  # 最大请求等待队列大小
+  max-request-queue-size: 100
+  # 最大异步线程数
+  max-async-thread-size: 300
+  # 最大异步线程池队列大小
+  max-async-queue-size: 16
+  # 请求超时时间，单位为毫秒（默认为 3000）
+  timeout: 3000
+  # 连接超时时间，单位为毫秒（默认为 timeout）
+  connect-timeout: 300000
+  # 数据读取超时时间，单位为毫秒（默认为 timeout）
+  read-timeout: 300000
+  # 请求失败后重试次数（默认为 0 次不重试）
+  max-retry-count: 0
+  # 单向验证的HTTPS的默认TLS协议（默认为 TLS）
+  ssl-protocol: TLS
+  # 打开或关闭日志（默认为 true）
+  log-enabled: true
+  # 打开/关闭Forest请求日志（默认为 true）
+  log-request: true
+  # 打开/关闭Forest响应状态日志（默认为 true）
+  log-response-status: true
+  # 打开/关闭Forest响应内容日志（默认为 false）
+  log-response-content: true
+  # 异步模式（默认为 platform）
+  async-mode: platform
+  # 在spring上下文中bean的id，默认值为forestConfiguration
+  bean-id: forestConfiguration
+
+# 第三方API配置
+gaode:
+  map:
+    # 是否启用高德地图服务
+    enabled: ${GAODE_MAP_ENABLED:true}
+    # 高德地图API密钥 - 开发环境默认值
+    api-key: ${GAODE_MAP_API_KEY:ad1bbed71d6a322d81a429d173f5ad93}
+    # API请求超时时间（毫秒）
+    timeout: ${GAODE_MAP_TIMEOUT:5000}
+
+# 火山引擎TTS配置
+volcengine:
+  tts:
+    # 是否启用火山TTS服务（默认禁用，需要配置密钥后启用）
+    enabled: ${VOLCENGINE_TTS_ENABLED:false}
+    # 应用ID
+    # 获取步骤:
+    # 1. 访问 https://console.volcengine.com/speech/app 创建应用
+    # 2. 访问 https://console.volcengine.com/speech/service/8 开通服务
+    # 3. 在开通页面下拉找到 "App ID" 并复制
+    app-id: ${VOLCENGINE_TTS_APP_ID:}
+    # 访问令牌
+    # 获取位置: 在上述页面 App ID 右侧找到 "Access Token" 并复制
+    access-token: ${VOLCENGINE_TTS_ACCESS_TOKEN:}
+    # 业务集群（volcano_tts: 内置音色, volcano_mega: 复制音色）
+    cluster: volcano_tts
+    # 默认音色类型
+    default-voice: BV001_streaming
+    # 音频编码格式（mp3, wav, pcm）
+    # pcm: 未压缩格式,转Opus效果最好
+    encoding: pcm
+    # 音频采样率（Hz）
+    # 16000: 16kHz语音标准，适合设备提示音，文件更小
+    # 24000: 24kHz默认值，音质更好（推荐）
+    sample-rate: ${VOLCENGINE_TTS_SAMPLE_RATE:24000}
+    # 语速比例（0.5-2.0）
+    speed-ratio: 1.0
+    # 音量比例（0.5-2.0）
+    volume-ratio: 1.0
+    # 音调比例（0.5-2.0）
+    pitch-ratio: 1.0

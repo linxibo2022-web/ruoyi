@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>plus.ruoyi</groupId>
+    <artifactId>ruoyi-common-bom</artifactId>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
+
+    <description>
+        通用依赖项管理 - 定义所有模块的统一版本
+    </description>
+
+    <properties>
+        <revision>5.6.1</revision>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- ================ 核心基础模块 ================ -->
+            <!-- 核心模块 - 基础工具类与通用功能 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-core</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 安全模块 - 提供应用安全防护功能 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-security</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- Web服务模块 - Web应用基础功能支持 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-web</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 多媒体处理服务（图片、海报、GIF生成） -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-media</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 文档模板处理模块 - Word 文档占位符替换 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-doctemplate</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 日志记录模块 - 统一日志处理功能 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-log</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- ================ 数据处理模块 ================ -->
+            <!-- 数据库服务模块 - MyBatis增强与数据库交互 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-mybatis</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 缓存服务模块 - Redis缓存集成与工具 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-redis</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 序列化模块 - JSON序列化与反序列化工具 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-json</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 数据库加解密模块 - 敏感数据加密存储 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-encrypt</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- Excel处理模块 - Excel导入导出功能 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-excel</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 脱敏模块 - 数据脱敏与隐私保护 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-sensitive</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- OSS模块 - 对象存储服务集成 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-oss</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 翻译模块 - 多语言支持与国际化 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-serialmap</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- ================ 安全与认证模块 ================ -->
+            <!-- SaToken模块 - 权限认证框架 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-satoken</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 租户模块 - 多租户支持 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-tenant</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 社交登录模块 - 第三方账号集成 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-social</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- ================ 通信与消息模块 ================ -->
+            <!-- 邮件服务模块 - 邮件发送集成 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-mail</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 短信模块 - 短信发送集成 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-sms</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- WebSocket模块 - 实时双向通信支持 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-websocket</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- SSE模块 - 服务器发送事件支持 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-sse</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 统一消息推送模块 - 提供消息路由、降级、批量发送等高级功能 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-message</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- HTTP模块 - 提供网络请求客户端服务 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-http</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- ================ API与接口模块 ================ -->
+            <!-- 接口文档模块 - API文档生成与测试 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-doc</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- ================ 系统功能模块 ================ -->
+            <!-- 调度模块 - 定时任务与作业调度 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-job</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- RocketMQ 消息队列模块 - 分布式消息通信支持 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-rocketmq</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- MQTT通讯模块 - 基于mica-mqtt提供高性能物联网消息通信能力 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-mqtt</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 幂等模块 - 防止重复提交与操作 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-idempotent</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 限流模块 - 接口限流与流量控制 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-ratelimiter</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 微信小程序模块 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-miniapp</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 微信公众号模块 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-mp</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 支付模块 (WxJava + 支付宝SDK) -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-pay</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 支付核心模块 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-pay-core</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 微信支付模块 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-pay-wechat</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 支付宝支付模块 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-pay-alipay</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 余额支付模块 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-pay-balance</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 银联支付模块 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-pay-unionpay</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- openapi -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-openapi</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- AI模块 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-langchain4j</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 测试支持模块 -->
+            <dependency>
+                <groupId>plus.ruoyi</groupId>
+                <artifactId>ruoyi-common-test</artifactId>
+                <version>${revision}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>

@@ -1,0 +1,90 @@
+{
+  // 指定 JSON 模式，用于提供 IDE 的智能提示和验证
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    // 设置解析模块的基本目录，"."表示当前目录
+    "baseUrl": ".",
+    // 指定 ECMAScript 目标版本，ES2020 支持现代浏览器特性
+    // 参考: https://vite.dev/config/build-options.html#build-target
+    "target": "ES2020",
+    // 指定生成的模块代码，ESNext 表示使用最新的 ES 模块语法
+    "module": "ESNext",
+    // 指定模块解析策略，Bundler 适用于 Vite/Webpack 等打包工具
+    "moduleResolution": "Bundler",
+    // 指定要包含的库文件，这些库提供编译时类型检查
+    "lib": [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    // 跳过对声明文件(.d.ts)的类型检查，提高编译速度
+    "skipLibCheck": true,
+    // 指定增量编译信息的存储位置，加快后续构建速度
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo",
+    // 启用所有严格类型检查选项
+    "strict": true,
+    // 允许编译 JavaScript 文件
+    "allowJs": true,
+    // 保留 JSX 语法，交给后续处理（如 Vue 或 React）
+    "jsx": "preserve",
+    // 生成相应的 .map 文件，便于调试
+    "sourceMap": true,
+    // 允许导入 JSON 模块
+    "resolveJsonModule": true,
+    // 启用 CommonJS 和 ES 模块之间的互操作性
+    "esModuleInterop": true,
+    // 不生成输出文件，由 Vite 等工具处理
+    "noEmit": true,
+    // 配置模块路径别名，简化导入路径
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    // 包含的类型定义，node 用于 Node.js API，vite/client 用于 Vite 特定类型
+    "types": [
+      "node",
+      "vite/client"
+    ],
+    // ==================== 自定义配置 ====================
+
+    // 允许使用隐式 any 类型，适用于渐进式类型化项目
+    "noImplicitAny": false,
+    // 在编译过程中删除所有注释，减小产物体积
+    "removeComments": true,
+    // 启用对装饰器语法的实验性支持，用于类和方法的元编程
+    "experimentalDecorators": true,
+    // 关闭函数参数的双向协变检查，使类型检查更灵活
+    "strictFunctionTypes": false,
+    // 关闭严格的 null 检查，允许将 null 和 undefined 赋值给任何类型
+    "strictNullChecks": false,
+    // 允许从没有默认导出的模块导入默认值
+    "allowSyntheticDefaultImports": true,
+    // 确保文件引用使用一致的大小写，避免文件系统区分大小写导致的问题
+    "forceConsistentCasingInFileNames": true
+  },
+  // 指定要包含在编译中的文件匹配模式
+  "include": [
+    // 所有 TypeScript 源文件
+    "src/**/*.ts",
+    // 所有 Vue 组件文件
+    "src/**/*.vue",
+    // Vite 配置文件
+    "vite.config.ts",
+    // Vitest 测试配置文件
+    "vitest.config.ts",
+    // ESLint 配置文件
+    "eslint.config.ts",
+    // TypeScript 声明文件
+    "src/**/*.d.ts"
+  ],
+  // 指定要从编译中排除的文件匹配模式
+  "exclude": [
+    // 依赖包目录
+    "node_modules",
+    // 构建输出目录
+    "dist",
+    // 测试文件目录
+    "src/**/__tests__/*"
+  ]
+}

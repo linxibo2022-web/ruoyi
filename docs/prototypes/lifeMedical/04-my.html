@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, initial-scale=1.0">
+<title>医疗健康 - 我的</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#0EA5E9',
+        'primary-dark': '#0284C7',
+        'primary-light': '#E0F2FE',
+      }
+    }
+  }
+}
+</script>
+<style>
+  body { margin: 0; background: #1a1a2e; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .phone-frame { width: 375px; height: 812px; background: #F8FAFC; border-radius: 40px; overflow: hidden; position: relative; box-shadow: 0 25px 60px rgba(0,0,0,0.3); border: 8px solid #2a2a3e; }
+  .phone-content { height: 100%; overflow-y: auto; padding-bottom: 80px; }
+  .phone-content::-webkit-scrollbar { display: none; }
+  .tab-bar { position: absolute; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #E2E8F0; display: flex; padding: 8px 0 20px; z-index: 50; }
+  .tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; text-decoration: none; color: #94A3B8; font-size: 10px; }
+  .tab-item.active { color: #0EA5E9; }
+  .tab-item i { width: 24px; height: 24px; }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <div class="phone-content">
+    <!-- 蓝色渐变头部 -->
+    <div class="bg-gradient-to-br from-primary to-cyan-400 pt-14 pb-8 px-5 relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/4"></div>
+      <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/4"></div>
+      <div class="relative z-10 flex items-center gap-4">
+        <div class="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-3xl border-2 border-white/30">
+          😊
+        </div>
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-white font-semibold text-lg">张三</span>
+            <span class="text-xs bg-amber-400/90 text-white px-2 py-0.5 rounded-full">健康会员</span>
+          </div>
+          <div class="text-white/70 text-xs">手机号: 138****6789</div>
+        </div>
+        <i data-lucide="settings" class="w-5 h-5 text-white/70"></i>
+      </div>
+    </div>
+
+    <!-- 健康档案卡片 -->
+    <div class="px-4 -mt-4 relative z-10 mb-4">
+      <div class="bg-white rounded-2xl p-4 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-sm font-semibold text-gray-800">健康档案</span>
+          <span class="text-xs text-primary">编辑 ›</span>
+        </div>
+        <div class="grid grid-cols-3 gap-4">
+          <div class="text-center">
+            <div class="text-lg font-bold text-gray-800">175<span class="text-xs text-gray-400 font-normal">cm</span></div>
+            <div class="text-xs text-gray-400 mt-0.5">身高</div>
+          </div>
+          <div class="text-center border-x border-gray-100">
+            <div class="text-lg font-bold text-gray-800">68<span class="text-xs text-gray-400 font-normal">kg</span></div>
+            <div class="text-xs text-gray-400 mt-0.5">体重</div>
+          </div>
+          <div class="text-center">
+            <div class="text-lg font-bold text-gray-800">A<span class="text-xs text-gray-400 font-normal">型</span></div>
+            <div class="text-xs text-gray-400 mt-0.5">血型</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 我的服务 -->
+    <div class="px-4 mb-4">
+      <div class="text-sm font-semibold text-gray-800 mb-3">我的服务</div>
+      <div class="grid grid-cols-4 gap-3">
+        <div class="bg-white rounded-xl p-3 flex flex-col items-center gap-1.5 shadow-sm">
+          <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+            <i data-lucide="clipboard-list" class="w-5 h-5 text-blue-500"></i>
+          </div>
+          <span class="text-xs text-gray-600">就诊记录</span>
+        </div>
+        <div class="bg-white rounded-xl p-3 flex flex-col items-center gap-1.5 shadow-sm">
+          <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
+            <i data-lucide="file-text" class="w-5 h-5 text-green-500"></i>
+          </div>
+          <span class="text-xs text-gray-600">处方单</span>
+        </div>
+        <div class="bg-white rounded-xl p-3 flex flex-col items-center gap-1.5 shadow-sm">
+          <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center">
+            <i data-lucide="activity" class="w-5 h-5 text-purple-500"></i>
+          </div>
+          <span class="text-xs text-gray-600">体检报告</span>
+        </div>
+        <div class="bg-white rounded-xl p-3 flex flex-col items-center gap-1.5 shadow-sm">
+          <div class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center">
+            <i data-lucide="users" class="w-5 h-5 text-amber-500"></i>
+          </div>
+          <span class="text-xs text-gray-600">家庭成员</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 更多功能列表 -->
+    <div class="px-4">
+      <div class="text-sm font-semibold text-gray-800 mb-3">更多功能</div>
+      <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <!-- 我的订单 -->
+        <div class="flex items-center justify-between px-4 py-3.5 border-b border-gray-50">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+              <i data-lucide="shopping-bag" class="w-4 h-4 text-blue-500"></i>
+            </div>
+            <span class="text-sm text-gray-700">我的订单</span>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        </div>
+        <!-- 医保卡 -->
+        <div class="flex items-center justify-between px-4 py-3.5 border-b border-gray-50">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center">
+              <i data-lucide="credit-card" class="w-4 h-4 text-green-500"></i>
+            </div>
+            <span class="text-sm text-gray-700">医保卡</span>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        </div>
+        <!-- 收藏医生 -->
+        <div class="flex items-center justify-between px-4 py-3.5 border-b border-gray-50">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center">
+              <i data-lucide="heart" class="w-4 h-4 text-red-500"></i>
+            </div>
+            <span class="text-sm text-gray-700">收藏医生</span>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        </div>
+        <!-- 用药提醒 -->
+        <div class="flex items-center justify-between px-4 py-3.5 border-b border-gray-50">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center">
+              <i data-lucide="alarm-clock" class="w-4 h-4 text-amber-500"></i>
+            </div>
+            <span class="text-sm text-gray-700">用药提醒</span>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        </div>
+        <!-- 地址管理 -->
+        <div class="flex items-center justify-between px-4 py-3.5 border-b border-gray-50">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-cyan-50 rounded-lg flex items-center justify-center">
+              <i data-lucide="map-pin" class="w-4 h-4 text-cyan-500"></i>
+            </div>
+            <span class="text-sm text-gray-700">地址管理</span>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        </div>
+        <!-- 意见反馈 -->
+        <div class="flex items-center justify-between px-4 py-3.5 border-b border-gray-50">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center">
+              <i data-lucide="message-square" class="w-4 h-4 text-purple-500"></i>
+            </div>
+            <span class="text-sm text-gray-700">意见反馈</span>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        </div>
+        <!-- 关于我们 -->
+        <div class="flex items-center justify-between px-4 py-3.5">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center">
+              <i data-lucide="info" class="w-4 h-4 text-gray-500"></i>
+            </div>
+            <span class="text-sm text-gray-700">关于我们</span>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- 退出登录 -->
+    <div class="px-4 py-6">
+      <button class="w-full bg-white text-red-500 text-sm font-medium py-3 rounded-2xl shadow-sm">退出登录</button>
+    </div>
+  </div>
+
+  <!-- 底部Tab栏 -->
+  <div class="tab-bar">
+    <a href="01-index.html" class="tab-item">
+      <i data-lucide="home"></i>
+      <span>首页</span>
+    </a>
+    <a href="02-consult.html" class="tab-item">
+      <i data-lucide="stethoscope"></i>
+      <span>问诊</span>
+    </a>
+    <a href="03-booking.html" class="tab-item">
+      <i data-lucide="calendar-check"></i>
+      <span>预约</span>
+    </a>
+    <a href="04-my.html" class="tab-item active">
+      <i data-lucide="user"></i>
+      <span>我的</span>
+    </a>
+  </div>
+</div>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>

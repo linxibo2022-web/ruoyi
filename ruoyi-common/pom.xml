@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>ruoyi-plus-uniapp</artifactId>
+        <groupId>plus.ruoyi</groupId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ruoyi-common</artifactId>
+    <packaging>pom</packaging>
+
+    <description>
+        通用模块 - 汇集所有通用功能组件与基础设施，提供系统各模块共享的核心功能
+    </description>
+
+    <!-- 模块列表 - 按逻辑分组排序 -->
+    <modules>
+        <!-- ================ 核心依赖管理 ================ -->
+        <!-- 依赖版本集中管理，定义所有模块统一的依赖版本 -->
+        <module>ruoyi-common-bom</module>
+
+        <!-- ================ 基础核心模块 ================ -->
+        <!-- 核心工具模块 - 提供基础工具类、异常处理、通用注解等 -->
+        <module>ruoyi-common-core</module>
+        <!-- JSON序列化模块 - 提供对象序列化与数据转换功能 -->
+        <module>ruoyi-common-json</module>
+        <!-- 缓存服务模块 - 提供Redis缓存与分布式锁功能 -->
+        <module>ruoyi-common-redis</module>
+        <!-- Web服务模块 - 提供Web应用基础支持与MVC功能 -->
+        <module>ruoyi-common-web</module>
+        <!-- 多媒体处理服务（图片、海报、GIF生成） -->
+        <module>ruoyi-common-media</module>
+        <!-- 文档模板处理模块 - Word 文档占位符替换 -->
+        <module>ruoyi-common-doctemplate</module>
+
+        <!-- ================ 安全与认证模块 ================ -->
+        <!-- 权限认证模块 - 基于Sa-Token的用户认证与权限控制 -->
+        <module>ruoyi-common-satoken</module>
+        <!-- 安全防护模块 - 提供应用安全防护与访问控制 -->
+        <module>ruoyi-common-security</module>
+        <!-- 数据加解密模块 - 提供敏感数据加密与API数据安全传输 -->
+        <module>ruoyi-common-encrypt</module>
+        <!-- 数据脱敏模块 - 保护隐私数据的展示与传输 -->
+        <module>ruoyi-common-sensitive</module>
+        <!-- 社交登录模块 - 支持微信、QQ等第三方账号登录 -->
+        <module>ruoyi-common-social</module>
+
+        <!-- ================ 数据访问模块 ================ -->
+        <!-- 数据库服务模块 - 基于MyBatis Plus的ORM映射与数据库访问 -->
+        <module>ruoyi-common-mybatis</module>
+        <!-- Excel处理模块 - 基于EasyExcel的Excel导入导出 -->
+        <module>ruoyi-common-excel</module>
+        <!-- 对象存储模块 - 支持本地、MinIO、阿里云OSS等文件存储 -->
+        <module>ruoyi-common-oss</module>
+        <!-- 序列化映射模块 - 提供多语言与数据字典翻译功能 -->
+        <module>ruoyi-common-serialmap</module>
+
+        <!-- ================ 通信与消息模块 ================ -->
+        <!-- 邮件服务模块 - 提供邮件发送与模板处理 -->
+        <module>ruoyi-common-mail</module>
+        <!-- 短信服务模块 - 提供多平台短信发送与验证码功能 -->
+        <module>ruoyi-common-sms</module>
+        <!-- WebSocket模块 - 提供双向实时通信能力 -->
+        <module>ruoyi-common-websocket</module>
+        <!-- SSE模块 - 提供服务器发送事件与单向推送能力 -->
+        <module>ruoyi-common-sse</module>
+        <!-- 统一消息推送模块 - 提供消息路由、降级、批量发送等高级功能 -->
+        <module>ruoyi-common-message</module>
+        <!-- HTTP模块 - 提供网络请求客户端服务 -->
+        <module>ruoyi-common-http</module>
+        <!-- MQTT模块 - 提供高性能物联网消息通信能力 -->
+        <module>ruoyi-common-mqtt</module>
+
+        <!-- ================ 系统功能模块 ================ -->
+        <!-- 日志记录模块 - 提供操作日志与审计功能 -->
+        <module>ruoyi-common-log</module>
+        <!-- 定时任务模块 - 提供任务调度与分布式作业 -->
+        <module>ruoyi-common-job</module>
+        <!-- RocketMQ 消息队列模块 - 提供分布式消息通信能力 -->
+        <module>ruoyi-common-rocketmq</module>
+        <!-- 幂等控制模块 - 防止重复提交与操作 -->
+        <module>ruoyi-common-idempotent</module>
+        <!-- 限流模块 - 提供接口访问频率控制 -->
+        <module>ruoyi-common-ratelimiter</module>
+        <!-- 接口文档模块 - 基于Swagger的API文档生成 -->
+        <module>ruoyi-common-doc</module>
+        <!-- 多租户模块 - 提供SaaS多租户数据隔离 -->
+        <module>ruoyi-common-tenant</module>
+
+        <!--  微信小程序      -->
+        <module>ruoyi-common-miniapp</module>
+        <!--  微信公众号      -->
+        <module>ruoyi-common-mp</module>
+        <!--   支付模块     -->
+        <module>ruoyi-common-pay</module>
+        <!--   openapi模块     -->
+        <module>ruoyi-common-openapi</module>
+        <!--   AI模块     -->
+        <module>ruoyi-common-langchain4j</module>
+
+        <!-- ================ 测试支持模块 ================ -->
+        <!-- 测试依赖模块 - 提供单元测试框架与测试基础类 -->
+        <module>ruoyi-common-test</module>
+    </modules>
+</project>

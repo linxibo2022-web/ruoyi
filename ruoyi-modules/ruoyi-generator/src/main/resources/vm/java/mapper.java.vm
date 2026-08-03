@@ -1,0 +1,19 @@
+package ${packageName}.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import ${packageName}.domain.${ClassName};
+
+/**
+ * ${functionName}Mapper接口
+ * 提供${functionName}表的CRUD和数据权限控制功能
+ *
+ * @author ${author}
+ * @date ${datetime}
+ */
+//@DataPermission({
+//    @DataColumn(key = "deptName", value = "create_dept"),
+//    @DataColumn(key = "userName", value = "create_by")
+//})
+public interface ${ClassName}Mapper extends BaseMapper<${ClassName}> {
+
+}

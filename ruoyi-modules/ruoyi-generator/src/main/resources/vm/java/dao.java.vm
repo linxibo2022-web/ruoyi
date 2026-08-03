@@ -1,0 +1,20 @@
+package ${packageName}.dao;
+
+import ${packageName}.domain.${ClassName};
+import ${packageName}.domain.bo.${ClassName}Bo;
+import plus.ruoyi.common.mybatis.core.dao.IBaseDao;
+import plus.ruoyi.common.mybatis.core.query.PlusLambdaQuery;
+
+/**
+ * ${functionName}DAO接口
+ *
+ * @author ${author}
+ * @date ${datetime}
+ */
+public interface I${ClassName}Dao extends IBaseDao<${ClassName}> {
+
+    /**
+     * 根据业务对象构建查询条件
+     */
+    PlusLambdaQuery<${ClassName}> buildQueryWrapper(${ClassName}Bo bo);
+}

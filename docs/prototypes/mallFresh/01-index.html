@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>生鲜商城 - 首页</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#22C55E',
+            'primary-light': '#F0FDF4',
+            'primary-dark': '#16A34A',
+            accent: '#F97316',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    .phone-frame { width: 375px; height: 812px; margin: 20px auto; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .status-bar { height: 44px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 600; }
+    .safe-area-bottom { padding-bottom: 34px; }
+    .home-indicator { width: 134px; height: 5px; background: #000; border-radius: 3px; margin: 8px auto; }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    a { text-decoration: none; color: inherit; }
+  </style>
+</head>
+<body class="bg-gray-200 flex items-start justify-center min-h-screen py-8">
+
+  <div class="phone-frame bg-gray-50 flex flex-col">
+
+    <div class="status-bar bg-primary">
+      <span class="text-white">9:41</span>
+      <div class="flex items-center gap-1 text-white">
+        <i data-lucide="signal" class="w-4 h-4"></i>
+        <i data-lucide="wifi" class="w-4 h-4"></i>
+        <i data-lucide="battery-full" class="w-4 h-4"></i>
+      </div>
+    </div>
+
+    <main class="flex-1 overflow-y-auto hide-scrollbar">
+
+      <!-- 顶部区域：定位 + 搜索 -->
+      <div class="bg-gradient-to-b from-primary to-primary-light px-4 pb-4 pt-2">
+        <!-- 定位栏 -->
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center text-white">
+            <i data-lucide="map-pin" class="w-4 h-4 mr-1"></i>
+            <span class="text-sm font-medium">杭州市西湖区</span>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 ml-0.5"></i>
+          </div>
+          <div class="flex items-center gap-3 text-white">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+          </div>
+        </div>
+        <!-- 搜索框 -->
+        <div class="flex items-center bg-white rounded-full px-4 py-2.5">
+          <i data-lucide="search" class="w-4 h-4 text-gray-400 mr-2"></i>
+          <span class="text-sm text-gray-400">搜索水果、蔬菜、肉类...</span>
+        </div>
+        <!-- 配送时间 -->
+        <div class="flex items-center mt-3 bg-white/80 rounded-lg px-3 py-2">
+          <i data-lucide="truck" class="w-4 h-4 text-primary mr-2"></i>
+          <span class="text-xs text-gray-700 font-medium">最快30分钟送达</span>
+          <span class="text-xs text-gray-400 mx-2">|</span>
+          <span class="text-xs text-primary font-medium">预计 10:30 到</span>
+        </div>
+      </div>
+
+      <!-- 轮播图 -->
+      <div class="px-4 pt-3">
+        <div class="relative rounded-2xl overflow-hidden h-[130px] bg-gradient-to-r from-green-500 to-emerald-400">
+          <div class="absolute inset-0 flex items-center px-5">
+            <div class="text-white">
+              <div class="text-[10px] opacity-80 bg-white/20 rounded-full px-2 py-0.5 inline-block mb-1">今日特惠</div>
+              <div class="text-lg font-bold">新鲜水果节</div>
+              <div class="text-xs opacity-90 mt-0.5">满59减10 限时抢购</div>
+            </div>
+          </div>
+          <div class="absolute right-3 bottom-0">
+            <div class="text-6xl">🍊</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 分类入口 -->
+      <div class="bg-white mx-4 mt-3 rounded-2xl px-2 py-3">
+        <div class="grid grid-cols-5 gap-1">
+          <a href="02-category.html" class="flex flex-col items-center gap-1">
+            <div class="text-2xl">🥬</div>
+            <span class="text-[11px] text-gray-700">时令蔬菜</span>
+          </a>
+          <a href="02-category.html" class="flex flex-col items-center gap-1">
+            <div class="text-2xl">🍎</div>
+            <span class="text-[11px] text-gray-700">新鲜水果</span>
+          </a>
+          <a href="02-category.html" class="flex flex-col items-center gap-1">
+            <div class="text-2xl">🥩</div>
+            <span class="text-[11px] text-gray-700">肉禽蛋品</span>
+          </a>
+          <a href="02-category.html" class="flex flex-col items-center gap-1">
+            <div class="text-2xl">🦐</div>
+            <span class="text-[11px] text-gray-700">海鲜水产</span>
+          </a>
+          <a href="02-category.html" class="flex flex-col items-center gap-1">
+            <div class="text-2xl">🥛</div>
+            <span class="text-[11px] text-gray-700">乳品烘焙</span>
+          </a>
+          <a href="02-category.html" class="flex flex-col items-center gap-1">
+            <div class="text-2xl">🍚</div>
+            <span class="text-[11px] text-gray-700">米面粮油</span>
+          </a>
+          <a href="02-category.html" class="flex flex-col items-center gap-1">
+            <div class="text-2xl">🧊</div>
+            <span class="text-[11px] text-gray-700">冷冻速食</span>
+          </a>
+          <a href="02-category.html" class="flex flex-col items-center gap-1">
+            <div class="text-2xl">🍵</div>
+            <span class="text-[11px] text-gray-700">饮品酒水</span>
+          </a>
+          <a href="02-category.html" class="flex flex-col items-center gap-1">
+            <div class="text-2xl">🧴</div>
+            <span class="text-[11px] text-gray-700">日用清洁</span>
+          </a>
+          <a href="02-category.html" class="flex flex-col items-center gap-1">
+            <div class="text-2xl">📦</div>
+            <span class="text-[11px] text-gray-700">更多</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 限时抢购 -->
+      <div class="mx-4 mt-3 bg-white rounded-2xl p-4">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-sm">限时抢购</span>
+            <div class="flex gap-0.5">
+              <span class="bg-red-500 text-white text-[10px] px-1 py-0.5 rounded font-mono">02</span>
+              <span class="text-red-500 text-[10px] font-bold">:</span>
+              <span class="bg-red-500 text-white text-[10px] px-1 py-0.5 rounded font-mono">30</span>
+              <span class="text-red-500 text-[10px] font-bold">:</span>
+              <span class="bg-red-500 text-white text-[10px] px-1 py-0.5 rounded font-mono">15</span>
+            </div>
+          </div>
+          <span class="text-xs text-gray-400">更多 ›</span>
+        </div>
+        <div class="flex gap-3 overflow-x-auto hide-scrollbar">
+          <div class="flex-shrink-0 w-[90px]">
+            <div class="w-[90px] h-[90px] rounded-xl bg-green-50 flex items-center justify-center text-4xl">🍇</div>
+            <div class="mt-1.5 text-red-500 font-bold text-xs">¥12.9</div>
+            <div class="text-gray-400 text-[10px] line-through">¥25.8</div>
+          </div>
+          <div class="flex-shrink-0 w-[90px]">
+            <div class="w-[90px] h-[90px] rounded-xl bg-yellow-50 flex items-center justify-center text-4xl">🍌</div>
+            <div class="mt-1.5 text-red-500 font-bold text-xs">¥5.9</div>
+            <div class="text-gray-400 text-[10px] line-through">¥9.9</div>
+          </div>
+          <div class="flex-shrink-0 w-[90px]">
+            <div class="w-[90px] h-[90px] rounded-xl bg-red-50 flex items-center justify-center text-4xl">🍅</div>
+            <div class="mt-1.5 text-red-500 font-bold text-xs">¥3.5</div>
+            <div class="text-gray-400 text-[10px] line-through">¥6.8</div>
+          </div>
+          <div class="flex-shrink-0 w-[90px]">
+            <div class="w-[90px] h-[90px] rounded-xl bg-orange-50 flex items-center justify-center text-4xl">🥕</div>
+            <div class="mt-1.5 text-red-500 font-bold text-xs">¥2.8</div>
+            <div class="text-gray-400 text-[10px] line-through">¥5.5</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 猜你喜欢 -->
+      <div class="mx-4 mt-3 mb-3">
+        <div class="font-bold text-sm mb-3">猜你喜欢</div>
+        <div class="space-y-2.5">
+          <!-- 商品行 1 -->
+          <div class="bg-white rounded-2xl p-3 flex">
+            <div class="w-[88px] h-[88px] rounded-xl bg-green-50 flex items-center justify-center text-4xl flex-shrink-0">🥦</div>
+            <div class="ml-3 flex-1 flex flex-col justify-between">
+              <div>
+                <div class="text-[13px] font-medium text-gray-800">有机西蓝花</div>
+                <div class="text-[11px] text-gray-400 mt-0.5">云南有机农场 | 约300g/份</div>
+                <div class="flex gap-1 mt-1">
+                  <span class="text-[10px] text-primary bg-primary-light px-1.5 py-0.5 rounded">有机</span>
+                  <span class="text-[10px] text-accent bg-orange-50 px-1.5 py-0.5 rounded">当季</span>
+                </div>
+              </div>
+              <div class="flex items-end justify-between">
+                <div>
+                  <span class="text-primary font-bold text-sm">¥8.9</span>
+                  <span class="text-gray-400 text-[10px] line-through ml-1">¥12.0</span>
+                </div>
+                <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                  <i data-lucide="plus" class="w-3.5 h-3.5 text-white"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 商品行 2 -->
+          <div class="bg-white rounded-2xl p-3 flex">
+            <div class="w-[88px] h-[88px] rounded-xl bg-red-50 flex items-center justify-center text-4xl flex-shrink-0">🍓</div>
+            <div class="ml-3 flex-1 flex flex-col justify-between">
+              <div>
+                <div class="text-[13px] font-medium text-gray-800">丹东99草莓</div>
+                <div class="text-[11px] text-gray-400 mt-0.5">辽宁丹东 | 300g/盒</div>
+                <div class="flex gap-1 mt-1">
+                  <span class="text-[10px] text-red-500 bg-red-50 px-1.5 py-0.5 rounded">爆款</span>
+                </div>
+              </div>
+              <div class="flex items-end justify-between">
+                <div>
+                  <span class="text-primary font-bold text-sm">¥29.9</span>
+                  <span class="text-gray-400 text-[10px] line-through ml-1">¥39.9</span>
+                </div>
+                <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                  <i data-lucide="plus" class="w-3.5 h-3.5 text-white"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 商品行 3 -->
+          <div class="bg-white rounded-2xl p-3 flex">
+            <div class="w-[88px] h-[88px] rounded-xl bg-yellow-50 flex items-center justify-center text-4xl flex-shrink-0">🥚</div>
+            <div class="ml-3 flex-1 flex flex-col justify-between">
+              <div>
+                <div class="text-[13px] font-medium text-gray-800">农家土鸡蛋</div>
+                <div class="text-[11px] text-gray-400 mt-0.5">散养土鸡 | 10枚/盒</div>
+                <div class="flex gap-1 mt-1">
+                  <span class="text-[10px] text-primary bg-primary-light px-1.5 py-0.5 rounded">天然</span>
+                  <span class="text-[10px] text-accent bg-orange-50 px-1.5 py-0.5 rounded">热销</span>
+                </div>
+              </div>
+              <div class="flex items-end justify-between">
+                <div>
+                  <span class="text-primary font-bold text-sm">¥15.8</span>
+                  <span class="text-gray-400 text-[10px] line-through ml-1">¥22.0</span>
+                </div>
+                <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                  <i data-lucide="plus" class="w-3.5 h-3.5 text-white"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 商品行 4 -->
+          <div class="bg-white rounded-2xl p-3 flex">
+            <div class="w-[88px] h-[88px] rounded-xl bg-blue-50 flex items-center justify-center text-4xl flex-shrink-0">🐟</div>
+            <div class="ml-3 flex-1 flex flex-col justify-between">
+              <div>
+                <div class="text-[13px] font-medium text-gray-800">挪威三文鱼刺身</div>
+                <div class="text-[11px] text-gray-400 mt-0.5">冰鲜空运 | 200g/份</div>
+                <div class="flex gap-1 mt-1">
+                  <span class="text-[10px] text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded">进口</span>
+                </div>
+              </div>
+              <div class="flex items-end justify-between">
+                <div>
+                  <span class="text-primary font-bold text-sm">¥59.9</span>
+                  <span class="text-gray-400 text-[10px] line-through ml-1">¥79.9</span>
+                </div>
+                <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                  <i data-lucide="plus" class="w-3.5 h-3.5 text-white"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- 底部 Tab 栏 -->
+    <nav class="border-t bg-white safe-area-bottom">
+      <div class="flex justify-around py-1.5">
+        <a href="01-index.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1">
+          <i data-lucide="home" class="w-5 h-5 text-primary"></i>
+          <span class="text-[10px] text-primary font-medium">首页</span>
+        </a>
+        <a href="02-category.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1">
+          <i data-lucide="grid-2x2" class="w-5 h-5 text-gray-400"></i>
+          <span class="text-[10px] text-gray-400">分类</span>
+        </a>
+        <a href="03-cart.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 relative">
+          <i data-lucide="shopping-cart" class="w-5 h-5 text-gray-400"></i>
+          <span class="absolute -top-0.5 right-3 w-4 h-4 bg-red-500 rounded-full text-white text-[10px] flex items-center justify-center">5</span>
+          <span class="text-[10px] text-gray-400">购物车</span>
+        </a>
+        <a href="04-my.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1">
+          <i data-lucide="user" class="w-5 h-5 text-gray-400"></i>
+          <span class="text-[10px] text-gray-400">我的</span>
+        </a>
+      </div>
+      <div class="home-indicator"></div>
+    </nav>
+
+  </div>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>

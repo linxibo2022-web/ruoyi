@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, user-scalable=no">
+<title>科技资讯 - 评测</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f0f0f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .phone-frame { width: 375px; height: 812px; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; background: #f5f5f5; display: flex; flex-direction: column; position: relative; }
+  .status-bar { height: 44px; background: #4F46E5; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }
+  .status-bar span { color: white; font-size: 12px; font-weight: 600; }
+  .content-area { flex: 1; overflow-y: auto; padding-bottom: 80px; }
+  .content-area::-webkit-scrollbar { display: none; }
+  .tab-bar { position: absolute; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e5e7eb; display: flex; padding: 6px 0 0 0; z-index: 10; }
+  .tab-bar a { flex: 1; display: flex; flex-direction: column; align-items: center; text-decoration: none; padding: 4px 0 2px 0; }
+  .tab-bar a .tab-icon { width: 24px; height: 24px; color: #9ca3af; }
+  .tab-bar a .tab-label { font-size: 10px; color: #9ca3af; margin-top: 2px; }
+  .tab-bar a.active .tab-icon { color: #4F46E5; }
+  .tab-bar a.active .tab-label { color: #4F46E5; font-weight: 600; }
+  .safe-area-bottom { height: 20px; background: white; }
+  .home-indicator { width: 134px; height: 5px; background: #1a1a1a; border-radius: 3px; margin: 0 auto 8px auto; }
+
+  .review-tabs { display: flex; padding: 12px 16px; gap: 0; background: white; }
+  .review-tab { flex: 1; text-align: center; padding: 8px 0; font-size: 13px; color: #6b7280; cursor: pointer; position: relative; font-weight: 500; }
+  .review-tab.active { color: #4F46E5; font-weight: 700; }
+  .review-tab.active::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 24px; height: 3px; background: #4F46E5; border-radius: 2px; }
+
+  .stars { display: flex; gap: 2px; }
+  .star-filled { color: #f59e0b; }
+  .star-empty { color: #e5e7eb; }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span>9:41</span>
+    <span style="font-size: 14px; font-weight: 700;">深度评测</span>
+    <span>
+      <i data-lucide="search" style="width:16px;height:16px;color:white;"></i>
+    </span>
+  </div>
+
+  <!-- Content -->
+  <div class="content-area">
+    <!-- 评测分类 Tab -->
+    <div class="review-tabs">
+      <div class="review-tab active">手机</div>
+      <div class="review-tab">电脑</div>
+      <div class="review-tab">智能设备</div>
+    </div>
+
+    <div style="padding: 12px 16px;">
+
+      <!-- 评测卡片 1 -->
+      <div style="background: white; border-radius: 12px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+        <div style="height: 160px; background: linear-gradient(135deg, #312e81, #4F46E5); position: relative;">
+          <div style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.5); color: white; font-size: 10px; padding: 3px 8px; border-radius: 4px; backdrop-filter: blur(4px);">深度评测</div>
+          <div style="position: absolute; top: 10px; right: 10px; background: #4F46E5; color: white; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 6px;">9.2</div>
+          <!-- 装饰 -->
+          <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 60px; height: 100px; border: 2px solid rgba(255,255,255,0.2); border-radius: 12px;"></div>
+        </div>
+        <div style="padding: 12px;">
+          <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+            <div class="stars">
+              <span class="star-filled" style="font-size: 12px;">&#9733;</span>
+              <span class="star-filled" style="font-size: 12px;">&#9733;</span>
+              <span class="star-filled" style="font-size: 12px;">&#9733;</span>
+              <span class="star-filled" style="font-size: 12px;">&#9733;</span>
+              <span class="star-filled" style="font-size: 12px;">&#9733;</span>
+            </div>
+            <span style="font-size: 11px; color: #f59e0b; font-weight: 600;">5.0</span>
+          </div>
+          <div style="font-size: 15px; font-weight: 700; color: #1f2937; margin-bottom: 4px;">iPhone 17 Pro Max 深度评测</div>
+          <div style="font-size: 12px; color: #6b7280; line-height: 1.5;">A20 仿生芯片加持，4800 万潜望长焦，屏下 Face ID 首秀</div>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 10px;">
+            <span style="font-size: 10px; color: #9ca3af;">
+              <i data-lucide="eye" style="width:12px;height:12px;display:inline-block;vertical-align:-2px;"></i>
+              12.8万 阅读
+            </span>
+            <span style="font-size: 10px; color: #9ca3af;">2小时前</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 评测卡片 2 -->
+      <div style="background: white; border-radius: 12px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+        <div style="height: 160px; background: linear-gradient(135deg, #7c3aed, #a78bfa); position: relative;">
+          <div style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.5); color: white; font-size: 10px; padding: 3px 8px; border-radius: 4px; backdrop-filter: blur(4px);">对比评测</div>
+          <div style="position: absolute; top: 10px; right: 10px; background: #7c3aed; color: white; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 6px;">8.8</div>
+          <div style="position: absolute; bottom: 20px; left: 35%; width: 50px; height: 90px; border: 2px solid rgba(255,255,255,0.2); border-radius: 10px;"></div>
+          <div style="position: absolute; bottom: 20px; left: 55%; width: 50px; height: 90px; border: 2px solid rgba(255,255,255,0.15); border-radius: 10px;"></div>
+        </div>
+        <div style="padding: 12px;">
+          <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+            <div class="stars">
+              <span class="star-filled" style="font-size: 12px;">&#9733;</span>
+              <span class="star-filled" style="font-size: 12px;">&#9733;</span>
+              <span class="star-filled" style="font-size: 12px;">&#9733;</span>
+              <span class="star-filled" style="font-size: 12px;">&#9733;</span>
+              <span class="star-empty" style="font-size: 12px;">&#9733;</span>
+            </div>
+            <span style="font-size: 11px; color: #f59e0b; font-weight: 600;">4.5</span>
+          </div>
+          <div style="font-size: 15px; font-weight: 700; color: #1f2937; margin-bottom: 4px;">华为 Mate 70 Pro vs 三星 S26 Ultra</div>
+          <div style="font-size: 12px; color: #6b7280; line-height: 1.5;">两大旗舰正面对决：影像、性能、AI 功能全方位对比</div>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 10px;">
+            <span style="font-size: 10px; color: #9ca3af;">
+              <i data-lucide="eye" style="width:12px;height:12px;display:inline-block;vertical-align:-2px;"></i>
+              8.5万 阅读
+            </span>
+            <span style="font-size: 10px; color: #9ca3af;">5小时前</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 评测卡片 3 -->
+      <div style="background: white; border-radius: 12px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+        <div style="height: 160px; background: linear-gradient(135deg, #059669, #34d399); position: relative;">
+          <div style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.5); color: white; font-size: 10px; padding: 3px 8px; border-radius: 4px; backdrop-filter: blur(4px);">首发评测</div>
+          <div style="position: absolute; top: 10px; right: 10px; background: #059669; color: white; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 6px;">9.0</div>
+          <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 80px; height: 80px; border: 2px solid rgba(255,255,255,0.2); border-radius: 50%;"></div>
+        </div>
+        <div style="padding: 12px;">
+          <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+            <div class="stars">
+              <span class="star-filled" style="font-size: 12px;">&#9733;</span>
+              <span class="star-filled" style="font-size: 12px;">&#9733;</span>
+              <span class="star-filled" style="font-size: 12px;">&#9733;</span>
+              <span class="star-filled" style="font-size: 12px;">&#9733;</span>
+              <span class="star-filled" style="font-size: 12px;">&#9733;</span>
+            </div>
+            <span style="font-size: 11px; color: #f59e0b; font-weight: 600;">4.8</span>
+          </div>
+          <div style="font-size: 15px; font-weight: 700; color: #1f2937; margin-bottom: 4px;">OPPO Find X8 Ultra 影像旗舰评测</div>
+          <div style="font-size: 12px; color: #6b7280; line-height: 1.5;">哈苏联名四摄系统，10 倍光学变焦，夜景表现惊艳</div>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 10px;">
+            <span style="font-size: 10px; color: #9ca3af;">
+              <i data-lucide="eye" style="width:12px;height:12px;display:inline-block;vertical-align:-2px;"></i>
+              6.2万 阅读
+            </span>
+            <span style="font-size: 10px; color: #9ca3af;">昨天</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <a href="01-index.html">
+      <i data-lucide="home" class="tab-icon"></i>
+      <span class="tab-label">首页</span>
+    </a>
+    <a href="02-news.html">
+      <i data-lucide="zap" class="tab-icon"></i>
+      <span class="tab-label">快讯</span>
+    </a>
+    <a href="03-review.html" class="active">
+      <i data-lucide="star" class="tab-icon"></i>
+      <span class="tab-label">评测</span>
+    </a>
+    <a href="04-my.html">
+      <i data-lucide="user" class="tab-icon"></i>
+      <span class="tab-label">我的</span>
+    </a>
+    <div class="safe-area-bottom"></div>
+  </div>
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+  lucide.createIcons();
+</script>
+</body>
+</html>

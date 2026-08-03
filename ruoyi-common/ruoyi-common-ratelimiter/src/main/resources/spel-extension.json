@@ -1,0 +1,7 @@
+{
+  "plus.ruoyi.common.ratelimiter.annotation.RateLimiter@key": {
+    "method": {
+      "parameters": true
+    }
+  }
+}

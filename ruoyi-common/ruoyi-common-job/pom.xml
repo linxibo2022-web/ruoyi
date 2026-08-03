@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>plus.ruoyi</groupId>
+        <artifactId>ruoyi-common</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ruoyi-common-job</artifactId>
+
+    <description>
+        定时任务模块 - 基于SnailJob提供分布式任务调度与执行能力
+    </description>
+
+    <dependencies>
+        <!-- ================ 内部模块依赖 ================ -->
+        <!-- 核心模块 - 提供基础功能支持 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-core</artifactId>
+        </dependency>
+
+        <!-- ================ Spring依赖 ================ -->
+        <!-- Spring Boot自动配置 - 提供自动配置与条件装配能力 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+        </dependency>
+
+        <!-- ================ 任务调度依赖 ================ -->
+        <!-- SnailJob客户端启动器 - 提供任务调度客户端能力 -->
+        <dependency>
+            <groupId>com.aizuda</groupId>
+            <artifactId>snail-job-client-starter</artifactId>
+        </dependency>
+
+        <!-- SnailJob任务核心库 - 定义任务执行与管理接口 -->
+        <dependency>
+            <groupId>com.aizuda</groupId>
+            <artifactId>snail-job-client-job-core</artifactId>
+        </dependency>
+
+        <!-- SnailJob重试核心依赖 - 提供任务重试机制 -->
+        <dependency>
+            <groupId>com.aizuda</groupId>
+            <artifactId>snail-job-client-retry-core</artifactId>
+        </dependency>
+
+        <!-- ================ 工具依赖 ================ -->
+        <!-- Lombok - 减少样板代码 -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+    </dependencies>
+</project>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>短视频 - 发现</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>tailwind.config = { theme: { extend: { colors: { primary: '#EF4444' } } } }</script>
+  <style>
+    .phone-frame { width: 375px; height: 812px; margin: 20px auto; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .status-bar { height: 44px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 600; }
+    .safe-area-bottom { padding-bottom: 34px; }
+    .home-indicator { width: 134px; height: 5px; background: #000; border-radius: 3px; margin: 8px auto; }
+  </style>
+</head>
+<body class="bg-gray-200 flex items-start justify-center min-h-screen py-8">
+  <div class="phone-frame bg-white flex flex-col">
+    <div class="status-bar bg-white">
+      <span>9:41</span>
+      <div class="flex items-center gap-1"><i data-lucide="signal" class="w-4 h-4"></i><i data-lucide="wifi" class="w-4 h-4"></i><i data-lucide="battery-full" class="w-4 h-4"></i></div>
+    </div>
+
+    <main class="flex-1 overflow-y-auto bg-gray-50">
+      <!-- 搜索栏 -->
+      <div class="bg-white px-4 pt-2 pb-3">
+        <div class="bg-gray-100 rounded-full px-4 py-2.5 flex items-center gap-2">
+          <i data-lucide="search" class="w-4 h-4 text-gray-400"></i>
+          <span class="text-gray-400 text-sm">搜索你感兴趣的内容</span>
+        </div>
+      </div>
+
+      <!-- 热门话题 -->
+      <div class="bg-white px-4 py-3 mt-2">
+        <div class="flex justify-between items-center mb-3">
+          <span class="text-base font-bold text-gray-800">🔥 热门话题</span>
+          <span class="text-xs text-gray-400">换一批</span>
+        </div>
+        <div class="flex gap-2 overflow-x-auto pb-1">
+          <span class="bg-red-50 text-primary text-xs px-3 py-1.5 rounded-full whitespace-nowrap font-medium">#创意手工</span>
+          <span class="bg-blue-50 text-blue-500 text-xs px-3 py-1.5 rounded-full whitespace-nowrap font-medium">#美食制作</span>
+          <span class="bg-green-50 text-green-500 text-xs px-3 py-1.5 rounded-full whitespace-nowrap font-medium">#旅行vlog</span>
+          <span class="bg-purple-50 text-purple-500 text-xs px-3 py-1.5 rounded-full whitespace-nowrap font-medium">#知识分享</span>
+          <span class="bg-amber-50 text-amber-500 text-xs px-3 py-1.5 rounded-full whitespace-nowrap font-medium">#搞笑日常</span>
+        </div>
+      </div>
+
+      <!-- 推荐视频网格 -->
+      <div class="px-2 mt-2">
+        <div class="grid grid-cols-2 gap-1.5">
+          <!-- 视频卡片 1 -->
+          <div class="rounded-lg overflow-hidden bg-white">
+            <div class="h-52 relative" style="background: linear-gradient(135deg, #EF4444, #F87171);">
+              <div class="absolute inset-0 flex items-center justify-center"><span class="text-5xl">🎨</span></div>
+              <div class="absolute bottom-2 left-2 flex items-center gap-1">
+                <i data-lucide="play" class="w-3 h-3 text-white"></i>
+                <span class="text-white text-[10px]">128.6k</span>
+              </div>
+            </div>
+            <div class="p-2">
+              <p class="text-xs text-gray-800 font-medium leading-tight line-clamp-2">超治愈的手工折纸教程，一起来学吧～</p>
+              <div class="flex items-center justify-between mt-1.5">
+                <div class="flex items-center gap-1">
+                  <div class="w-4 h-4 rounded-full bg-gray-200 flex items-center justify-center"><span class="text-[8px]">😎</span></div>
+                  <span class="text-[10px] text-gray-400">创意达人</span>
+                </div>
+                <div class="flex items-center gap-0.5">
+                  <i data-lucide="heart" class="w-3 h-3 text-gray-400"></i>
+                  <span class="text-[10px] text-gray-400">12.8k</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 视频卡片 2 -->
+          <div class="rounded-lg overflow-hidden bg-white">
+            <div class="h-40 relative" style="background: linear-gradient(135deg, #F59E0B, #FBBF24);">
+              <div class="absolute inset-0 flex items-center justify-center"><span class="text-5xl">🍜</span></div>
+              <div class="absolute bottom-2 left-2 flex items-center gap-1">
+                <i data-lucide="play" class="w-3 h-3 text-white"></i>
+                <span class="text-white text-[10px]">86.2k</span>
+              </div>
+            </div>
+            <div class="p-2">
+              <p class="text-xs text-gray-800 font-medium leading-tight line-clamp-2">3分钟学会正宗麻辣拌，超简单！</p>
+              <div class="flex items-center justify-between mt-1.5">
+                <div class="flex items-center gap-1">
+                  <div class="w-4 h-4 rounded-full bg-gray-200 flex items-center justify-center"><span class="text-[8px]">👨‍🍳</span></div>
+                  <span class="text-[10px] text-gray-400">美食家</span>
+                </div>
+                <div class="flex items-center gap-0.5">
+                  <i data-lucide="heart" class="w-3 h-3 text-gray-400"></i>
+                  <span class="text-[10px] text-gray-400">8.6k</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 视频卡片 3 -->
+          <div class="rounded-lg overflow-hidden bg-white">
+            <div class="h-40 relative" style="background: linear-gradient(135deg, #10B981, #34D399);">
+              <div class="absolute inset-0 flex items-center justify-center"><span class="text-5xl">🏔️</span></div>
+              <div class="absolute bottom-2 left-2 flex items-center gap-1">
+                <i data-lucide="play" class="w-3 h-3 text-white"></i>
+                <span class="text-white text-[10px]">56.3k</span>
+              </div>
+            </div>
+            <div class="p-2">
+              <p class="text-xs text-gray-800 font-medium leading-tight line-clamp-2">西藏自驾游Day3：纳木错日出太美了</p>
+              <div class="flex items-center justify-between mt-1.5">
+                <div class="flex items-center gap-1">
+                  <div class="w-4 h-4 rounded-full bg-gray-200 flex items-center justify-center"><span class="text-[8px]">🧑‍💻</span></div>
+                  <span class="text-[10px] text-gray-400">旅行者</span>
+                </div>
+                <div class="flex items-center gap-0.5">
+                  <i data-lucide="heart" class="w-3 h-3 text-gray-400"></i>
+                  <span class="text-[10px] text-gray-400">5.6k</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 视频卡片 4 -->
+          <div class="rounded-lg overflow-hidden bg-white">
+            <div class="h-52 relative" style="background: linear-gradient(135deg, #8B5CF6, #A78BFA);">
+              <div class="absolute inset-0 flex items-center justify-center"><span class="text-5xl">💡</span></div>
+              <div class="absolute bottom-2 left-2 flex items-center gap-1">
+                <i data-lucide="play" class="w-3 h-3 text-white"></i>
+                <span class="text-white text-[10px]">203.1k</span>
+              </div>
+            </div>
+            <div class="p-2">
+              <p class="text-xs text-gray-800 font-medium leading-tight line-clamp-2">程序员必看！5个提高效率的VSCode插件</p>
+              <div class="flex items-center justify-between mt-1.5">
+                <div class="flex items-center gap-1">
+                  <div class="w-4 h-4 rounded-full bg-gray-200 flex items-center justify-center"><span class="text-[8px]">🤓</span></div>
+                  <span class="text-[10px] text-gray-400">码农小王</span>
+                </div>
+                <div class="flex items-center gap-0.5">
+                  <i data-lucide="heart" class="w-3 h-3 text-gray-400"></i>
+                  <span class="text-[10px] text-gray-400">20.3k</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="h-4"></div>
+    </main>
+
+    <nav class="border-t bg-white safe-area-bottom">
+      <div class="flex justify-around py-1.5">
+        <a href="01-index.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline"><i data-lucide="home" class="w-5 h-5 text-gray-400"></i><span class="text-[10px] text-gray-400">首页</span></a>
+        <a href="02-discover.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline"><i data-lucide="compass" class="w-5 h-5 text-primary"></i><span class="text-[10px] text-primary font-medium">发现</span></a>
+        <a href="03-create.html" class="flex flex-col items-center gap-0.5 min-w-[56px] py-1 no-underline">
+          <div class="w-10 h-7 rounded-lg flex items-center justify-center relative">
+            <div class="absolute w-8 h-6 rounded bg-cyan-400 left-0.5"></div>
+            <div class="absolute w-8 h-6 rounded bg-primary right-0.5"></div>
+            <div class="absolute w-8 h-6 rounded bg-black flex items-center justify-center"><i data-lucide="plus" class="w-4 h-4 text-white"></i></div>
+          </div>
+        </a>
+        <a href="05-message.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline"><i data-lucide="message-square" class="w-5 h-5 text-gray-400"></i><span class="text-[10px] text-gray-400">消息</span></a>
+        <a href="04-my.html" class="flex flex-col items-center gap-0.5 min-w-[64px] py-1 no-underline"><i data-lucide="user" class="w-5 h-5 text-gray-400"></i><span class="text-[10px] text-gray-400">我的</span></a>
+      </div>
+      <div class="home-indicator"></div>
+    </nav>
+  </div>
+  <script>lucide.createIcons();</script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, user-scalable=no">
+<title>科技资讯 - 快讯</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f0f0f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .phone-frame { width: 375px; height: 812px; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; background: #f5f5f5; display: flex; flex-direction: column; position: relative; }
+  .status-bar { height: 44px; background: #4F46E5; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }
+  .status-bar span { color: white; font-size: 12px; font-weight: 600; }
+  .content-area { flex: 1; overflow-y: auto; padding-bottom: 80px; }
+  .content-area::-webkit-scrollbar { display: none; }
+  .tab-bar { position: absolute; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e5e7eb; display: flex; padding: 6px 0 0 0; z-index: 10; }
+  .tab-bar a { flex: 1; display: flex; flex-direction: column; align-items: center; text-decoration: none; padding: 4px 0 2px 0; }
+  .tab-bar a .tab-icon { width: 24px; height: 24px; color: #9ca3af; }
+  .tab-bar a .tab-label { font-size: 10px; color: #9ca3af; margin-top: 2px; }
+  .tab-bar a.active .tab-icon { color: #4F46E5; }
+  .tab-bar a.active .tab-label { color: #4F46E5; font-weight: 600; }
+  .safe-area-bottom { height: 20px; background: white; }
+  .home-indicator { width: 134px; height: 5px; background: #1a1a1a; border-radius: 3px; margin: 0 auto 8px auto; }
+
+  .timeline-item { position: relative; padding-left: 28px; padding-bottom: 20px; margin-left: 20px; }
+  .timeline-item::before { content: ''; position: absolute; left: 0; top: 8px; width: 10px; height: 10px; border-radius: 50%; background: #4F46E5; border: 2px solid #e0e7ff; z-index: 1; }
+  .timeline-item::after { content: ''; position: absolute; left: 4px; top: 20px; bottom: 0; width: 2px; background: #e5e7eb; }
+  .timeline-item:last-child::after { display: none; }
+  .timeline-item.hot::before { background: #ef4444; border-color: #fecaca; }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span>9:41</span>
+    <span style="font-size: 14px; font-weight: 700;">科技快讯</span>
+    <span>
+      <i data-lucide="filter" style="width:16px;height:16px;color:white;"></i>
+    </span>
+  </div>
+
+  <!-- Content -->
+  <div class="content-area">
+    <!-- 今日日期头 -->
+    <div style="padding: 16px 16px 8px 16px; display: flex; align-items: center; gap: 8px;">
+      <div style="font-size: 16px; font-weight: 700; color: #1f2937;">今日快讯</div>
+      <div style="font-size: 11px; color: white; background: #ef4444; padding: 1px 8px; border-radius: 10px;">LIVE</div>
+      <div style="flex: 1;"></div>
+      <div style="font-size: 11px; color: #9ca3af;">2026年4月13日</div>
+    </div>
+
+    <!-- 时间线列表 -->
+    <div style="padding: 12px 16px 0 16px;">
+
+      <!-- 快讯 1 - 热门 -->
+      <div class="timeline-item hot">
+        <div style="font-size: 10px; color: #9ca3af; margin-bottom: 4px;">10:32</div>
+        <div style="background: white; border-radius: 10px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+          <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+            <span style="font-size: 10px; color: white; background: #ef4444; padding: 1px 6px; border-radius: 4px;">热</span>
+            <span style="font-size: 13px; font-weight: 600; color: #1f2937;">OpenAI 宣布 GPT-5 正式发布</span>
+          </div>
+          <div style="font-size: 12px; color: #6b7280; line-height: 1.6;">新模型在数学推理、代码生成、多模态理解三项基准测试中均创下新纪录，API 即日起开放调用。</div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+            <span style="font-size: 10px; color: #4F46E5; background: #eef2ff; padding: 2px 6px; border-radius: 4px;">AI</span>
+            <span style="font-size: 10px; color: #9ca3af;">来源：OpenAI 官方博客</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 快讯 2 -->
+      <div class="timeline-item">
+        <div style="font-size: 10px; color: #9ca3af; margin-bottom: 4px;">09:58</div>
+        <div style="background: white; border-radius: 10px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+          <div style="font-size: 13px; font-weight: 600; color: #1f2937; margin-bottom: 6px;">台积电 2nm 工艺正式量产</div>
+          <div style="font-size: 12px; color: #6b7280; line-height: 1.6;">首批 2nm 芯片将供应苹果 A20 处理器，良率已达 70% 以上。</div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+            <span style="font-size: 10px; color: #4F46E5; background: #eef2ff; padding: 2px 6px; border-radius: 4px;">芯片</span>
+            <span style="font-size: 10px; color: #9ca3af;">来源：路透社</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 快讯 3 -->
+      <div class="timeline-item">
+        <div style="font-size: 10px; color: #9ca3af; margin-bottom: 4px;">09:15</div>
+        <div style="background: white; border-radius: 10px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+          <div style="font-size: 13px; font-weight: 600; color: #1f2937; margin-bottom: 6px;">小米汽车累计交付突破 50 万辆</div>
+          <div style="font-size: 12px; color: #6b7280; line-height: 1.6;">SU7 系列持续热销，小米汽车工厂二期已满负荷运转，月产能提升至 3 万辆。</div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+            <span style="font-size: 10px; color: #4F46E5; background: #eef2ff; padding: 2px 6px; border-radius: 4px;">汽车</span>
+            <span style="font-size: 10px; color: #9ca3af;">来源：小米官方</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 快讯 4 - 热门 -->
+      <div class="timeline-item hot">
+        <div style="font-size: 10px; color: #9ca3af; margin-bottom: 4px;">08:42</div>
+        <div style="background: white; border-radius: 10px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+          <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+            <span style="font-size: 10px; color: white; background: #ef4444; padding: 1px 6px; border-radius: 4px;">热</span>
+            <span style="font-size: 13px; font-weight: 600; color: #1f2937;">苹果 Vision Pro 2 售价腰斩至 $1799</span>
+          </div>
+          <div style="font-size: 12px; color: #6b7280; line-height: 1.6;">第二代头显重量减轻 40%，新增手势追踪 2.0，价格大幅下调加速 XR 普及。</div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+            <span style="font-size: 10px; color: #4F46E5; background: #eef2ff; padding: 2px 6px; border-radius: 4px;">VR/AR</span>
+            <span style="font-size: 10px; color: #9ca3af;">来源：The Verge</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 快讯 5 -->
+      <div class="timeline-item">
+        <div style="font-size: 10px; color: #9ca3af; margin-bottom: 4px;">08:10</div>
+        <div style="background: white; border-radius: 10px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+          <div style="font-size: 13px; font-weight: 600; color: #1f2937; margin-bottom: 6px;">Google DeepMind 发布蛋白质结构预测新模型</div>
+          <div style="font-size: 12px; color: #6b7280; line-height: 1.6;">AlphaFold 4 准确率接近实验测定水平，将免费开放给全球科研机构使用。</div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+            <span style="font-size: 10px; color: #4F46E5; background: #eef2ff; padding: 2px 6px; border-radius: 4px;">AI</span>
+            <span style="font-size: 10px; color: #9ca3af;">来源：Nature</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 快讯 6 -->
+      <div class="timeline-item">
+        <div style="font-size: 10px; color: #9ca3af; margin-bottom: 4px;">07:30</div>
+        <div style="background: white; border-radius: 10px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+          <div style="font-size: 13px; font-weight: 600; color: #1f2937; margin-bottom: 6px;">比亚迪固态电池通过车规级认证</div>
+          <div style="font-size: 12px; color: #6b7280; line-height: 1.6;">能量密度达 500Wh/kg，预计 2027 年量产装车，续航突破 1500km。</div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+            <span style="font-size: 10px; color: #4F46E5; background: #eef2ff; padding: 2px 6px; border-radius: 4px;">汽车</span>
+            <span style="font-size: 10px; color: #9ca3af;">来源：电车实验室</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <a href="01-index.html">
+      <i data-lucide="home" class="tab-icon"></i>
+      <span class="tab-label">首页</span>
+    </a>
+    <a href="02-news.html" class="active">
+      <i data-lucide="zap" class="tab-icon"></i>
+      <span class="tab-label">快讯</span>
+    </a>
+    <a href="03-review.html">
+      <i data-lucide="star" class="tab-icon"></i>
+      <span class="tab-label">评测</span>
+    </a>
+    <a href="04-my.html">
+      <i data-lucide="user" class="tab-icon"></i>
+      <span class="tab-label">我的</span>
+    </a>
+    <div class="safe-area-bottom"></div>
+  </div>
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+  lucide.createIcons();
+</script>
+</body>
+</html>

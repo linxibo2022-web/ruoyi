@@ -1,0 +1,872 @@
+services:
+  mysql:
+    image: mysql:8.0.42
+    container_name: mysql
+    environment:
+      # 时区设置 - 统一使用上海时区
+      TZ: Asia/Shanghai
+      # root用户密码 - MySQL管理员密码（生产环境必须修改）
+      MYSQL_ROOT_PASSWORD: mysql123456
+      # 初始化数据库 - 容器启动时自动创建的数据库
+      MYSQL_DATABASE: erp_sys
+    ports:
+      # MySQL服务端口映射 - 宿主机端口:容器端口
+      - "3306:3306"
+    volumes:
+      # 数据持久化 - MySQL数据文件存储到宿主机
+      - /docker/mysql/data/:/var/lib/mysql/
+      # 配置文件映射 - 自定义MySQL配置文件
+      - /docker/mysql/conf/:/etc/mysql/conf.d/
+    command:
+      # MySQL启动参数配置
+      # 使用原生密码认证插件（兼容旧版本客户端）
+      - --default-authentication-plugin=mysql_native_password
+      # 设置字符集为utf8mb4
+      - --character-set-server=utf8mb4
+      # 设置校对规则
+      - --collation-server=utf8mb4_general_ci
+      # 显式设置timestamp默认值
+      - --explicit_defaults_for_timestamp=true
+      # 表名不区分大小写
+      - --lower_case_table_names=1
+    privileged: true
+    network_mode: "host"
+
+  # ==================== Web服务器 ====================
+  nginx-web:
+    image: nginx:1.23.4
+    container_name: nginx-web
+    environment:
+      # 时区设置 - 统一使用上海时区
+      TZ: Asia/Shanghai
+    ports:
+      # HTTP端口映射 - 标准Web服务端口
+      - "80:80"
+      # HTTPS端口映射 - SSL加密Web服务端口
+      - "443:443"
+    volumes:
+      # SSL证书映射 - HTTPS证书文件存储
+      - /docker/nginx/cert:/etc/nginx/cert
+      # 配置文件映射 - Nginx主配置文件
+      - /docker/nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+      # 静态文件目录 - 网站静态资源存储
+      - /docker/nginx/html:/usr/share/nginx/html
+      # 日志目录映射 - Nginx访问和错误日志
+      - /docker/nginx/log:/var/log/nginx
+    privileged: true
+    network_mode: "host"
+
+  # ==================== 缓存服务 ====================
+  redis:
+    image: redis:7.2.8
+    container_name: redis
+    ports:
+      # Redis服务端口映射
+      - "6379:6379"
+    environment:
+      # 时区设置 - 统一使用上海时区
+      TZ: Asia/Shanghai
+    volumes:
+      # 配置文件映射 - Redis自定义配置文件
+      - /docker/redis/conf:/redis/config:rw
+      # 数据持久化 - Redis数据文件存储到宿主机
+      - /docker/redis/data/:/redis/data/:rw
+    # Redis启动命令 - 使用自定义配置文件启动
+    command: "redis-server /redis/config/redis.conf"
+    privileged: true
+    network_mode: "host"
+
+  # ==================== 对象存储服务 ====================
+  minio:
+    # MinIO版本说明 - 使用最后一个功能完整版本，后续版本功能被限制
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+    container_name: minio
+    ports:
+      # MinIO API端口 - 对象存储API服务端口
+      - "9000:9000"
+      # MinIO控制台端口 - Web管理界面端口
+      - "9001:9001"
+    environment:
+      # 时区设置 - 统一使用上海时区
+      TZ: Asia/Shanghai
+      # 管理员用户名 - MinIO控制台登录用户名
+      MINIO_ROOT_USER: ruoyi
+      # 管理员密码 - MinIO控制台登录密码（最少8位字符）
+      MINIO_ROOT_PASSWORD: ruoyi123
+      # HTTPS域名配置（可选） - 使用HTTPS时需要指定域名
+      #MINIO_SERVER_URL: "https://xxx.com:9000"
+      #MINIO_BROWSER_REDIRECT_URL: "https://xxx.com:9001"
+      # 数据压缩开关 - on开启压缩，off关闭压缩
+      MINIO_COMPRESS: "off"
+      # 压缩文件扩展名 - 指定需要压缩的文件类型，为空则压缩所有类型
+      MINIO_COMPRESS_EXTENSIONS: ""
+      # 压缩MIME类型 - 指定需要压缩的MIME类型，为空则压缩所有类型
+      MINIO_COMPRESS_MIME_TYPES: ""
+    volumes:
+      # 数据存储映射 - MinIO对象数据存储到宿主机
+      - /docker/minio/data:/data
+      # 配置文件映射 - MinIO配置文件存储
+      - /docker/minio/config:/root/.minio/
+    # MinIO启动命令 - 指定API和控制台端口及数据目录
+    command: server --address ':9000' --console-address ':9001' /data
+    privileged: true
+    network_mode: "host"
+
+  # ==================== 主应用服务（实例1）====================
+  erp_sys:
+    image: erp_sys:5.6.1
+    container_name: erp_sys
+    environment:
+      # ==================== 基础运行环境配置 ====================
+      # 时区设置 - 统一使用上海时区
+      TZ: Asia/Shanghai
+      # 应用服务端口 - 主应用HTTP服务端口
+      SERVER_PORT: 5500
+      # SnailJob客户端端口 - 定时任务客户端通信端口
+      SNAIL_PORT: 25500
+      # 调试端口 - 用于远程调试，生产环境可不配置
+      DEBUG_PORT: 5005
+      # Spring环境配置 - 指定运行环境(dev/test/prod)
+      SPRING_PROFILES_ACTIVE: prod
+      # 调试参数 - JVM远程调试配置，生产环境建议设为空
+      DEBUG_ARGS: ""
+
+      # ==================== 授权码 ====================
+      APP_LICENSE: your-license-code
+      # ==================== 离线授权码 ====================
+      APP_OFFLINE_LICENSE: your-offline-license-code
+
+      # ==================== 日志级别配置 ====================
+      # 应用日志级别 - 控制日志输出详细程度(debug/info/warn/error)
+      LOG_LEVEL: info
+
+      # ==================== 数据库配置 ====================
+      # 主数据库配置
+      # 数据库服务器地址 - MySQL主库IP或域名
+      DB_HOST: 127.0.0.1
+      # 数据库端口 - MySQL服务端口，默认3306
+      DB_PORT: 3306
+      # 数据库名称 - 应用使用的数据库名
+      DB_NAME: erp_sys
+      # 数据库用户名 - 连接数据库的用户账号
+      DB_USERNAME: erp_sys
+      # 数据库密码 - 连接数据库的用户密码
+      DB_PASSWORD: your-database-password
+
+      # 从数据库配置（可选，读写分离时配置）
+      # 从库服务器地址 - 用于读操作的从库地址
+      DB_SLAVE_HOST: 127.0.0.1
+      # 从库端口 - 从库MySQL服务端口
+      DB_SLAVE_PORT: 3306
+      # 从库数据库名 - 从库数据库名称
+      DB_SLAVE_NAME: erp_sys
+      # 从库用户名 - 连接从库的用户账号
+      DB_SLAVE_USERNAME: erp_sys
+      # 从库密码 - 连接从库的用户密码
+      DB_SLAVE_PASSWORD: your-database-password
+
+      # 数据库连接池配置（生产环境性能优化）
+      # 最大连接池数量 - 连接池最大连接数，根据并发量调整
+      DB_MAX_POOL_SIZE: 50
+      # 最小空闲连接数 - 连接池最小保持的空闲连接数
+      DB_MIN_IDLE: 20
+
+      # 数据库性能分析插件 - 开发环境可开启，生产环境建议关闭
+      P6SPY_ENABLED: "false"
+      # ==================== Redis缓存配置 ====================
+      # Redis服务器地址 - Redis缓存服务器IP或域名
+      REDIS_HOST: 127.0.0.1
+      # Redis端口 - Redis服务端口，默认6379
+      REDIS_PORT: 6379
+      # Redis数据库索引 - 使用的Redis数据库编号(0-15)
+      REDIS_DATABASE: 0
+      # Redis密码 - 连接Redis的密码
+      REDIS_PASSWORD: ""
+      # Redis SSL连接 - 是否启用SSL加密连接
+      REDIS_SSL_ENABLED: "false"
+      # Redisson分布式客户端配置（性能优化）
+      # Redisson线程数 - 处理Redis操作的线程数
+      REDISSON_THREADS: 16
+      # Redisson网络线程数 - 处理网络IO的线程数
+      REDISSON_NETTY_THREADS: 32
+      # 最小空闲连接数 - Redis连接池最小空闲连接
+      REDISSON_MIN_IDLE: 32
+      # 连接池大小 - Redis连接池最大连接数
+      REDISSON_POOL_SIZE: 64
+
+      # ==================== 应用配置 ====================
+      # 文件上传路径 - 应用文件上传存储目录
+      APP_UPLOAD_PATH: /ruoyi/server/upload
+      # 应用基础URL - 用于构建回调地址等（支付、第三方登录等）
+      APP_BASE_API: https://ruoyi.plus
+
+      # ==================== 安全配置 ====================
+      # JWT密钥 - 用于生成和验证JWT token的密钥
+      JWT_SECRET_KEY: uDkkASPQVN5iR4eN
+
+      # API接口加密配置（提高接口安全性）
+      # API加密开关 - 是否启用全局接口加密
+      API_ENCRYPT_ENABLED: "true"
+      # 响应加密公钥 - 用于加密API响应数据的RSA公钥
+      API_RESPONSE_PUBLIC_KEY: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIrZxEhzVAHKJm7BJpXIHWGU3sHJYgRiOOTw3Auj/iNDTL+RExEW2Y0dg/IC71DKxcjvVEA9GdDp0/5nph+4dIMCAwEAAQ==
+      # 请求解密私钥 - 用于解密API请求数据的RSA私钥
+      API_REQUEST_PRIVATE_KEY: MIIBOgIBAAJBAK9s1Pbnn5W+l1hx3ukHLtevayF5nOFIb140zvIPksw8h7bZWY05zyWdsQ2I51ypiC53KnyfhibPk3AJ2yr+qnkCAwEAAQJAfqWhsodSLTel6BJ9jdrDtK9ONqKn4fT7ghW5+gPIRW2S1tQYQlVpq/yM1eDAk+DfyNKMEX8Z9Hr1nXPTyh+bKQIhAOU2bI2SIMfWRqxlkhI3Ae2DWiwpDIj5yqmPv20GM20XAiEAw+0yI6yta9qkPtnR+8lfmdY5Pjyou2JtpE260xiZ/u8CIQCo4MZuMEISup9rmZJb9UdoVaT0cHIZ4eEduRmTHER7lQIgN1GZfokazgEFrtlBeJ366CycLP5jhcTcwC9SOJgRovECIGmK/KwZ4k7Uycktqseo9LjMsNYxTyNNeyxPuaNN0sgg
+
+      # API文档开关 - 开发环境默认true，生产环境建议设置为false关闭API文档
+      SPRINGDOC_ENABLED: "false"
+      # ==================== AI功能配置 ====================
+      # LangChain4j AI功能开关 - 是否启用AI聊天等功能
+      LANGCHAIN4J_ENABLED: "false"
+      # DeepSeek API密钥
+      LANGCHAIN4J_DEEPSEEK_API_KEY: sk-618bfe88c5bc444aa447b42ba827b452
+      # 通义千问 API密钥
+      LANGCHAIN4J_QIANWEN_API_KEY: sk-xxxxxxxxxxxxxxxxxxxx
+      # OpenAi API密钥
+      LANGCHAIN4J_OPENAI_API_KEY: sk-xxxxxxxxxxxxxxxxxxxx
+
+      # ==================== 开放平台配置 ====================
+      # 是否启用开放平台
+      OPEN_API_ENABLED: "false"
+      # AppSecret加密密钥（AES-256需要32字节） 项目运营中再更换会导致之前的加密无法解密
+      OPEN_API_SECRET_KEY: q3XA19UeJExvCqynPOnyYUcr4zwOVCyi
+      # 访问模式: all(所有用户) | roles(指定角色) | admin(仅管理员) | super_admin(仅超管)
+      OPEN_API_ACCESS_MODE: all
+      # 允许访问的角色列表(当mode=roles时生效,多个用逗号分隔)
+      OPEN_API_ALLOWED_ROLES: admin,pc_user
+
+      # 数据库字段加密配置（可选，敏感数据加密）
+      # 数据加密密码 - 对称加密算法的密钥
+      ENCRYPT_PASSWORD: ""
+      # 加密公钥 - 非对称加密算法的公钥
+      ENCRYPT_PUBLIC_KEY: ""
+      # 加密私钥 - 非对称加密算法的私钥
+      ENCRYPT_PRIVATE_KEY: ""
+
+      # ==================== 监控配置 ====================
+      # 监控服务开关 - 是否启用Spring Boot Admin监控
+      MONITOR_ENABLED: "true"
+      # 监控中心地址 - Spring Boot Admin服务器地址
+      MONITOR_URL: http://127.0.0.1:9090/admin
+      # 监控用户名 - 连接监控中心的用户名
+      MONITOR_USERNAME: ruoyi
+      # 监控密码 - 连接监控中心的密码
+      MONITOR_PASSWORD: 123456
+
+      # ==================== 定时任务配置 ====================
+      # 定时任务开关 - 是否启用SnailJob分布式定时任务
+      SNAIL_JOB_ENABLED: "true"
+      # 调度中心地址 - SnailJob调度服务器IP或域名（⚠️ 必须带 SERVER 前缀，避免 Relaxed Binding 覆盖客户端配置）
+      SNAIL_JOB_SERVER_HOST: 127.0.0.1
+      # 调度中心端口 - SnailJob调度服务器端口（⚠️ 同理，避免覆盖客户端端口）
+      SNAIL_JOB_SERVER_PORT: 17888
+      # 访问令牌 - 连接调度中心的认证token
+      SNAIL_JOB_TOKEN: SJ_cKqBTPzCsWA3VyuCfFoccmuIEGXjr5KT
+      # 客户端IP - 指定客户端IP地址，为空则自动获取
+      SNAIL_JOB_CLIENT_HOST: ""
+
+      # ==================== 邮件服务配置（可选）====================
+      # 邮件服务开关 - 是否启用邮件发送功能
+      MAIL_ENABLED: "false"
+      # SMTP服务器 - 邮件服务提供商的SMTP服务器地址
+      MAIL_HOST: ""
+      # SMTP端口 - 邮件服务器端口，SSL通常为465，STARTTLS为587
+      MAIL_PORT: 465
+      # 发件人邮箱 - 系统发送邮件时显示的发件人地址
+      MAIL_FROM: ""
+      # 邮箱用户名 - 登录邮件服务器的用户名（通常是邮箱地址）
+      MAIL_USERNAME: ""
+      # 邮箱密码 - 登录邮件服务器的密码（可能是授权码）
+      MAIL_PASSWORD: ""
+
+      # ==================== 短信服务配置（可选）====================
+      # 阿里云短信服务配置
+      # 阿里云AccessKey - 阿里云账号的访问密钥ID
+      SMS_ALI_ACCESS_KEY: ""
+      # 阿里云AccessSecret - 阿里云账号的访问密钥Secret
+      SMS_ALI_ACCESS_SECRET: ""
+      # 阿里云短信签名 - 短信内容前的签名标识
+      SMS_ALI_SIGNATURE: ""
+      # 阿里云应用ID - 短信服务的应用标识
+      SMS_ALI_SDK_APP_ID: ""
+
+      # 腾讯云短信服务配置
+      # 腾讯云SecretId - 腾讯云账号的访问密钥ID
+      SMS_TENCENT_ACCESS_KEY: ""
+      # 腾讯云SecretKey - 腾讯云账号的访问密钥Key
+      SMS_TENCENT_ACCESS_SECRET: ""
+      # 腾讯云短信签名 - 短信内容前的签名标识
+      SMS_TENCENT_SIGNATURE: ""
+      # 腾讯云应用ID - 短信服务的应用标识
+      SMS_TENCENT_SDK_APP_ID: ""
+
+      # 短信发送频率限制（防刷机制）
+      # 每分钟限制 - 单手机号每分钟最大发送次数
+      SMS_MINUTE_MAX: 1
+      # 每日限制 - 单手机号每日最大发送次数
+      SMS_ACCOUNT_MAX: 30
+
+      # ==================== 第三方服务配置 ====================
+      # 高德地图API配置
+      # 高德地图API密钥 - 用于地图服务、路径规划、地理编码等（生产环境必须配置真实密钥）
+      GAODE_MAP_API_KEY: your-gaode-api-key
+      # 高德地图API请求超时时间（毫秒）- 根据网络环境调整
+      GAODE_MAP_TIMEOUT: 10000
+      # 高德地图服务开关 - 是否启用高德地图相关功能
+      GAODE_MAP_ENABLED: "true"
+      # ==================== 第三方登录配置（可选）====================
+      # 第三方登录回调基础地址 - 用于构建各平台的回调URL
+      JUSTAUTH_ADDRESS: https://ruoyi.plus
+
+      # 微信开放平台登录（网站应用）
+      # 微信开放平台应用ID - 网站应用的AppID
+      WECHAT_OPEN_CLIENT_ID: ""
+      # 微信开放平台应用密钥 - 网站应用的AppSecret
+      WECHAT_OPEN_CLIENT_SECRET: ""
+
+      # 微信公众号登录
+      # 微信公众号应用ID - 公众号的AppID
+      WECHAT_MP_CLIENT_ID: ""
+      # 微信公众号应用密钥 - 公众号的AppSecret
+      WECHAT_MP_CLIENT_SECRET: ""
+
+      # 微信企业号登录
+      # 微信企业号应用ID - 企业微信的CorpID
+      WECHAT_ENTERPRISE_CLIENT_ID: ""
+      # 微信企业号应用密钥 - 企业微信的CorpSecret
+      WECHAT_ENTERPRISE_CLIENT_SECRET: ""
+      # 微信企业号代理ID - 企业微信应用的AgentId
+      WECHAT_ENTERPRISE_AGENT_ID: ""
+
+      # Gitee码云登录
+      # Gitee应用ID - 在Gitee第三方应用中申请的Client ID
+      GITEE_CLIENT_ID: ""
+      # Gitee应用密钥 - 在Gitee第三方应用中申请的Client Secret
+      GITEE_CLIENT_SECRET: ""
+
+      # QQ互联登录
+      # QQ应用ID - 在QQ互联平台申请的App ID
+      QQ_CLIENT_ID: ""
+      # QQ应用密钥 - 在QQ互联平台申请的App Key
+      QQ_CLIENT_SECRET: ""
+
+      # 微博开放平台登录
+      # 微博应用ID - 在微博开放平台申请的App Key
+      WEIBO_CLIENT_ID: ""
+      # 微博应用密钥 - 在微博开放平台申请的App Secret
+      WEIBO_CLIENT_SECRET: ""
+
+      # 钉钉登录
+      # 钉钉应用ID - 在钉钉开放平台申请的AppKey
+      DINGTALK_CLIENT_ID: ""
+      # 钉钉应用密钥 - 在钉钉开放平台申请的AppSecret
+      DINGTALK_CLIENT_SECRET: ""
+
+      # MaxKey统一身份认证平台
+      # MaxKey服务器地址 - MaxKey SSO服务器地址
+      MAXKEY_SERVER_URL: http://sso.maxkey.top
+      # MaxKey客户端ID - 在MaxKey中注册的应用ID
+      MAXKEY_CLIENT_ID: 876892492581044224*
+      # MaxKey客户端密钥 - 在MaxKey中注册的应用密钥
+      MAXKEY_CLIENT_SECRET: x1Y5MTMwNzIwMjMxNTM4NDc3Mzche8
+
+      # TopIAM身份管控平台
+      # TopIAM服务器地址 - TopIAM服务器完整授权地址
+      TOPIAM_SERVER_URL: ""
+      # TopIAM客户端ID - 在TopIAM中注册的应用ID
+      TOPIAM_CLIENT_ID: ""
+      # TopIAM客户端密钥 - 在TopIAM中注册的应用密钥
+      TOPIAM_CLIENT_SECRET: ""
+
+      # 百度登录
+      # 百度应用ID - 在百度开发者中心申请的API Key
+      BAIDU_CLIENT_ID: ""
+      # 百度应用密钥 - 在百度开发者中心申请的Secret Key
+      BAIDU_CLIENT_SECRET: ""
+
+      # CSDN登录
+      # CSDN应用ID - 在CSDN开放平台申请的Client ID
+      CSDN_CLIENT_ID: ""
+      # CSDN应用密钥 - 在CSDN开放平台申请的Client Secret
+      CSDN_CLIENT_SECRET: ""
+
+      # Coding登录
+      # Coding应用ID - 在Coding开放平台申请的Client ID
+      CODING_CLIENT_ID: ""
+      # Coding应用密钥 - 在Coding开放平台申请的Client Secret
+      CODING_CLIENT_SECRET: ""
+      # Coding团队名 - Coding团队/企业的名称
+      CODING_GROUP_NAME: ""
+
+      # 开源中国登录
+      # OSChina应用ID - 在开源中国申请的Client ID
+      OSCHINA_CLIENT_ID: ""
+      # OSChina应用密钥 - 在开源中国申请的Client Secret
+      OSCHINA_CLIENT_SECRET: ""
+
+      # 支付宝登录
+      # 支付宝应用ID - 在支付宝开放平台创建的应用APPID
+      ALIPAY_CLIENT_ID: ""
+      # 支付宝应用私钥 - 应用私钥，用于签名
+      ALIPAY_CLIENT_SECRET: ""
+      # 支付宝公钥 - 支付宝公钥，用于验签
+      ALIPAY_PUBLIC_KEY: ""
+
+      # GitLab登录
+      # GitLab应用ID - 在GitLab中注册的Application ID
+      GITLAB_CLIENT_ID: ""
+      # GitLab应用密钥 - 在GitLab中注册的Secret
+      GITLAB_CLIENT_SECRET: ""
+
+      # RocketMQ客户端
+      # 自定义开关配置（用于控制是否加载RocketMQ模块）
+      ROCKETMQ_ENABLED: "false"
+      # NameServer 地址（多个用分号分隔）本地开发使用 127.0.0.1，生产环境使用实际 IP
+      ROCKETMQ_NAME_SERVER: 127.0.0.1:9876
+      # 集群名称（用于Topic管理）
+      ROCKETMQ_CLUSTER_NAME: RuoYiCluster
+      # Broker 地址（用于Topic管理）
+      ROCKETMQ_BROKER_ADDR: 127.0.0.1:10911
+      # 生产者组名
+      ROCKETMQ_PRODUCER_GROUP: ruoyi-producer-group
+      # 发送消息超时时间（毫秒）
+      ROCKETMQ_PRODUCER_MESSAGE_TIMEOUT: 3000
+      # 消息最大大小
+      ROCKETMQ_PRODUCER_MESSAGE_SIZE: 4194304
+      # 发送失败重试次数
+      ROCKETMQ_PRODUCER_RETRY_FAILED: 2
+      # 异步发送失败重试次数
+      ROCKETMQ_PRODUCER_RETRY_ASYNC_FAILED: 2
+      # 压缩消息阈值
+      ROCKETMQ_PRODUCER_MESSAGE_BODY_THRESHOLD: 4096
+      # 是否自动创建 Topic 为 true 时，发送消息前会自动检查并创建
+      ROCKETMQ_PRODUCER_AUTO_CREATE_TOPIC: "true"
+      # 批量发送消息的最大数量
+      ROCKETMQ_PRODUCER_BATCH_SIZE: 100
+      # 是否启用消息发送日志
+      ROCKETMQ_PRODUCER_ENABLE_LOG: "true"
+    volumes:
+      # 日志文件映射 - 将容器内日志目录映射到宿主机，便于查看和管理
+      - /home/ubuntu/apps/erp_sys/logs/:/ruoyi/server/logs/
+      # 文件上传目录映射 - 将上传文件存储到宿主机，数据持久化
+      - /home/ubuntu/apps/erp_sys/upload/:/ruoyi/server/upload/
+      # 临时文件目录映射 - 临时文件存储目录
+      - /home/ubuntu/apps/erp_sys/temp/:/ruoyi/server/temp/
+      # 微信支付证书目录映射 - 微信支付相关证书文件存储
+      - /home/ubuntu/apps/wxpay/:/ruoyi/server/wxpay/
+    privileged: true
+    network_mode: "host"
+    restart: always
+
+  # ==================== 主应用服务（实例2）====================
+  erp_sys2:
+    image: erp_sys:5.6.1
+    container_name: erp_sys2
+    environment:
+      # ==================== 基础运行环境配置 ====================
+      # 时区设置 - 统一使用上海时区
+      TZ: Asia/Shanghai
+      # 应用服务端口 - 第二个实例使用不同端口，实现负载均衡
+      SERVER_PORT: 5501
+      # SnailJob客户端端口 - 第二个实例使用不同端口
+      SNAIL_PORT: 25501
+      # 调试端口 - 第二个实例的远程调试端口
+      DEBUG_PORT: 5006
+      # Spring环境配置 - 指定运行环境(dev/test/prod)
+      SPRING_PROFILES_ACTIVE: prod
+      # 调试参数 - JVM远程调试配置，生产环境建议设为空
+      DEBUG_ARGS: ""
+
+      # ==================== 日志级别配置 ====================
+      # 应用日志级别 - 控制日志输出详细程度(debug/info/warn/error)
+      LOG_LEVEL: info
+
+      # ==================== 授权码 ====================
+      APP_LICENSE: your-license-code
+      # ==================== 离线授权码 ====================
+      APP_OFFLINE_LICENSE: your-offline-license-code
+
+      # ==================== 数据库配置（与第一个实例相同）====================
+      # 主数据库配置
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_NAME: erp_sys
+      DB_USERNAME: erp_sys
+      DB_PASSWORD: your-database-password
+
+      # 从数据库配置（可选，读写分离时配置）
+      DB_SLAVE_HOST: 127.0.0.1
+      DB_SLAVE_PORT: 3306
+      DB_SLAVE_NAME: erp_sys
+      DB_SLAVE_USERNAME: erp_sys
+      DB_SLAVE_PASSWORD: your-database-password
+
+      # 数据库连接池配置
+      DB_MAX_POOL_SIZE: 50
+      DB_MIN_IDLE: 20
+
+      # 数据库性能分析插件
+      P6SPY_ENABLED: "false"
+      # ==================== Redis缓存配置（与第一个实例相同）====================
+      REDIS_HOST: 127.0.0.1
+      REDIS_PORT: 6379
+      REDIS_DATABASE: 0
+      REDIS_PASSWORD: ""
+      REDIS_SSL_ENABLED: "false"
+      # Redisson分布式客户端配置
+      REDISSON_THREADS: 16
+      REDISSON_NETTY_THREADS: 32
+      REDISSON_MIN_IDLE: 32
+      REDISSON_POOL_SIZE: 64
+
+      # ==================== 应用配置（与第一个实例相同）====================
+      APP_UPLOAD_PATH: /ruoyi/server/upload
+      APP_BASE_API: https://ruoyi.plus
+
+      # ==================== 安全配置（与第一个实例相同）====================
+      JWT_SECRET_KEY: uDkkASPQVN5iR4eN
+      API_ENCRYPT_ENABLED: "true"
+      API_RESPONSE_PUBLIC_KEY: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIrZxEhzVAHKJm7BJpXIHWGU3sHJYgRiOOTw3Auj/iNDTL+RExEW2Y0dg/IC71DKxcjvVEA9GdDp0/5nph+4dIMCAwEAAQ==
+      API_REQUEST_PRIVATE_KEY: MIIBOgIBAAJBAK9s1Pbnn5W+l1hx3ukHLtevayF5nOFIb140zvIPksw8h7bZWY05zyWdsQ2I51ypiC53KnyfhibPk3AJ2yr+qnkCAwEAAQJAfqWhsodSLTel6BJ9jdrDtK9ONqKn4fT7ghW5+gPIRW2S1tQYQlVpq/yM1eDAk+DfyNKMEX8Z9Hr1nXPTyh+bKQIhAOU2bI2SIMfWRqxlkhI3Ae2DWiwpDIj5yqmPv20GM20XAiEAw+0yI6yta9qkPtnR+8lfmdY5Pjyou2JtpE260xiZ/u8CIQCo4MZuMEISup9rmZJb9UdoVaT0cHIZ4eEduRmTHER7lQIgN1GZfokazgEFrtlBeJ366CycLP5jhcTcwC9SOJgRovECIGmK/KwZ4k7Uycktqseo9LjMsNYxTyNNeyxPuaNN0sgg
+
+      # API文档开关 - 开发环境默认true，生产环境建议设置为false关闭API文档
+      SPRINGDOC_ENABLED: "false"
+      # ==================== AI功能配置 ====================
+      # LangChain4j AI功能开关 - 是否启用AI聊天等功能
+      LANGCHAIN4J_ENABLED: "false"
+      # DeepSeek API密钥
+      LANGCHAIN4J_DEEPSEEK_API_KEY: sk-618bfe88c5bc444aa447b42ba827b452
+      # 通义千问 API密钥
+      LANGCHAIN4J_QIANWEN_API_KEY: sk-xxxxxxxxxxxxxxxxxxxx
+      # OpenAi API密钥
+      LANGCHAIN4J_OPENAI_API_KEY: sk-xxxxxxxxxxxxxxxxxxxx
+
+      # ==================== 开放平台配置 ====================
+      # 是否启用开放平台
+      OPEN_API_ENABLED: "false"
+      # AppSecret加密密钥（AES-256需要32字节） 项目运营中再更换会导致之前的加密无法解密
+      OPEN_API_SECRET_KEY: q3XA19UeJExvCqynPOnyYUcr4zwOVCyi
+      # 访问模式: all(所有用户) | roles(指定角色) | admin(仅管理员) | super_admin(仅超管)
+      OPEN_API_ACCESS_MODE: all
+      # 允许访问的角色列表(当mode=roles时生效,多个用逗号分隔)
+      OPEN_API_ALLOWED_ROLES: admin,pc_user
+
+      # 数据库字段加密配置
+      ENCRYPT_PASSWORD: ""
+      ENCRYPT_PUBLIC_KEY: ""
+      ENCRYPT_PRIVATE_KEY: ""
+
+      # ==================== 监控配置（与第一个实例相同）====================
+      MONITOR_ENABLED: "true"
+      MONITOR_URL: http://127.0.0.1:9090/admin
+      MONITOR_USERNAME: ruoyi
+      MONITOR_PASSWORD: 123456
+
+      # ==================== 定时任务配置（与第一个实例相同）====================
+      SNAIL_JOB_ENABLED: "true"
+      SNAIL_JOB_SERVER_HOST: 127.0.0.1
+      SNAIL_JOB_SERVER_PORT: 17888
+      SNAIL_JOB_TOKEN: SJ_cKqBTPzCsWA3VyuCfFoccmuIEGXjr5KT
+      SNAIL_JOB_CLIENT_HOST: ""
+
+      # ==================== 邮件服务配置（可选）====================
+      # 邮件服务开关 - 是否启用邮件发送功能
+      MAIL_ENABLED: "false"
+      # SMTP服务器 - 邮件服务提供商的SMTP服务器地址
+      MAIL_HOST: ""
+      # SMTP端口 - 邮件服务器端口，SSL通常为465，STARTTLS为587
+      MAIL_PORT: 465
+      # 发件人邮箱 - 系统发送邮件时显示的发件人地址
+      MAIL_FROM: ""
+      # 邮箱用户名 - 登录邮件服务器的用户名（通常是邮箱地址）
+      MAIL_USERNAME: ""
+      # 邮箱密码 - 登录邮件服务器的密码（可能是授权码）
+      MAIL_PASSWORD: ""
+
+      # ==================== 短信服务配置（可选）====================
+      # 阿里云短信服务配置
+      # 阿里云AccessKey - 阿里云账号的访问密钥ID
+      SMS_ALI_ACCESS_KEY: ""
+      # 阿里云AccessSecret - 阿里云账号的访问密钥Secret
+      SMS_ALI_ACCESS_SECRET: ""
+      # 阿里云短信签名 - 短信内容前的签名标识
+      SMS_ALI_SIGNATURE: ""
+      # 阿里云应用ID - 短信服务的应用标识
+      SMS_ALI_SDK_APP_ID: ""
+
+      # 腾讯云短信服务配置
+      # 腾讯云SecretId - 腾讯云账号的访问密钥ID
+      SMS_TENCENT_ACCESS_KEY: ""
+      # 腾讯云SecretKey - 腾讯云账号的访问密钥Key
+      SMS_TENCENT_ACCESS_SECRET: ""
+      # 腾讯云短信签名 - 短信内容前的签名标识
+      SMS_TENCENT_SIGNATURE: ""
+      # 腾讯云应用ID - 短信服务的应用标识
+      SMS_TENCENT_SDK_APP_ID: ""
+
+      # 短信发送频率限制（防刷机制）
+      # 每分钟限制 - 单手机号每分钟最大发送次数
+      SMS_MINUTE_MAX: 1
+      # 每日限制 - 单手机号每日最大发送次数
+      SMS_ACCOUNT_MAX: 30
+
+      # ==================== 第三方服务配置 ====================
+      # 高德地图API配置
+      # 高德地图API密钥 - 用于地图服务、路径规划、地理编码等（生产环境必须配置真实密钥）
+      GAODE_MAP_API_KEY: your-gaode-api-key
+      # 高德地图API请求超时时间（毫秒）- 根据网络环境调整
+      GAODE_MAP_TIMEOUT: 10000
+      # 高德地图服务开关 - 是否启用高德地图相关功能
+      GAODE_MAP_ENABLED: "true"
+      # ==================== 第三方登录配置（可选）====================
+      # 第三方登录回调基础地址 - 用于构建各平台的回调URL
+      JUSTAUTH_ADDRESS: https://ruoyi.plus
+
+      # 微信开放平台登录（网站应用）
+      # 微信开放平台应用ID - 网站应用的AppID
+      WECHAT_OPEN_CLIENT_ID: ""
+      # 微信开放平台应用密钥 - 网站应用的AppSecret
+      WECHAT_OPEN_CLIENT_SECRET: ""
+
+      # 微信公众号登录
+      # 微信公众号应用ID - 公众号的AppID
+      WECHAT_MP_CLIENT_ID: ""
+      # 微信公众号应用密钥 - 公众号的AppSecret
+      WECHAT_MP_CLIENT_SECRET: ""
+
+      # 微信企业号登录
+      # 微信企业号应用ID - 企业微信的CorpID
+      WECHAT_ENTERPRISE_CLIENT_ID: ""
+      # 微信企业号应用密钥 - 企业微信的CorpSecret
+      WECHAT_ENTERPRISE_CLIENT_SECRET: ""
+      # 微信企业号代理ID - 企业微信应用的AgentId
+      WECHAT_ENTERPRISE_AGENT_ID: ""
+
+      # Gitee码云登录
+      # Gitee应用ID - 在Gitee第三方应用中申请的Client ID
+      GITEE_CLIENT_ID: ""
+      # Gitee应用密钥 - 在Gitee第三方应用中申请的Client Secret
+      GITEE_CLIENT_SECRET: ""
+
+      # QQ互联登录
+      # QQ应用ID - 在QQ互联平台申请的App ID
+      QQ_CLIENT_ID: ""
+      # QQ应用密钥 - 在QQ互联平台申请的App Key
+      QQ_CLIENT_SECRET: ""
+
+      # 微博开放平台登录
+      # 微博应用ID - 在微博开放平台申请的App Key
+      WEIBO_CLIENT_ID: ""
+      # 微博应用密钥 - 在微博开放平台申请的App Secret
+      WEIBO_CLIENT_SECRET: ""
+
+      # 钉钉登录
+      # 钉钉应用ID - 在钉钉开放平台申请的AppKey
+      DINGTALK_CLIENT_ID: ""
+      # 钉钉应用密钥 - 在钉钉开放平台申请的AppSecret
+      DINGTALK_CLIENT_SECRET: ""
+
+      # MaxKey统一身份认证平台
+      # MaxKey服务器地址 - MaxKey SSO服务器地址
+      MAXKEY_SERVER_URL: http://sso.maxkey.top
+      # MaxKey客户端ID - 在MaxKey中注册的应用ID
+      MAXKEY_CLIENT_ID: 876892492581044224*
+      # MaxKey客户端密钥 - 在MaxKey中注册的应用密钥
+      MAXKEY_CLIENT_SECRET: x1Y5MTMwNzIwMjMxNTM4NDc3Mzche8
+
+      # TopIAM身份管控平台
+      # TopIAM服务器地址 - TopIAM服务器完整授权地址
+      TOPIAM_SERVER_URL: ""
+      # TopIAM客户端ID - 在TopIAM中注册的应用ID
+      TOPIAM_CLIENT_ID: ""
+      # TopIAM客户端密钥 - 在TopIAM中注册的应用密钥
+      TOPIAM_CLIENT_SECRET: ""
+
+      # 百度登录
+      # 百度应用ID - 在百度开发者中心申请的API Key
+      BAIDU_CLIENT_ID: ""
+      # 百度应用密钥 - 在百度开发者中心申请的Secret Key
+      BAIDU_CLIENT_SECRET: ""
+
+      # CSDN登录
+      # CSDN应用ID - 在CSDN开放平台申请的Client ID
+      CSDN_CLIENT_ID: ""
+      # CSDN应用密钥 - 在CSDN开放平台申请的Client Secret
+      CSDN_CLIENT_SECRET: ""
+
+      # Coding登录
+      # Coding应用ID - 在Coding开放平台申请的Client ID
+      CODING_CLIENT_ID: ""
+      # Coding应用密钥 - 在Coding开放平台申请的Client Secret
+      CODING_CLIENT_SECRET: ""
+      # Coding团队名 - Coding团队/企业的名称
+      CODING_GROUP_NAME: ""
+
+      # 开源中国登录
+      # OSChina应用ID - 在开源中国申请的Client ID
+      OSCHINA_CLIENT_ID: ""
+      # OSChina应用密钥 - 在开源中国申请的Client Secret
+      OSCHINA_CLIENT_SECRET: ""
+
+      # 支付宝登录
+      # 支付宝应用ID - 在支付宝开放平台创建的应用APPID
+      ALIPAY_CLIENT_ID: ""
+      # 支付宝应用私钥 - 应用私钥，用于签名
+      ALIPAY_CLIENT_SECRET: ""
+      # 支付宝公钥 - 支付宝公钥，用于验签
+      ALIPAY_PUBLIC_KEY: ""
+
+      # GitLab登录
+      # GitLab应用ID - 在GitLab中注册的Application ID
+      GITLAB_CLIENT_ID: ""
+      # GitLab应用密钥 - 在GitLab中注册的Secret
+      GITLAB_CLIENT_SECRET: ""
+
+      # RocketMQ客户端
+      # 自定义开关配置（用于控制是否加载RocketMQ模块）
+      ROCKETMQ_ENABLED: "false"
+      # NameServer 地址（多个用分号分隔）本地开发使用 127.0.0.1，生产环境使用实际 IP
+      ROCKETMQ_NAME_SERVER: 127.0.0.1:9876
+      # 集群名称（用于Topic管理）
+      ROCKETMQ_CLUSTER_NAME: RuoYiCluster
+      # Broker 地址（用于Topic管理）
+      ROCKETMQ_BROKER_ADDR: 127.0.0.1:10911
+      # 生产者组名
+      ROCKETMQ_PRODUCER_GROUP: ruoyi-producer-group2
+      # 发送消息超时时间（毫秒）
+      ROCKETMQ_PRODUCER_MESSAGE_TIMEOUT: 3000
+      # 消息最大大小
+      ROCKETMQ_PRODUCER_MESSAGE_SIZE: 4194304
+      # 发送失败重试次数
+      ROCKETMQ_PRODUCER_RETRY_FAILED: 2
+      # 异步发送失败重试次数
+      ROCKETMQ_PRODUCER_RETRY_ASYNC_FAILED: 2
+      # 压缩消息阈值
+      ROCKETMQ_PRODUCER_MESSAGE_BODY_THRESHOLD: 4096
+      # 是否自动创建 Topic 为 true 时，发送消息前会自动检查并创建
+      ROCKETMQ_PRODUCER_AUTO_CREATE_TOPIC: "true"
+      # 批量发送消息的最大数量
+      ROCKETMQ_PRODUCER_BATCH_SIZE: 100
+      # 是否启用消息发送日志
+      ROCKETMQ_PRODUCER_ENABLE_LOG: "true"
+    volumes:
+      # 日志文件映射 - 第二个实例使用独立的日志目录
+      - /home/ubuntu/apps/erp_sys2/logs/:/ruoyi/server/logs/
+      # 文件上传目录映射 - 共享上传文件目录（多实例共享文件）
+      - /home/ubuntu/apps/erp_sys/upload/:/ruoyi/server/upload/
+      # 临时文件目录映射 - 第二个实例使用独立的临时目录
+      - /home/ubuntu/apps/erp_sys2/temp/:/ruoyi/server/temp/
+      # 微信支付证书目录映射 - 共享支付证书目录
+      - /home/ubuntu/apps/wxpay/:/ruoyi/server/wxpay/
+    privileged: true
+    network_mode: "host"
+    restart: always
+
+  # ==================== 监控中心服务 ====================
+  monitor:
+    image: monitor:5.6.1
+    container_name: monitor
+    environment:
+      # ==================== 基础运行环境配置 ====================
+      # 时区设置 - 统一使用上海时区
+      TZ: Asia/Shanghai
+      # Spring环境配置 - 指定运行环境(dev/test/prod)
+      SPRING_PROFILES_ACTIVE: prod
+      # 监控中心服务端口 - Spring Boot Admin管理界面端口
+      SERVER_PORT: 9090
+
+      # ==================== 日志级别配置 ====================
+      # 监控中心日志级别 - 控制Spring Boot Admin日志输出详细程度
+      LOG_LEVEL: info
+
+      # ==================== 监控中心认证配置 ====================
+      # 监控中心登录用户名 - 访问Spring Boot Admin界面的用户名
+      MONITOR_USERNAME: ruoyi
+      # 监控中心登录密码 - 访问Spring Boot Admin界面的密码（生产环境必须修改）
+      MONITOR_PASSWORD: 123456
+      # 监控中心界面标题 - 在管理界面显示的标题名称
+      MONITOR_TITLE: Spring Boot Admin服务监控中心
+
+      # ==================== 自监控配置 ====================
+      # 自监控开关 - 是否将监控中心自身也注册为被监控应用
+      MONITOR_SELF_ENABLED: "true"
+      # 监控中心访问地址 - 用于自监控注册的完整URL地址
+      MONITOR_URL: http://127.0.0.1:9090/admin
+
+      # ==================== 邮件通知配置（可选）====================
+      # 邮件通知开关 - 是否启用服务状态变化的邮件通知
+      NOTIFY_MAIL_ENABLED: "false"
+      # 通知收件人 - 接收监控告警邮件的邮箱地址
+      NOTIFY_MAIL_TO: ""
+      # 邮件主题 - 监控告警邮件的主题（可自定义）
+      NOTIFY_MAIL_SUBJECT: admin监控通知
+
+      # ==================== Webhook通知配置（可选）====================
+      # Webhook通知开关 - 是否启用钉钉等第三方平台的消息推送
+      NOTIFY_WEBHOOK_ENABLED: "false"
+      # 钉钉机器人Webhook地址 - 钉钉群机器人的完整Webhook URL
+      DINGTALK_WEBHOOK_URL: ""
+      # 钉钉机器人密钥 - 钉钉机器人的加签密钥（安全设置）
+      DINGTALK_SECRET: ""
+      # 钉钉关键词 - 钉钉机器人触发的关键词列表（逗号分隔）
+      DINGTALK_KEYWORDS: ""
+
+    volumes:
+      # 日志文件映射 - 将容器内日志目录映射到宿主机，便于查看和管理
+      - /home/ubuntu/apps/monitor/logs/:/ruoyi/monitor/logs/
+    privileged: true
+    network_mode: "host"
+    restart: always
+
+  # ==================== 定时任务调度服务 ====================
+  snailjob:
+    image: snailjob:5.6.1
+    container_name: snailjob
+    environment:
+      # ==================== 基础运行环境配置 ====================
+      # 时区设置 - 统一使用上海时区
+      TZ: Asia/Shanghai
+      # Spring环境配置 - 指定运行环境(dev/test/prod)
+      SPRING_PROFILES_ACTIVE: prod
+      # SnailJob Web管理界面端口 - 访问调度管理界面的端口
+      SERVER_PORT: 8800
+      # SnailJob RPC通信端口 - 与客户端通信的内部服务端口
+      SNAILJOB_SERVER_PORT: 17888
+
+      # ==================== 日志级别配置 ====================
+      # SnailJob日志级别 - 控制调度系统日志输出详细程度
+      LOG_LEVEL: info
+
+      # ==================== 数据库配置 ====================
+      # 数据库服务器地址 - SnailJob专用数据库的MySQL服务器IP或域名
+      SNAILJOB_DB_HOST: 127.0.0.1
+      # 数据库端口 - MySQL服务端口，默认3306
+      SNAILJOB_DB_PORT: 3306
+      # 数据库名称 - SnailJob调度系统使用的数据库名
+      SNAILJOB_DB_NAME: erp_sys_snailjob
+      # 数据库用户名 - 连接SnailJob数据库的用户账号
+      SNAILJOB_DB_USERNAME: erp_sys_snailjob
+      # 数据库密码 - 连接SnailJob数据库的用户密码
+      SNAILJOB_DB_PASSWORD: your-snailjob-db-password
+
+      # 数据库连接池配置（性能优化）
+      # 最小空闲连接数 - 连接池最小保持的空闲连接数
+      SNAILJOB_DB_MIN_IDLE: 10
+      # 最大连接池数量 - 连接池最大连接数，根据调度任务数量调整
+      SNAILJOB_DB_MAX_POOL: 20
+
+      # ==================== 监控配置 ====================
+      # 监控服务开关 - 是否将SnailJob注册到Spring Boot Admin监控中心
+      MONITOR_ENABLED: "true"
+      # 监控中心地址 - Spring Boot Admin服务器地址
+      MONITOR_URL: http://127.0.0.1:9090/admin
+      # 监控用户名 - 连接监控中心的用户名
+      MONITOR_USERNAME: ruoyi
+      # 监控密码 - 连接监控中心的密码
+      MONITOR_PASSWORD: 123456
+
+    volumes:
+      # 日志文件映射 - 将容器内日志目录映射到宿主机，便于查看调度日志
+      - /home/ubuntu/apps/snailjob/logs/:/ruoyi/snailjob/logs/
+    privileged: true
+    network_mode: "host"
+    restart: always

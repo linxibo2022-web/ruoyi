@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, user-scalable=no">
+<title>天气工具 - 设置</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f0f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .phone-frame { width: 375px; height: 812px; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; background: #f8fafc; position: relative; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+  .status-bar { height: 44px; background: #f8fafc; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }
+  .status-bar span { color: #1e293b; font-size: 12px; font-weight: 600; }
+  .screen { flex: 1; overflow-y: auto; padding-bottom: 80px; }
+  .screen::-webkit-scrollbar { display: none; }
+  .tab-bar { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); display: flex; border-top: 1px solid #e5e7eb; padding-bottom: 20px; z-index: 50; }
+  .tab-bar a { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 8px 0 4px; text-decoration: none; color: #9ca3af; font-size: 10px; gap: 2px; }
+  .tab-bar a.active { color: #0EA5E9; }
+  .tab-bar a i { width: 22px; height: 22px; }
+  .home-indicator { width: 134px; height: 5px; background: #000; border-radius: 3px; margin: 0 auto; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); opacity: 0.2; }
+
+  .page-header { padding: 4px 20px 16px; }
+  .page-header h1 { font-size: 28px; font-weight: 700; color: #0f172a; }
+
+  .section { padding: 0 16px 20px; }
+  .section-label { font-size: 12px; color: #94a3b8; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; padding-left: 4px; }
+
+  .card-group { background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+
+  .city-card { display: flex; align-items: center; padding: 14px 16px; border-bottom: 1px solid #f1f5f9; }
+  .city-card:last-child { border-bottom: none; }
+  .city-card .cc-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 12px; flex-shrink: 0; }
+  .city-card .cc-icon.current { background: #0EA5E9; color: white; }
+  .city-card .cc-icon.other { background: #f1f5f9; }
+  .city-card .cc-info { flex: 1; }
+  .city-card .cc-name { font-size: 15px; font-weight: 500; color: #1e293b; display: flex; align-items: center; gap: 6px; }
+  .city-card .cc-sub { font-size: 12px; color: #94a3b8; margin-top: 1px; }
+  .city-card .cc-temp { font-size: 18px; font-weight: 600; color: #1e293b; margin-right: 8px; }
+  .city-card .cc-action { color: #cbd5e1; }
+  .city-card .cc-action i { width: 18px; height: 18px; }
+  .current-badge { display: inline-block; background: #dcfce7; color: #16a34a; font-size: 10px; padding: 1px 6px; border-radius: 4px; font-weight: 500; }
+
+  .add-city { display: flex; align-items: center; justify-content: center; padding: 14px; gap: 6px; color: #0EA5E9; font-size: 14px; font-weight: 500; cursor: pointer; border-top: 1px solid #f1f5f9; }
+  .add-city i { width: 18px; height: 18px; }
+
+  .setting-row { display: flex; align-items: center; padding: 14px 16px; border-bottom: 1px solid #f1f5f9; }
+  .setting-row:last-child { border-bottom: none; }
+  .setting-row .sr-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px; flex-shrink: 0; }
+  .setting-row .sr-icon i { width: 18px; height: 18px; }
+  .setting-row .sr-label { flex: 1; font-size: 15px; color: #1e293b; }
+  .setting-row .sr-value { font-size: 13px; color: #94a3b8; margin-right: 4px; }
+
+  /* Toggle switch */
+  .toggle { width: 44px; height: 26px; border-radius: 13px; background: #e2e8f0; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+  .toggle.on { background: #0EA5E9; }
+  .toggle .toggle-dot { width: 22px; height: 22px; border-radius: 50%; background: white; position: absolute; top: 2px; left: 2px; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+  .toggle.on .toggle-dot { transform: translateX(18px); }
+
+  /* Unit selector */
+  .unit-selector { display: flex; background: #f1f5f9; border-radius: 8px; overflow: hidden; flex-shrink: 0; }
+  .unit-btn { padding: 6px 16px; font-size: 13px; font-weight: 500; color: #64748b; cursor: pointer; transition: all 0.2s; }
+  .unit-btn.active { background: #0EA5E9; color: white; border-radius: 8px; }
+
+  .about-section { padding: 24px 16px; text-align: center; }
+  .about-logo { font-size: 48px; margin-bottom: 8px; }
+  .about-name { font-size: 16px; font-weight: 600; color: #1e293b; }
+  .about-ver { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+  .about-desc { font-size: 12px; color: #94a3b8; margin-top: 8px; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span>9:41</span>
+    <span>●●●●○ ⚡ 85%</span>
+  </div>
+
+  <div class="screen">
+    <!-- Header -->
+    <div class="page-header">
+      <h1>设置</h1>
+    </div>
+
+    <!-- City Management -->
+    <div class="section">
+      <div class="section-label">城市管理</div>
+      <div class="card-group">
+        <div class="city-card">
+          <div class="cc-icon current">
+            <i data-lucide="map-pin"></i>
+          </div>
+          <div class="cc-info">
+            <div class="cc-name">北京市 <span class="current-badge">当前</span></div>
+            <div class="cc-sub">自动定位 · 晴</div>
+          </div>
+          <div class="cc-temp">28°</div>
+          <div class="cc-action"><i data-lucide="chevron-right"></i></div>
+        </div>
+        <div class="city-card">
+          <div class="cc-icon other">🌧️</div>
+          <div class="cc-info">
+            <div class="cc-name">上海市</div>
+            <div class="cc-sub">小雨 · 湿度 78%</div>
+          </div>
+          <div class="cc-temp">24°</div>
+          <div class="cc-action"><i data-lucide="chevron-right"></i></div>
+        </div>
+        <div class="city-card">
+          <div class="cc-icon other">☀️</div>
+          <div class="cc-info">
+            <div class="cc-name">广州市</div>
+            <div class="cc-sub">晴 · 湿度 62%</div>
+          </div>
+          <div class="cc-temp">33°</div>
+          <div class="cc-action"><i data-lucide="chevron-right"></i></div>
+        </div>
+        <div class="city-card">
+          <div class="cc-icon other">⛅</div>
+          <div class="cc-info">
+            <div class="cc-name">成都市</div>
+            <div class="cc-sub">多云 · 湿度 55%</div>
+          </div>
+          <div class="cc-temp">26°</div>
+          <div class="cc-action"><i data-lucide="chevron-right"></i></div>
+        </div>
+        <div class="add-city">
+          <i data-lucide="plus"></i>
+          <span>添加城市</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preferences -->
+    <div class="section">
+      <div class="section-label">偏好设置</div>
+      <div class="card-group">
+        <div class="setting-row">
+          <div class="sr-icon" style="background:#fef3c7;">
+            <i data-lucide="thermometer" style="color:#f59e0b;"></i>
+          </div>
+          <div class="sr-label">温度单位</div>
+          <div class="unit-selector">
+            <div class="unit-btn active">℃</div>
+            <div class="unit-btn">℉</div>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="sr-icon" style="background:#dbeafe;">
+            <i data-lucide="wind" style="color:#3b82f6;"></i>
+          </div>
+          <div class="sr-label">风速单位</div>
+          <div class="sr-value">km/h</div>
+          <div class="cc-action"><i data-lucide="chevron-right" style="width:18px;height:18px;color:#cbd5e1;"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="section">
+      <div class="section-label">通知设置</div>
+      <div class="card-group">
+        <div class="setting-row">
+          <div class="sr-icon" style="background:#fce7f3;">
+            <i data-lucide="bell" style="color:#ec4899;"></i>
+          </div>
+          <div class="sr-label">天气预警通知</div>
+          <div class="toggle on"><div class="toggle-dot"></div></div>
+        </div>
+        <div class="setting-row">
+          <div class="sr-icon" style="background:#e0e7ff;">
+            <i data-lucide="cloud-rain" style="color:#6366f1;"></i>
+          </div>
+          <div class="sr-label">降雨提醒</div>
+          <div class="toggle on"><div class="toggle-dot"></div></div>
+        </div>
+        <div class="setting-row">
+          <div class="sr-icon" style="background:#dcfce7;">
+            <i data-lucide="sunrise" style="color:#22c55e;"></i>
+          </div>
+          <div class="sr-label">每日天气播报</div>
+          <div class="toggle"><div class="toggle-dot"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- About -->
+    <div class="about-section">
+      <div class="about-logo">🌤️</div>
+      <div class="about-name">天气工具</div>
+      <div class="about-ver">版本 1.0.0</div>
+      <div class="about-desc">数据来源：中国气象局<br>更新频率：每 30 分钟</div>
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <a href="01-index.html">
+      <i data-lucide="cloud-sun"></i>
+      <span>天气</span>
+    </a>
+    <a href="02-forecast.html">
+      <i data-lucide="calendar-days"></i>
+      <span>预报</span>
+    </a>
+    <a href="03-map.html">
+      <i data-lucide="map"></i>
+      <span>天气图</span>
+    </a>
+    <a href="04-setting.html" class="active">
+      <i data-lucide="settings"></i>
+      <span>设置</span>
+    </a>
+  </div>
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+  lucide.createIcons();
+</script>
+</body>
+</html>

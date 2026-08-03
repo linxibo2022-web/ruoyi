@@ -1,0 +1,68 @@
+# Snail Job 生产环境配置
+
+# 数据库配置 - 所有敏感信息通过环境变量提供
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${SNAILJOB_DB_HOST:127.0.0.1}:${SNAILJOB_DB_PORT:3306}/${SNAILJOB_DB_NAME:erp_sys}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: ${SNAILJOB_DB_USERNAME:root}
+    password: ${SNAILJOB_DB_PASSWORD:root}
+    # HikariCP 连接池配置
+    hikari:
+      # 连接超时时间（毫秒）
+      connection-timeout: 30000
+      # 连接验证超时时间（毫秒）
+      validation-timeout: 5000
+      # 最小空闲连接数
+      minimum-idle: ${SNAILJOB_DB_MIN_IDLE:10}
+      # 最大连接池大小
+      maximum-pool-size: ${SNAILJOB_DB_MAX_POOL:20}
+      # 空闲连接超时时间（毫秒）
+      idle-timeout: 600000
+      # 连接最大生命周期（毫秒）
+      max-lifetime: 900000
+      # 连接保活时间（毫秒）
+      keepaliveTime: 30000
+
+--- # snail-job 服务端配置
+snail-job:
+  # 服务端节点IP(默认按照`NetUtil.getLocalIpStr()`)
+  server-host:
+  # 服务端端口号
+  server-port: ${SNAILJOB_SERVER_PORT:17888}
+  # 合并日志默认保存天数
+  merge-Log-days: 1
+  # 合并日志默认的条数
+  merge-Log-num: 500
+  # 配置每批次拉取重试数据的大小
+  retry-pull-page-size: 100
+  # 配置日志保存时间（单位：天）
+  log-storage: 7
+  # bucket的总数量
+  bucket-total: 128
+  # Dashboard 任务容错天数
+  summary-day: 7
+  # 配置负载均衡周期时间
+  load-balance-cycle-time: 10
+  # 重试任务拉取的并行度
+  retry-max-pull-parallel: 2
+
+--- # Spring Boot Admin 监控中心配置
+spring.boot.admin.client:
+  # 生产环境启用监控客户端
+  enabled: ${MONITOR_ENABLED:false}
+  # 监控中心地址
+  url: ${MONITOR_URL:http://127.0.0.1:9090/admin}
+  instance:
+    # 服务主机类型
+    service-host-type: IP
+    metadata:
+      # 监控认证用户名
+      username: ${MONITOR_USERNAME:ruoyi}
+      # 监控认证密码
+      userpassword: ${MONITOR_PASSWORD:123456}
+  # 监控用户名 - 必须通过环境变量提供
+  username: ${MONITOR_USERNAME:ruoyi}
+  # 监控密码 - 必须通过环境变量提供
+  password: ${MONITOR_PASSWORD:123456}

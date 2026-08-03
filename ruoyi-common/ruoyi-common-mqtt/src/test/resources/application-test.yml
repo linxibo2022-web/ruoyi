@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: mqtt-test
+
+# MQTT 客户端配置 (测试环境)
+mqtt:
+  client:
+    enabled: true  # ✅ 启用 MQTT,MqttClientUsageTest 需要
+    ip: 192.168.168.168
+    port: 1883
+    reconnect: false  # 测试环境禁用自动重连,避免测试挂起
+    timeout: 3  # 3秒超时,快速失败

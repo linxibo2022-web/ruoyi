@@ -1,0 +1,195 @@
+package ${packageName}.service.impl;
+
+import cn.hutool.core.collection.CollUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ${packageName}.dao.I${ClassName}Dao;
+import ${packageName}.domain.${ClassName};
+import ${packageName}.domain.bo.${ClassName}Bo;
+import ${packageName}.domain.vo.${ClassName}Vo;
+import ${packageName}.service.I${ClassName}Service;
+import plus.ruoyi.common.core.dict.DictEnableStatus;
+import plus.ruoyi.common.core.exception.ServiceException;
+import plus.ruoyi.common.core.utils.MapstructUtils;
+import plus.ruoyi.common.mybatis.core.page.PageQuery;
+import plus.ruoyi.common.mybatis.core.page.PageResult;
+import plus.ruoyi.common.mybatis.core.query.PlusLambdaQuery;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+/**
+ * ${functionName}服务实现
+ *
+ * @author ${author}
+ * @date ${datetime}
+ */
+@Service
+@RequiredArgsConstructor
+public class ${ClassName}ServiceImpl implements I${ClassName}Service {
+
+    private final I${ClassName}Dao ${className}Dao;
+
+    /**
+     * 根据ID查询
+     *
+     * @param ${pkColumn.javaField} 主键ID
+     * @return 视图对象
+     */
+    @Override
+    public ${ClassName}Vo get(${pkColumn.javaType} ${pkColumn.javaField}) {
+        ${ClassName} entity = ${className}Dao.getById(${pkColumn.javaField});
+        return MapstructUtils.convert(entity, ${ClassName}Vo.class);
+    }
+
+    /**
+     * 查询列表
+     *
+     * @param bo 查询参数
+     * @return 列表数据
+     */
+    @Override
+    public List<${ClassName}Vo> list(${ClassName}Bo bo) {
+        PlusLambdaQuery<${ClassName}> wrapper = ${className}Dao.buildQueryWrapper(bo);
+        List<${ClassName}> entities = ${className}Dao.list(wrapper);
+        return MapstructUtils.convert(entities, ${ClassName}Vo.class);
+    }
+
+    /**
+     * 分页查询
+     *
+     * @param bo        查询参数
+     * @param pageQuery 分页参数
+     * @return 分页结果
+     */
+    @Override
+    public PageResult<${ClassName}Vo> page(${ClassName}Bo bo, PageQuery pageQuery) {
+        PlusLambdaQuery<${ClassName}> wrapper = ${className}Dao.buildQueryWrapper(bo);
+        PageResult<${ClassName}> entityPage = ${className}Dao.page(wrapper, pageQuery);
+        return entityPage.convert(${ClassName}Vo.class);
+    }
+
+    /**
+     * 新增
+     *
+     * @param bo 业务对象
+     * @return 主键ID
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ${pkColumn.javaType} add(${ClassName}Bo bo) {
+        ${ClassName} entity = MapstructUtils.convert(bo, ${ClassName}.class);
+        beforeSave(entity);
+        ${className}Dao.insert(entity);
+        return entity.get${pkColumn.javaField.substring(0,1).toUpperCase()}${pkColumn.javaField.substring(1)}();
+    }
+
+    /**
+     * 修改
+     *
+     * @param bo 业务对象
+     * @return 影响行数
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int update(${ClassName}Bo bo) {
+        if (bo.get${pkColumn.javaField.substring(0,1).toUpperCase()}${pkColumn.javaField.substring(1)}() == null) {
+            throw ServiceException.of("${functionName}ID不能为空");
+        }
+        if (!${className}Dao.exists(bo.get${pkColumn.javaField.substring(0,1).toUpperCase()}${pkColumn.javaField.substring(1)}())) {
+            throw ServiceException.of("${functionName}不存在");
+        }
+        ${ClassName} entity = MapstructUtils.convert(bo, ${ClassName}.class);
+        beforeSave(entity);
+        return ${className}Dao.updateById(entity);
+    }
+
+    /**
+     * 批量删除
+     *
+     * @param ids ID集合
+     * @return 影响行数
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int batchDelete(Collection<${pkColumn.javaType}> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            throw ServiceException.of("ID集合不能为空");
+        }
+        beforeDelete(ids);
+        return ${className}Dao.deleteByIds(ids);
+    }
+
+    /**
+     * 批量保存
+     *
+     * @param boList 业务对象集合
+     * @return 影响行数
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int batchSave(List<${ClassName}Bo> boList) {
+        if (CollUtil.isEmpty(boList)) {
+            return 0;
+        }
+        List<${ClassName}> entities = new ArrayList<>(boList.size());
+        for (${ClassName}Bo bo : boList) {
+            ${ClassName} entity = MapstructUtils.convert(bo, ${ClassName}.class);
+            beforeSave(entity);
+            entities.add(entity);
+        }
+        return ${className}Dao.batchSave(entities);
+    }
+
+    /**
+     * 保存前钩子方法
+     * 子类可重写此方法实现数据校验、默认值设置等逻辑
+     *
+     * @param entity 实体对象
+     */
+    protected void beforeSave(${ClassName} entity) {
+        // 默认实现为空,子类按需重写
+    }
+
+    /**
+     * 查询选项列表
+     * 用于下拉选择、关联查询等场景,只返回必要字段
+     *
+     * @return 选项列表
+     */
+    @Override
+    public List<${ClassName}Vo> listForOption() {
+        PlusLambdaQuery<${ClassName}> wrapper = PlusLambdaQuery.of();
+        // 只查询启用状态的数据
+        #foreach($column in $columns)
+        #if($column.javaField == 'status')
+        wrapper.eq(${ClassName}::getStatus, DictEnableStatus.ENABLE.getValue());
+        #end
+        #end
+        // 只选择必要的字段:ID和显示字段
+        wrapper.select(${ClassName}::get${pkColumn.javaField.substring(0,1).toUpperCase()}${pkColumn.javaField.substring(1)}#if($displayField), ${ClassName}::get${displayField}#end);
+        // 排序
+        #foreach($column in $columns)
+        #if($column.javaField == 'sortOrder' || $column.javaField == 'sort')
+        wrapper.orderByAsc(${ClassName}::get${column.javaField.substring(0,1).toUpperCase()}${column.javaField.substring(1)});
+        #end
+        #end
+        wrapper.orderByDesc(${ClassName}::get${pkColumn.javaField.substring(0,1).toUpperCase()}${pkColumn.javaField.substring(1)});
+        // 使用分页限制返回数量,防止数据过多
+        PageQuery pageQuery = new PageQuery(1000, 1);
+        PageResult<${ClassName}> entityPage = ${className}Dao.page(wrapper, pageQuery);
+        return MapstructUtils.convert(entityPage.getRecords(), ${ClassName}Vo.class);
+    }
+
+    /**
+     * 删除前钩子方法
+     * 子类可重写此方法实现关联数据校验、清理等逻辑
+     *
+     * @param ids 待删除的ID集合
+     */
+    protected void beforeDelete(Collection<${pkColumn.javaType}> ids) {
+        // 默认实现为空,子类按需重写
+    }
+}

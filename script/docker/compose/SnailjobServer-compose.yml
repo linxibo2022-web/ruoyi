@@ -1,0 +1,56 @@
+services:
+  snailjob:
+    image: snailjob:5.6.1
+    container_name: snailjob
+    environment:
+      # ==================== 基础运行环境配置 ====================
+      # 时区设置 - 统一使用上海时区
+      TZ: Asia/Shanghai
+      # Spring环境配置 - 指定运行环境(dev/test/prod)
+      SPRING_PROFILES_ACTIVE: prod
+      # SnailJob Web管理界面端口 - 访问调度管理界面的端口
+      SERVER_PORT: 8800
+      # SnailJob RPC通信端口 - 与客户端通信的内部服务端口
+      SNAILJOB_SERVER_PORT: 17888
+
+      # ==================== 日志级别配置 ====================
+      # SnailJob日志级别 - 控制调度系统日志输出详细程度(debug/info/warn/error)
+      LOG_LEVEL: info
+
+      # ==================== 数据库配置 ====================
+      # 数据库服务器地址 - SnailJob专用数据库的MySQL服务器IP或域名
+      SNAILJOB_DB_HOST: 127.0.0.1
+      # 数据库端口 - MySQL服务端口，默认3306
+      SNAILJOB_DB_PORT: 3306
+      # 数据库名称 - SnailJob调度系统使用的数据库名
+      SNAILJOB_DB_NAME: erp_sys_snailjob
+      # 数据库用户名 - 连接SnailJob数据库的用户账号
+      SNAILJOB_DB_USERNAME: erp_sys_snailjob
+      # 数据库密码 - 连接SnailJob数据库的用户密码
+      SNAILJOB_DB_PASSWORD: your-snailjob-db-password
+
+      # 数据库连接池配置（性能优化）
+      # 最小空闲连接数 - 连接池最小保持的空闲连接数
+      SNAILJOB_DB_MIN_IDLE: 10
+      # 最大连接池数量 - 连接池最大连接数，根据调度任务数量调整
+      SNAILJOB_DB_MAX_POOL: 20
+
+      # ==================== 监控配置 ====================
+      # 监控服务开关 - 是否将SnailJob注册到Spring Boot Admin监控中心
+      MONITOR_ENABLED: true
+      # 监控中心地址 - Spring Boot Admin服务器地址
+      MONITOR_URL: http://127.0.0.1:9090/admin
+      # 监控用户名 - 连接监控中心的用户名
+      MONITOR_USERNAME: ruoyi
+      # 监控密码 - 连接监控中心的密码
+      MONITOR_PASSWORD: 123456
+
+    volumes:
+      # 日志文件映射 - 将容器内日志目录映射到宿主机，便于查看调度日志
+      - /home/ubuntu/apps/snailjob/logs/:/ruoyi/snailjob/logs/
+    # 特权模式 - 允许容器访问宿主机设备，某些调度功能可能需要
+    privileged: true
+    # 网络模式 - 使用宿主机网络，简化与客户端应用的网络连接
+    network_mode: "host"
+    # 重启策略 - 容器异常退出时自动重启，确保调度服务持续可用
+    restart: always

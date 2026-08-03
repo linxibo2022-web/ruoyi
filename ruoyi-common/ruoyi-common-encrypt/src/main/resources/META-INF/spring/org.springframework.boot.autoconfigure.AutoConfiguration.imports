@@ -1,0 +1,3 @@
+plus.ruoyi.common.encrypt.config.EncryptorAutoConfiguration
+plus.ruoyi.common.encrypt.config.ApiDecryptAutoConfiguration
+

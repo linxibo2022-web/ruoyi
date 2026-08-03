@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, user-scalable=no">
+<title>社区论坛 - 我的</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#0891B2',
+        'primary-light': '#E0F7FA',
+        'primary-dark': '#0E7490',
+      }
+    }
+  }
+}
+</script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f0f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .phone-frame { width: 375px; height: 812px; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; background: #f5f5f5; position: relative; display: flex; flex-direction: column; }
+  .status-bar { height: 44px; background: transparent; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; position: absolute; top: 0; left: 0; right: 0; z-index: 10; }
+  .status-bar .time { font-size: 14px; font-weight: 600; color: #fff; }
+  .status-bar .icons { display: flex; gap: 6px; align-items: center; color: #fff; }
+  .screen-content { flex: 1; overflow-y: auto; background: #f5f5f5; }
+  .screen-content::-webkit-scrollbar { display: none; }
+  .tab-bar { height: 83px; background: #fff; border-top: 1px solid #e5e5e5; display: flex; padding-bottom: 34px; flex-shrink: 0; }
+  .tab-bar a { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: #999; font-size: 10px; gap: 2px; }
+  .tab-bar a.active { color: #0891B2; }
+  .tab-bar a i { width: 24px; height: 24px; }
+  .home-indicator { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; background: #1a1a1a; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <!-- Status Bar (overlaid on gradient header) -->
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons">
+      <i data-lucide="signal" style="width:16px;height:16px;"></i>
+      <i data-lucide="wifi" style="width:16px;height:16px;"></i>
+      <i data-lucide="battery-full" style="width:16px;height:16px;"></i>
+    </div>
+  </div>
+
+  <!-- Screen Content -->
+  <div class="screen-content">
+    <!-- Header with gradient -->
+    <div class="relative" style="background: linear-gradient(135deg, #0891B2 0%, #0E7490 50%, #065F73 100%);">
+      <div class="pt-14 pb-6 px-4">
+        <!-- User Info -->
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-16 h-16 rounded-full bg-white/20 border-2 border-white/40 flex items-center justify-center overflow-hidden">
+            <div class="w-full h-full bg-gradient-to-br from-cyan-200 to-blue-300 flex items-center justify-center">
+              <span class="text-2xl font-bold text-primary-dark">Z</span>
+            </div>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-1">
+              <h2 class="text-lg font-bold text-white">张三丰</h2>
+              <span class="px-2 py-0.5 bg-amber-400/90 text-amber-900 text-[10px] font-bold rounded-full">论坛达人</span>
+            </div>
+            <p class="text-xs text-white/70">ID: forum_zhang2026</p>
+            <p class="text-xs text-white/60 mt-0.5">热爱技术，热爱生活，享受分享的乐趣</p>
+          </div>
+          <i data-lucide="settings" class="w-5 h-5 text-white/70"></i>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-3 gap-3">
+          <div class="bg-white/15 backdrop-blur-sm rounded-xl py-3 text-center">
+            <div class="text-xl font-bold text-white">128</div>
+            <div class="text-xs text-white/70 mt-0.5">帖子</div>
+          </div>
+          <div class="bg-white/15 backdrop-blur-sm rounded-xl py-3 text-center">
+            <div class="text-xl font-bold text-white">1.2k</div>
+            <div class="text-xs text-white/70 mt-0.5">回复</div>
+          </div>
+          <div class="bg-white/15 backdrop-blur-sm rounded-xl py-3 text-center">
+            <div class="text-xl font-bold text-white">3.6k</div>
+            <div class="text-xs text-white/70 mt-0.5">被赞</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- My Posts -->
+    <div class="bg-white mt-2 px-4 py-3">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-sm font-semibold text-gray-900">我的帖子</h3>
+        <span class="text-xs text-primary">查看全部</span>
+      </div>
+
+      <div class="border-b border-gray-100 pb-3 mb-3">
+        <div class="text-sm font-medium text-gray-900 mb-1.5 leading-snug">Vue 3.5 新特性深度解析，这些变化你必须知道</div>
+        <div class="flex items-center gap-3 text-xs text-gray-400">
+          <span class="inline-block px-1.5 py-0.5 bg-blue-50 text-blue-500 text-[10px] rounded">技术</span>
+          <span class="flex items-center gap-0.5"><i data-lucide="message-circle" class="w-3 h-3"></i> 86</span>
+          <span class="flex items-center gap-0.5"><i data-lucide="heart" class="w-3 h-3"></i> 245</span>
+          <span class="ml-auto">2小时前</span>
+        </div>
+      </div>
+
+      <div class="border-b border-gray-100 pb-3 mb-3">
+        <div class="text-sm font-medium text-gray-900 mb-1.5 leading-snug">TypeScript 5.0 装饰器完全指南：从入门到精通</div>
+        <div class="flex items-center gap-3 text-xs text-gray-400">
+          <span class="inline-block px-1.5 py-0.5 bg-blue-50 text-blue-500 text-[10px] rounded">技术</span>
+          <span class="flex items-center gap-0.5"><i data-lucide="message-circle" class="w-3 h-3"></i> 52</span>
+          <span class="flex items-center gap-0.5"><i data-lucide="heart" class="w-3 h-3"></i> 189</span>
+          <span class="ml-auto">3天前</span>
+        </div>
+      </div>
+
+      <div class="pb-1">
+        <div class="text-sm font-medium text-gray-900 mb-1.5 leading-snug">周末徒步莫干山，偶遇超美日落（多图预警）</div>
+        <div class="flex items-center gap-3 text-xs text-gray-400">
+          <span class="inline-block px-1.5 py-0.5 bg-teal-50 text-teal-500 text-[10px] rounded">旅行</span>
+          <span class="flex items-center gap-0.5"><i data-lucide="message-circle" class="w-3 h-3"></i> 38</span>
+          <span class="flex items-center gap-0.5"><i data-lucide="heart" class="w-3 h-3"></i> 312</span>
+          <span class="ml-auto">1周前</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- More Features -->
+    <div class="bg-white mt-2 px-4 py-3">
+      <h3 class="text-sm font-semibold text-gray-900 mb-3">更多功能</h3>
+
+      <div class="space-y-1">
+        <!-- Favorites -->
+        <div class="flex items-center gap-3 py-3">
+          <div class="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center">
+            <i data-lucide="star" class="w-[18px] h-[18px] text-amber-500"></i>
+          </div>
+          <span class="text-sm text-gray-700 flex-1">我的收藏</span>
+          <div class="flex items-center gap-1">
+            <span class="text-xs text-gray-400">56篇</span>
+            <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+          </div>
+        </div>
+
+        <!-- Drafts -->
+        <div class="flex items-center gap-3 py-3">
+          <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
+            <i data-lucide="file-edit" class="w-[18px] h-[18px] text-blue-500"></i>
+          </div>
+          <span class="text-sm text-gray-700 flex-1">我的草稿</span>
+          <div class="flex items-center gap-1">
+            <span class="text-xs text-gray-400">3篇</span>
+            <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+          </div>
+        </div>
+
+        <!-- History -->
+        <div class="flex items-center gap-3 py-3">
+          <div class="w-9 h-9 rounded-xl bg-green-50 flex items-center justify-center">
+            <i data-lucide="clock" class="w-[18px] h-[18px] text-green-500"></i>
+          </div>
+          <span class="text-sm text-gray-700 flex-1">浏览历史</span>
+          <div class="flex items-center gap-1">
+            <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+          </div>
+        </div>
+
+        <!-- Following -->
+        <div class="flex items-center gap-3 py-3">
+          <div class="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center">
+            <i data-lucide="users" class="w-[18px] h-[18px] text-purple-500"></i>
+          </div>
+          <span class="text-sm text-gray-700 flex-1">我的关注</span>
+          <div class="flex items-center gap-1">
+            <span class="text-xs text-gray-400">42人</span>
+            <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+          </div>
+        </div>
+
+        <!-- Medal -->
+        <div class="flex items-center gap-3 py-3">
+          <div class="w-9 h-9 rounded-xl bg-rose-50 flex items-center justify-center">
+            <i data-lucide="award" class="w-[18px] h-[18px] text-rose-500"></i>
+          </div>
+          <span class="text-sm text-gray-700 flex-1">我的徽章</span>
+          <div class="flex items-center gap-1">
+            <span class="text-xs text-gray-400">8枚</span>
+            <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+          </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="flex items-center gap-3 py-3">
+          <div class="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center">
+            <i data-lucide="settings" class="w-[18px] h-[18px] text-gray-500"></i>
+          </div>
+          <span class="text-sm text-gray-700 flex-1">设置</span>
+          <div class="flex items-center gap-1">
+            <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+          </div>
+        </div>
+
+        <!-- Help -->
+        <div class="flex items-center gap-3 py-3">
+          <div class="w-9 h-9 rounded-xl bg-cyan-50 flex items-center justify-center">
+            <i data-lucide="help-circle" class="w-[18px] h-[18px] text-cyan-500"></i>
+          </div>
+          <span class="text-sm text-gray-700 flex-1">帮助与反馈</span>
+          <div class="flex items-center gap-1">
+            <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="h-4"></div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <a href="01-index.html">
+      <i data-lucide="home" class="w-5 h-5"></i>
+      <span>首页</span>
+    </a>
+    <a href="02-discussion.html">
+      <i data-lucide="pen-square" class="w-5 h-5"></i>
+      <span>讨论</span>
+    </a>
+    <a href="03-message.html">
+      <i data-lucide="message-circle" class="w-5 h-5"></i>
+      <span>消息</span>
+    </a>
+    <a href="04-my.html" class="active">
+      <i data-lucide="user" class="w-5 h-5"></i>
+      <span>我的</span>
+    </a>
+  </div>
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+  lucide.createIcons();
+</script>
+</body>
+</html>

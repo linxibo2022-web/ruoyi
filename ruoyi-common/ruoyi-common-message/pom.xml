@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>plus.ruoyi</groupId>
+        <artifactId>ruoyi-common</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ruoyi-common-message</artifactId>
+
+    <description>
+        统一消息推送模块 - 提供消息路由、降级、批量发送等高级功能
+        注意：此模块为可选模块，不依赖具体通道实现，通过Spring自动发现所有MessageChannel
+    </description>
+
+    <dependencies>
+        <!-- ================ 内部模块依赖 ================ -->
+        <!-- Core模块 - 提供消息接口定义 (MessageChannel/MessageContext/MessageResult) -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-core</artifactId>
+        </dependency>
+
+        <!-- ================ 注意 ================ -->
+        <!-- 此模块不依赖具体的消息通道实现 -->
+        <!-- 具体通道(websocket/sms/miniapp/mp)由业务模块按需引入 -->
+        <!-- 本模块通过 Spring 自动发现所有 MessageChannel 实现 -->
+    </dependencies>
+</project>

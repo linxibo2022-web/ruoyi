@@ -1,0 +1,46 @@
+/**
+ * 基础样式重置
+ * 统一浏览器默认样式并设置项目基础风格
+ */
+
+body {
+  height: 100%; // 高度填满窗口
+  margin: 0; // 移除默认外边距
+}
+
+/* HTML根元素样式 */
+html {
+  height: 100%; // 高度填满窗口
+  box-sizing: border-box; // 使用border-box盒模型
+}
+
+/* 应用根容器 */
+#app {
+  height: 100%; // 应用容器高度填满
+}
+
+/* 全局盒模型设置 */
+*,
+*:before,
+*:after {
+  box-sizing: inherit; // 继承父元素的盒模型设置
+}
+
+/* 链接样式重置 */
+a:focus,
+a:active {
+  outline: none; // 移除焦点轮廓
+}
+
+a,
+a:focus,
+a:hover {
+  cursor: pointer; // 鼠标指针样式
+  color: inherit; // 继承父元素文字颜色
+  text-decoration: none; // 移除下划线
+}
+
+/* 移除div的焦点样式 */
+div:focus {
+  outline: none; // 移除div元素焦点轮廓
+}

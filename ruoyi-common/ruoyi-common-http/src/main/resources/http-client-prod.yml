@@ -1,0 +1,70 @@
+# HTTP客户端生产环境配置
+forest:
+  # 支持okhttp3和httpclient两种后端 HTTP API（默认为 okhttp3）
+  backend: okhttp3
+  # 连接池最大连接数（默认为 500）
+  max-connections: 1000
+  # 每个路由的最大连接数（默认为 500）
+  max-route-connections: 500
+  # 最大请求等待队列大小
+  max-request-queue-size: 100
+  # 最大异步线程数
+  max-async-thread-size: 300
+  # 最大异步线程池队列大小
+  max-async-queue-size: 16
+  # 请求超时时间，单位为毫秒（默认为 3000）
+  timeout: 3000
+  # 连接超时时间，单位为毫秒（默认为 timeout）
+  connect-timeout: 300000
+  # 数据读取超时时间，单位为毫秒（默认为 timeout）
+  read-timeout: 300000
+  # 请求失败后重试次数（默认为 0 次不重试）
+  max-retry-count: 0
+  # 单向验证的HTTPS的默认TLS协议（默认为 TLS）
+  ssl-protocol: TLS
+  # 打开或关闭日志（默认为 true）
+  log-enabled: false
+  # 打开/关闭Forest请求日志（默认为 true）
+  log-request: false
+  # 打开/关闭Forest响应状态日志（默认为 true）
+  log-response-status: false
+  # 打开/关闭Forest响应内容日志（默认为 false）
+  log-response-content: false
+  # 异步模式（默认为 platform）
+  async-mode: platform
+  # 在spring上下文中bean的id，默认值为forestConfiguration
+  bean-id: forestConfiguration
+
+# 第三方API配置
+gaode:
+  map:
+    # 是否启用高德地图服务
+    enabled: ${GAODE_MAP_ENABLED:true}
+    # 高德地图API密钥 - 生产环境通过环境变量配置，无默认值确保安全
+    api-key: ${GAODE_MAP_API_KEY}
+    # API请求超时时间（毫秒）
+    timeout: ${GAODE_MAP_TIMEOUT:5000}
+
+# 火山引擎TTS配置
+volcengine:
+  tts:
+    # 是否启用火山TTS服务（生产环境通过环境变量配置）
+    enabled: ${VOLCENGINE_TTS_ENABLED:false}
+    # 应用ID（生产环境必须通过环境变量配置）
+    app-id: ${VOLCENGINE_TTS_APP_ID}
+    # 访问令牌（生产环境必须通过环境变量配置）
+    access-token: ${VOLCENGINE_TTS_ACCESS_TOKEN}
+    # 业务集群（volcano_tts: 内置音色, volcano_mega: 复制音色）
+    cluster: ${VOLCENGINE_TTS_CLUSTER:volcano_tts}
+    # 默认音色类型
+    default-voice: ${VOLCENGINE_TTS_DEFAULT_VOICE:BV001_streaming}
+    # 音频编码格式（mp3, wav, pcm）
+    encoding: ${VOLCENGINE_TTS_ENCODING:pcm}
+    # 音频采样率（Hz）
+    sample-rate: ${VOLCENGINE_TTS_SAMPLE_RATE:24000}
+    # 语速比例（0.5-2.0）
+    speed-ratio: ${VOLCENGINE_TTS_SPEED_RATIO:1.0}
+    # 音量比例（0.5-2.0）
+    volume-ratio: ${VOLCENGINE_TTS_VOLUME_RATIO:1.0}
+    # 音调比例（0.5-2.0）
+    pitch-ratio: ${VOLCENGINE_TTS_PITCH_RATIO:1.0}

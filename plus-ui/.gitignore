@@ -1,0 +1,78 @@
+# MacOS系统文件
+.DS_Store
+
+# 历史记录目录（通常由某些编辑器插件生成）
+.history
+
+# npm/yarn/pnpm安装的依赖包
+node_modules/
+
+# 构建输出目录
+dist/
+
+# npm调试日志
+npm-debug.log*
+
+# yarn调试日志
+yarn-debug.log*
+
+# yarn错误日志
+yarn-error.log*
+
+# 所有日志文件
+**/*.log
+
+# 测试覆盖率报告
+tests/**/coverage/
+
+# E2E测试报告
+tests/e2e/reports
+
+# Selenium调试日志
+selenium-debug.log
+
+# 编辑器目录和文件
+# JetBrains IDE配置（WebStorm, IntelliJ IDEA等）
+.idea
+
+# Visual Studio Code配置
+.vscode
+
+# Visual Studio用户选项文件
+*.suo
+
+# Node.js Tools for Visual Studio文件
+*.ntvs*
+
+# Visual Studio Node.js项目文件
+*.njsproj
+
+# Visual Studio解决方案文件
+*.sln
+
+# 本地配置文件
+*.local
+
+# 锁定文件（通常团队中只保留一种包管理器的锁定文件）
+# npm锁定文件
+package-lock.json
+
+# yarn锁定文件
+yarn.lock
+
+# pnpm锁定文件
+pnpm-lock.yaml
+
+# ESLint自动导入插件配置
+.eslintrc-auto-import.json
+
+# 自动生成的类型声明文件
+# 自动导入的类型声明（通常由unplugin-auto-import生成）
+auto-imports.d.ts
+
+# 组件类型声明（通常由unplugin-vue-components生成）
+components.d.ts
+
+# OpenAPI 自动生成的文件（.generated.ts 后缀）
+**/*.generated.ts
+src/api/generated

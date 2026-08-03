@@ -1,0 +1,115 @@
+# Spring Boot Admin 监控中心配置文件
+
+# 服务器基础配置
+server:
+  # 监控中心服务端口
+  port: ${SERVER_PORT:9090}
+
+# Spring 应用配置
+spring:
+  application:
+    # 应用名称
+    name: Spring Boot Admin
+  profiles:
+    # 激活的配置文件（使用环境变量）
+    active: @profiles.active@
+
+# 日志配置
+logging:
+  # 日志配置文件
+  config: classpath:logback-plus.xml
+  level:
+    # 监控中心日志级别
+    org.springframework.boot.admin: ${LOG_LEVEL:info}
+
+--- # 监控中心服务端配置
+spring:
+  security:
+    user:
+      # 监控中心登录用户名（使用环境变量）
+      name: ${MONITOR_USERNAME:ruoyi}
+      # 监控中心登录密码（使用环境变量）
+      password: ${MONITOR_PASSWORD:123456}
+  boot:
+    admin:
+      ui:
+        # 监控中心界面标题
+        title: ${MONITOR_TITLE:Spring Boot Admin服务监控中心}
+      # 监控中心访问路径
+      context-path: /admin
+  # 忽略无用警告
+  thymeleaf:
+    check-template-location: false
+
+--- # Actuator 监控端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        # 暴露所有监控端点
+        include: '*'
+  endpoint:
+    health:
+      # 健康检查显示详细信息
+      show-details: ALWAYS
+    logfile:
+      # 外部日志文件路径
+      external-file: ./logs/ruoyi-monitor-admin.log
+
+--- # Spring Boot Admin 客户端配置（自监控）
+spring.boot.admin.client:
+  # 启用监控客户端
+  enabled: ${MONITOR_SELF_ENABLED:true}
+  # Spring Boot Admin Server 地址
+  url: ${MONITOR_URL:http://127.0.0.1:9090/admin}
+  instance:
+    # 服务主机类型
+    service-host-type: IP
+    metadata:
+      # 客户端认证用户名
+      username: ${MONITOR_USERNAME:ruoyi}
+      # 客户端认证密码
+      userpassword: ${MONITOR_PASSWORD:123456}
+  # 客户端用户名
+  username: ${MONITOR_USERNAME:ruoyi}
+  # 客户端密码
+  password: ${MONITOR_PASSWORD:123456}
+
+--- # 服务状态通知配置
+notify:
+  # 邮件通知配置
+  mail:
+    # 是否启用邮件通知
+    enabled: ${NOTIFY_MAIL_ENABLED:false}
+    # 收件人邮箱
+    to: ${NOTIFY_MAIL_TO:admin@example.com}
+    # 邮件主题
+    subject: ${NOTIFY_MAIL_SUBJECT:admin监控通知}
+    # 邮件模板（HTML格式）
+    template: "<html><body>
+                  <p><b>服务名称:</b> {}</p>
+                  <p><b>实例编号:</b> {}</p>
+                  <p><b>服务状态:</b> {}({})</p>
+                  <p><b>服务地址:</b> {}</p>
+                  <p><b>发送时间:</b> {}</p>
+               </body></html>"
+  # Webhook通知配置（钉钉机器人）
+  web-hook:
+    # 是否启用Webhook通知
+    enabled: ${NOTIFY_WEBHOOK_ENABLED:false}
+    # 通知类型：1-钉钉
+    type: 1
+    # 钉钉机器人密钥
+    secret: ${DINGTALK_SECRET:}
+    # 关键词列表
+    keywords: ${DINGTALK_KEYWORDS:}
+    # 钉钉机器人Webhook地址
+    url: ${DINGTALK_WEBHOOK_URL:https://oapi.dingtalk.com/robot/send?access_token=xxxxxx}
+    # 钉钉消息模板（Markdown格式）
+    template: |
+      #### **{}**
+      - **服务名称**: {}
+      - **实例编号**: {}
+      - **服务状态**: {}({})
+      - **服务地址**: {}
+      - **发送时间**: {}

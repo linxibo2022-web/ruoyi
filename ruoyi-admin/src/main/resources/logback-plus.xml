@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 定义日志文件的存储路径 - 从Spring配置读取 -->
+    <springProperty scope="context" name="log.path" source="logging.file.path" defaultValue="./logs"/>
+    <!-- 从环境变量读取日志级别 -->
+    <springProperty scope="context" name="LOG_LEVEL" source="logging.level.root" defaultValue="INFO"/>
+
+    <!-- 定义控制台彩色日志格式，提高开发阶段的可读性 -->
+    <property name="console.log.pattern"
+              value="%cyan(%d{yyyy-MM-dd HH:mm:ss}) %yellow([%X{requestId:-}]) %green([%thread]) %highlight(%-5level) %boldMagenta(%logger{36}%n) - %msg%n"/>
+    <!-- 定义文件日志格式，不带颜色信息，适合长期存储查看 -->
+    <property name="log.pattern" value="%d{yyyy-MM-dd HH:mm:ss} [%X{requestId:-}] [%thread] %-5level %logger{36} - %msg%n"/>
+
+    <!-- 控制台日志输出器配置 所有环境都需要 -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- 使用彩色日志格式 -->
+            <pattern>${console.log.pattern}</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 开发环境配置，使用Spring profiles区分环境 -->
+    <springProfile name="!prod">
+        <!-- 开发环境日志文件 - 每次启动清空，记录所有级别日志（INFO/WARN/ERROR） -->
+        <appender name="console_log" class="ch.qos.logback.core.FileAppender">
+            <file>${log.path}/console.log</file>
+            <!-- append=false 表示每次启动时清空文件 -->
+            <append>false</append>
+            <encoder>
+                <pattern>${log.pattern}</pattern>
+                <charset>utf-8</charset>
+            </encoder>
+        </appender>
+
+        <!-- SQL 日志控制台输出器 - 蓝色高亮 -->
+        <appender name="sql_console" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <!-- SQL 日志整行蓝色，便于识别 -->
+                <pattern>%blue(%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n)</pattern>
+                <charset>utf-8</charset>
+            </encoder>
+        </appender>
+
+        <!-- p6spy SQL 日志单独配置 -->
+        <logger name="p6spy" level="INFO" additivity="false">
+            <appender-ref ref="sql_console"/>    <!-- 控制台蓝色输出 -->
+            <appender-ref ref="console_log"/>    <!-- 同时写入文件 -->
+        </logger>
+
+        <!-- 开发环境：输出到控制台 + 文件 -->
+        <root level="${LOG_LEVEL}">
+            <appender-ref ref="console"/>
+            <appender-ref ref="console_log"/>
+        </root>
+    </springProfile>
+
+    <!-- 仅在生产环境定义的appender -->
+    <springProfile name="prod">
+        <!-- 控制台日志文件输出器配置，将控制台日志同时保存到文件 -->
+        <appender name="file_console" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <!-- 设置日志文件路径 -->
+            <file>${log.path}/sys-console.log</file>
+            <!-- 设置日志文件滚动策略，按天滚动 -->
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <!-- 滚动后的日志文件名格式 -->
+                <fileNamePattern>${log.path}/sys-console.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <!-- 设置日志保留时间为7天= -->
+                <maxHistory>7</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>${log.pattern}</pattern>
+                <charset>utf-8</charset>
+            </encoder>
+            <!-- 设置阈值过滤器，只记录INFO级别及以上的日志 -->
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>INFO</level>
+            </filter>
+        </appender>
+
+        <!-- INFO级别日志文件输出器配置 -->
+        <appender name="file_info" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${log.path}/sys-info.log</file>
+            <!-- 设置滚动策略为基于时间的滚动 -->
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${log.path}/sys-info.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <!-- 设置日志保留60天，适合长期分析 -->
+                <maxHistory>60</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>${log.pattern}</pattern>
+            </encoder>
+            <!-- 设置级别过滤器，只接收INFO级别的日志，拒绝其他级别 -->
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <!-- 过滤的级别 -->
+                <level>INFO</level>
+                <!-- 匹配时的操作：接收（记录） -->
+                <onMatch>ACCEPT</onMatch>
+                <!-- 不匹配时的操作：拒绝（不记录） -->
+                <onMismatch>DENY</onMismatch>
+            </filter>
+        </appender>
+
+        <!-- ERROR级别日志文件输出器配置 -->
+        <appender name="file_error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${log.path}/sys-error.log</file>
+            <!-- 循环政策：基于时间创建日志文件 -->
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <!-- 日志文件名格式 -->
+                <fileNamePattern>${log.path}/sys-error.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <!-- 错误日志也保留60天 -->
+                <maxHistory>60</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>${log.pattern}</pattern>
+            </encoder>
+            <!-- 设置级别过滤器，只接收ERROR级别的日志，拒绝其他级别 -->
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <!-- 过滤的级别 -->
+                <level>ERROR</level>
+                <!-- 匹配时的操作：接收（记录） -->
+                <onMatch>ACCEPT</onMatch>
+                <!-- 不匹配时的操作：拒绝（不记录） -->
+                <onMismatch>DENY</onMismatch>
+            </filter>
+        </appender>
+
+        <!-- INFO日志异步输出器配置，提高系统性能 -->
+        <appender name="async_info" class="ch.qos.logback.classic.AsyncAppender">
+            <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+            <discardingThreshold>0</discardingThreshold>
+            <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+            <queueSize>512</queueSize>
+            <!-- 引用INFO日志输出器 -->
+            <appender-ref ref="file_info"/>
+        </appender>
+
+        <!-- ERROR日志异步输出器配置 -->
+        <appender name="async_error" class="ch.qos.logback.classic.AsyncAppender">
+            <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+            <discardingThreshold>0</discardingThreshold>
+            <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+            <queueSize>512</queueSize>
+            <!-- 引用ERROR日志输出器 -->
+            <appender-ref ref="file_error"/>
+        </appender>
+
+        <!-- SQL日志文件输出器配置 -->
+        <appender name="file_sql" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${log.path}/sys-sql.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${log.path}/sys-sql.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <!-- SQL日志保留7天即可 -->
+                <maxHistory>7</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>${log.pattern}</pattern>
+            </encoder>
+        </appender>
+
+        <!-- SQL日志异步输出器配置 -->
+        <appender name="async_sql" class="ch.qos.logback.classic.AsyncAppender">
+            <discardingThreshold>0</discardingThreshold>
+            <queueSize>512</queueSize>
+            <appender-ref ref="file_sql"/>
+        </appender>
+
+        <!-- 根日志配置：使用环境变量控制 -->
+        <root level="${LOG_LEVEL}">
+            <!-- 生产环境使用全套日志配置 -->
+            <appender-ref ref="console"/>          <!-- 控制台输出 -->
+            <appender-ref ref="async_info"/>       <!-- 异步INFO日志 -->
+            <appender-ref ref="async_error"/>      <!-- 异步ERROR日志 -->
+            <appender-ref ref="file_console"/>     <!-- 控制台内容文件备份 -->
+            <!--        <appender-ref ref="sky_log"/>-->  <!-- SkyWalking集成(已注释) -->
+        </root>
+    </springProfile>
+
+    <!-- SkyWalking整合配置（已注释）
+         用于分布式追踪时在控制台日志中显示追踪ID -->
+    <!--    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">-->
+    <!--        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">-->
+    <!--            <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.TraceIdPatternLogbackLayout">-->
+    <!--                <pattern>[%tid] ${console.log.pattern}</pattern>-->
+    <!--            </layout>-->
+    <!--            <charset>utf-8</charset>-->
+    <!--        </encoder>-->
+    <!--    </appender>-->
+
+    <!-- SkyWalking日志收集配置（已注释）
+         用于将日志推送到SkyWalking后端进行集中分析 -->
+    <!--    <appender name="sky_log" class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.log.GRPCLogClientAppender">-->
+    <!--        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">-->
+    <!--            <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.TraceIdPatternLogbackLayout">-->
+    <!--                <pattern>[%tid] ${console.log.pattern}</pattern>-->
+    <!--            </layout>-->
+    <!--            <charset>utf-8</charset>-->
+    <!--        </encoder>-->
+    <!--    </appender>-->
+
+</configuration>

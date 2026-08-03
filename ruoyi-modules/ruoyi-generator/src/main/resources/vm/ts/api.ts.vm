@@ -1,0 +1,56 @@
+// ${functionName} API
+import type { ${ClassName}Query, ${ClassName}Bo, ${ClassName}Vo } from './${businessName}Types'
+
+/**
+ * 查询${functionName}列表
+ * @param query 查询参数
+ * @returns {Result<PageResult<${ClassName}Vo>>} 结果
+ */
+export const page${BusinessName}${pluralSuffix} = (query?: ${ClassName}Query): Result<PageResult<${ClassName}Vo>> => {
+  return http.get<PageResult<${ClassName}Vo>>('/${moduleName}/${businessName}/page${BusinessName}${pluralSuffix}', query)
+}
+
+/**
+ * 查询${functionName}详细
+ * @param ${pkColumn.javaField} ${functionName}ID
+ * @returns {Result<${ClassName}Vo>} 结果
+ */
+export const get${BusinessName} = (${pkColumn.javaField}: string | number): Result<${ClassName}Vo> => {
+  return http.get<${ClassName}Vo>(`/${moduleName}/${businessName}/get${BusinessName}/${${pkColumn.javaField}}`)
+}
+
+/**
+ * 新增${functionName}
+ * @param data ${functionName}数据
+ * @returns {Result<string | number>} 结果
+ */
+export const add${BusinessName} = (data: ${ClassName}Bo): Result<string | number> => {
+  return http.post<string | number>('/${moduleName}/${businessName}/add${BusinessName}', data)
+}
+
+/**
+ * 修改${functionName}
+ * @param data ${functionName}数据
+ * @returns {Result<void>} 结果
+ */
+export const update${BusinessName} = (data: ${ClassName}Bo): Result<void> => {
+  return http.put<void>('/${moduleName}/${businessName}/update${BusinessName}', data)
+}
+
+/**
+ * 删除${functionName}
+ * @param ${pkColumn.javaField}${pluralSuffix} ${functionName}ID
+ * @returns {Result<void>} 结果
+ */
+export const delete${BusinessName}${pluralSuffix} = (${pkColumn.javaField}${pluralSuffix}: string | number | Array<string | number>): Result<void> => {
+  return http.del<void>(`/${moduleName}/${businessName}/delete${BusinessName}${pluralSuffix}/${${pkColumn.javaField}${pluralSuffix}}`)
+}
+
+/**
+ * 获取${functionName}选项列表
+ * 用于下拉选择、关联查询等场景
+ * @returns {Result<DictItem[]>} 结果
+ */
+export const option${BusinessName}${pluralSuffix} = (): Result<DictItem[]> => {
+  return http.get<DictItem[]>('/${moduleName}/${businessName}/option${BusinessName}${pluralSuffix}')
+}

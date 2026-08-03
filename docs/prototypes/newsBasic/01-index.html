@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>首页 - 新闻资讯</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f0f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .phone-frame { width: 375px; height: 812px; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; background: #f5f5f5; position: relative; display: flex; flex-direction: column; }
+  .status-bar { height: 44px; background: #EF4444; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }
+  .status-bar .time { color: white; font-size: 14px; font-weight: 600; }
+  .status-bar .icons { display: flex; gap: 6px; color: white; }
+  .screen-content { flex: 1; overflow-y: auto; background: #f5f5f5; }
+  .screen-content::-webkit-scrollbar { display: none; }
+  .tab-bar { height: 56px; background: white; display: flex; border-top: 1px solid #e5e5e5; flex-shrink: 0; }
+  .tab-bar a { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: #999; font-size: 10px; gap: 2px; }
+  .tab-bar a.active { color: #EF4444; }
+  .tab-bar a i { width: 22px; height: 22px; }
+  .safe-area-bottom { height: 20px; background: white; flex-shrink: 0; }
+  .home-indicator { width: 134px; height: 5px; background: #1a1a1a; border-radius: 3px; margin: 0 auto; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); }
+
+  .search-bar { display: flex; align-items: center; padding: 8px 12px; background: #EF4444; gap: 8px; }
+  .search-input { flex: 1; height: 32px; background: rgba(255,255,255,0.2); border-radius: 16px; border: none; padding: 0 12px; color: white; font-size: 13px; }
+  .search-input::placeholder { color: rgba(255,255,255,0.7); }
+
+  .channel-bar { display: flex; overflow-x: auto; background: white; padding: 0 12px; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; }
+  .channel-bar::-webkit-scrollbar { display: none; }
+  .channel-item { padding: 10px 14px; font-size: 14px; color: #666; white-space: nowrap; cursor: pointer; position: relative; flex-shrink: 0; }
+  .channel-item.active { color: #EF4444; font-weight: 600; }
+  .channel-item.active::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 20px; height: 3px; background: #EF4444; border-radius: 2px; }
+
+  .news-list { padding: 0; }
+  .news-item { background: white; padding: 12px; margin-bottom: 8px; }
+  .news-big-img { margin-bottom: 8px; }
+  .news-big-img .img-wrap { width: 100%; height: 180px; background: linear-gradient(135deg, #fee2e2, #fecaca); border-radius: 8px; overflow: hidden; position: relative; }
+  .news-big-img .img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+  .news-big-img .img-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #EF4444; font-size: 40px; }
+  .news-big-img .title { font-size: 16px; font-weight: 600; color: #1a1a1a; line-height: 1.4; margin-top: 8px; }
+  .news-big-img .tag { display: inline-block; background: #EF4444; color: white; font-size: 10px; padding: 1px 4px; border-radius: 2px; margin-right: 4px; }
+
+  .news-right-img { display: flex; gap: 10px; }
+  .news-right-img .text-area { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+  .news-right-img .title { font-size: 15px; font-weight: 500; color: #1a1a1a; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .news-right-img .img-wrap { width: 110px; height: 76px; background: linear-gradient(135deg, #fee2e2, #fecaca); border-radius: 6px; flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; color: #EF4444; }
+
+  .news-three-img .title { font-size: 15px; font-weight: 500; color: #1a1a1a; line-height: 1.4; margin-bottom: 8px; }
+  .news-three-img .img-row { display: flex; gap: 4px; }
+  .news-three-img .img-row .img-wrap { flex: 1; height: 80px; background: linear-gradient(135deg, #fee2e2, #fecaca); border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; color: #EF4444; font-size: 20px; }
+
+  .news-meta { display: flex; align-items: center; gap: 12px; margin-top: 8px; font-size: 11px; color: #999; }
+  .news-meta .source { color: #666; }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons">
+      <i data-lucide="signal" style="width:14px;height:14px"></i>
+      <i data-lucide="wifi" style="width:14px;height:14px"></i>
+      <i data-lucide="battery-full" style="width:14px;height:14px"></i>
+    </div>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-bar">
+    <input class="search-input" placeholder="搜索新闻、热点话题" />
+    <i data-lucide="bell" style="width:20px;height:20px;color:white;flex-shrink:0"></i>
+  </div>
+
+  <!-- Channel Bar -->
+  <div class="channel-bar">
+    <div class="channel-item active">推荐</div>
+    <div class="channel-item">热点</div>
+    <div class="channel-item">科技</div>
+    <div class="channel-item">财经</div>
+    <div class="channel-item">体育</div>
+    <div class="channel-item">娱乐</div>
+    <div class="channel-item">军事</div>
+    <div class="channel-item">国际</div>
+  </div>
+
+  <!-- Screen Content -->
+  <div class="screen-content">
+    <div class="news-list">
+
+      <!-- 大图新闻 -->
+      <div class="news-item news-big-img">
+        <div class="img-wrap">
+          <div class="img-placeholder"><i data-lucide="image" style="width:40px;height:40px"></i></div>
+        </div>
+        <div class="title"><span class="tag">头条</span>全球科技峰会在上海开幕，聚焦AI与可持续发展</div>
+        <div class="news-meta">
+          <span class="source">新华社</span>
+          <span>2856评论</span>
+          <span>3小时前</span>
+        </div>
+      </div>
+
+      <!-- 右图新闻 1 -->
+      <div class="news-item news-right-img">
+        <div class="text-area">
+          <div class="title">国内新能源汽车销量再创新高，多家车企发布年度财报</div>
+          <div class="news-meta">
+            <span class="source">经济日报</span>
+            <span>1432评论</span>
+            <span>5小时前</span>
+          </div>
+        </div>
+        <div class="img-wrap"><i data-lucide="image" style="width:24px;height:24px"></i></div>
+      </div>
+
+      <!-- 右图新闻 2 -->
+      <div class="news-item news-right-img">
+        <div class="text-area">
+          <div class="title">教育部发布新政策：中小学课后服务将全面升级</div>
+          <div class="news-meta">
+            <span class="source">人民网</span>
+            <span>876评论</span>
+            <span>6小时前</span>
+          </div>
+        </div>
+        <div class="img-wrap"><i data-lucide="image" style="width:24px;height:24px"></i></div>
+      </div>
+
+      <!-- 右图新闻 3 -->
+      <div class="news-item news-right-img">
+        <div class="text-area">
+          <div class="title">春季养生指南：这些食物帮你增强免疫力</div>
+          <div class="news-meta">
+            <span class="source">健康时报</span>
+            <span>523评论</span>
+            <span>7小时前</span>
+          </div>
+        </div>
+        <div class="img-wrap"><i data-lucide="image" style="width:24px;height:24px"></i></div>
+      </div>
+
+      <!-- 三图新闻 -->
+      <div class="news-item news-three-img">
+        <div class="title">世界杯预选赛：国足客场逆转取胜，晋级形势乐观</div>
+        <div class="img-row">
+          <div class="img-wrap"><i data-lucide="image" style="width:20px;height:20px"></i></div>
+          <div class="img-wrap"><i data-lucide="image" style="width:20px;height:20px"></i></div>
+          <div class="img-wrap"><i data-lucide="image" style="width:20px;height:20px"></i></div>
+        </div>
+        <div class="news-meta">
+          <span class="source">央视体育</span>
+          <span>3621评论</span>
+          <span>8小时前</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <a href="01-index.html" class="active">
+      <i data-lucide="home"></i>
+      <span>首页</span>
+    </a>
+    <a href="02-category.html">
+      <i data-lucide="layout-grid"></i>
+      <span>频道</span>
+    </a>
+    <a href="03-video.html">
+      <i data-lucide="play-circle"></i>
+      <span>视频</span>
+    </a>
+    <a href="04-my.html">
+      <i data-lucide="user"></i>
+      <span>我的</span>
+    </a>
+  </div>
+
+  <!-- Safe Area -->
+  <div class="safe-area-bottom"></div>
+  <div class="home-indicator"></div>
+</div>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>

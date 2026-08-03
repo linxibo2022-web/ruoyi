@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>我的 - 新闻资讯</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f0f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .phone-frame { width: 375px; height: 812px; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; background: #f5f5f5; position: relative; display: flex; flex-direction: column; }
+  .status-bar { height: 44px; background: transparent; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; position: absolute; top: 0; left: 0; right: 0; z-index: 10; }
+  .status-bar .time { color: white; font-size: 14px; font-weight: 600; }
+  .status-bar .icons { display: flex; gap: 6px; color: white; }
+  .screen-content { flex: 1; overflow-y: auto; }
+  .screen-content::-webkit-scrollbar { display: none; }
+  .tab-bar { height: 56px; background: white; display: flex; border-top: 1px solid #e5e5e5; flex-shrink: 0; }
+  .tab-bar a { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: #999; font-size: 10px; gap: 2px; }
+  .tab-bar a.active { color: #EF4444; }
+  .tab-bar a i { width: 22px; height: 22px; }
+  .safe-area-bottom { height: 20px; background: white; flex-shrink: 0; }
+  .home-indicator { width: 134px; height: 5px; background: #1a1a1a; border-radius: 3px; margin: 0 auto; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); }
+
+  .profile-header { background: linear-gradient(135deg, #EF4444, #DC2626); padding: 60px 20px 24px; color: white; }
+  .profile-user { display: flex; align-items: center; gap: 14px; }
+  .profile-avatar { width: 60px; height: 60px; background: rgba(255,255,255,0.25); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid rgba(255,255,255,0.5); }
+  .profile-name { font-size: 18px; font-weight: 600; }
+  .profile-tag { display: inline-block; background: rgba(255,255,255,0.2); font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-top: 4px; }
+  .profile-id { font-size: 12px; opacity: 0.8; margin-top: 2px; }
+
+  .stats-card { display: flex; background: white; margin: -16px 12px 0; border-radius: 12px; padding: 16px 0; position: relative; z-index: 5; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .stats-item { flex: 1; text-align: center; }
+  .stats-item .num { font-size: 18px; font-weight: 700; color: #1a1a1a; }
+  .stats-item .label { font-size: 11px; color: #999; margin-top: 2px; }
+  .stats-item + .stats-item { border-left: 1px solid #f0f0f0; }
+
+  .quick-actions { display: flex; background: white; margin: 10px 12px 0; border-radius: 12px; padding: 16px 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .action-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .action-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; }
+  .action-icon.red { background: linear-gradient(135deg, #EF4444, #f87171); }
+  .action-icon.orange { background: linear-gradient(135deg, #F97316, #fb923c); }
+  .action-icon.blue { background: linear-gradient(135deg, #3B82F6, #60a5fa); }
+  .action-icon.purple { background: linear-gradient(135deg, #8B5CF6, #a78bfa); }
+  .action-label { font-size: 11px; color: #666; }
+
+  .menu-section { background: white; margin: 10px 12px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .menu-item { display: flex; align-items: center; padding: 14px 16px; }
+  .menu-item + .menu-item { border-top: 1px solid #f5f5f5; }
+  .menu-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; margin-right: 12px; flex-shrink: 0; }
+  .menu-icon.bg-red { background: #fee2e2; color: #EF4444; }
+  .menu-icon.bg-blue { background: #dbeafe; color: #3B82F6; }
+  .menu-icon.bg-green { background: #dcfce7; color: #22C55E; }
+  .menu-icon.bg-yellow { background: #fef9c3; color: #EAB308; }
+  .menu-icon.bg-purple { background: #f3e8ff; color: #8B5CF6; }
+  .menu-icon.bg-orange { background: #ffedd5; color: #F97316; }
+  .menu-text { flex: 1; font-size: 14px; color: #333; }
+  .menu-arrow { color: #ccc; }
+  .menu-badge { background: #EF4444; color: white; font-size: 10px; padding: 1px 6px; border-radius: 10px; margin-right: 8px; }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons">
+      <i data-lucide="signal" style="width:14px;height:14px"></i>
+      <i data-lucide="wifi" style="width:14px;height:14px"></i>
+      <i data-lucide="battery-full" style="width:14px;height:14px"></i>
+    </div>
+  </div>
+
+  <!-- Screen Content -->
+  <div class="screen-content">
+
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="profile-user">
+        <div class="profile-avatar">
+          <i data-lucide="user" style="width:28px;height:28px;color:white"></i>
+        </div>
+        <div>
+          <div class="profile-name">新闻达人</div>
+          <div class="profile-tag">新闻达人 Lv.8</div>
+          <div class="profile-id">ID: 88668866</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Card -->
+    <div class="stats-card">
+      <div class="stats-item">
+        <div class="num">128</div>
+        <div class="label">关注</div>
+      </div>
+      <div class="stats-item">
+        <div class="num">1.2万</div>
+        <div class="label">粉丝</div>
+      </div>
+      <div class="stats-item">
+        <div class="num">86.5万</div>
+        <div class="label">阅读</div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <div class="action-item">
+        <div class="action-icon red"><i data-lucide="bookmark" style="width:20px;height:20px"></i></div>
+        <span class="action-label">收藏</span>
+      </div>
+      <div class="action-item">
+        <div class="action-icon orange"><i data-lucide="clock" style="width:20px;height:20px"></i></div>
+        <span class="action-label">历史</span>
+      </div>
+      <div class="action-item">
+        <div class="action-icon blue"><i data-lucide="download" style="width:20px;height:20px"></i></div>
+        <span class="action-label">下载</span>
+      </div>
+      <div class="action-item">
+        <div class="action-icon purple"><i data-lucide="moon" style="width:20px;height:20px"></i></div>
+        <span class="action-label">夜间模式</span>
+      </div>
+    </div>
+
+    <!-- Menu Section -->
+    <div class="menu-section">
+      <div class="menu-item">
+        <div class="menu-icon bg-red"><i data-lucide="message-circle" style="width:18px;height:18px"></i></div>
+        <span class="menu-text">消息通知</span>
+        <span class="menu-badge">3</span>
+        <i data-lucide="chevron-right" class="menu-arrow" style="width:18px;height:18px"></i>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon bg-blue"><i data-lucide="thumbs-up" style="width:18px;height:18px"></i></div>
+        <span class="menu-text">我的点赞</span>
+        <i data-lucide="chevron-right" class="menu-arrow" style="width:18px;height:18px"></i>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon bg-green"><i data-lucide="star" style="width:18px;height:18px"></i></div>
+        <span class="menu-text">创作中心</span>
+        <i data-lucide="chevron-right" class="menu-arrow" style="width:18px;height:18px"></i>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon bg-yellow"><i data-lucide="award" style="width:18px;height:18px"></i></div>
+        <span class="menu-text">任务中心</span>
+        <i data-lucide="chevron-right" class="menu-arrow" style="width:18px;height:18px"></i>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon bg-purple"><i data-lucide="shield" style="width:18px;height:18px"></i></div>
+        <span class="menu-text">隐私设置</span>
+        <i data-lucide="chevron-right" class="menu-arrow" style="width:18px;height:18px"></i>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon bg-orange"><i data-lucide="settings" style="width:18px;height:18px"></i></div>
+        <span class="menu-text">系统设置</span>
+        <i data-lucide="chevron-right" class="menu-arrow" style="width:18px;height:18px"></i>
+      </div>
+    </div>
+
+    <div style="height: 20px;"></div>
+
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <a href="01-index.html">
+      <i data-lucide="home"></i>
+      <span>首页</span>
+    </a>
+    <a href="02-category.html">
+      <i data-lucide="layout-grid"></i>
+      <span>频道</span>
+    </a>
+    <a href="03-video.html">
+      <i data-lucide="play-circle"></i>
+      <span>视频</span>
+    </a>
+    <a href="04-my.html" class="active">
+      <i data-lucide="user"></i>
+      <span>我的</span>
+    </a>
+  </div>
+
+  <!-- Safe Area -->
+  <div class="safe-area-bottom"></div>
+  <div class="home-indicator"></div>
+</div>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>

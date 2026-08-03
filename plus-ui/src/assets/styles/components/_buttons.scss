@@ -1,0 +1,118 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+/**
+ * 颜色按钮混合宏
+ * 根据传入的颜色参数创建一个带有该背景色的按钮
+ * 鼠标悬停时会变成白色背景，传入的颜色作为文字和边框颜色
+ * @param {Color} $color - 按钮的主题颜色
+ */
+@mixin colorBtn($color) {
+  background: $color; // 设置按钮背景色
+
+  &:hover {
+    color: $color; // 悬停时文字变为传入的颜色
+
+    &:before,
+    &:after {
+      background: $color; // 悬停时设置伪元素（边框线）的颜色
+    }
+  }
+}
+
+// 使用不同颜色应用按钮样式
+.blue-btn {
+  @include colorBtn($blue); // 应用蓝色按钮样式
+}
+
+.light-blue-btn {
+  @include colorBtn($light-blue); // 应用浅蓝色按钮样式
+}
+
+.red-btn {
+  @include colorBtn($red); // 应用红色按钮样式
+}
+
+.pink-btn {
+  @include colorBtn($pink); // 应用粉色按钮样式
+}
+
+.green-btn {
+  @include colorBtn($green); // 应用绿色按钮样式
+}
+
+.tiffany-btn {
+  @include colorBtn($tiffany); // 应用蒂芙尼蓝按钮样式
+}
+
+.yellow-btn {
+  @include colorBtn($yellow); // 应用黄色按钮样式
+}
+
+/**
+ * 基础按钮样式类
+ * 定义了所有按钮的共同样式属性和悬停效果
+ * 包含独特的上下边框动画效果
+ */
+.pan-btn {
+  font-size: 14px;
+  color: #fff; // 按钮文字颜色为白色
+  padding: 14px 36px; // 按钮内边距
+  border-radius: 8px; // 圆角边框
+  border: none;
+  outline: none;
+  transition: 600ms ease all; // 所有属性的过渡动画
+  position: relative; // 相对定位，用于伪元素的绝对定位
+  display: inline-block;
+
+  &:hover {
+    background: #fff; // 悬停时背景变为白色
+
+    &:before,
+    &:after {
+      width: 100%; // 悬停时伪元素宽度变为100%，形成完整的边框线
+      transition: 600ms ease all;
+    }
+  }
+
+  // 上边框线伪元素
+  &:before,
+  &:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 2px; // 边框线高度为2px
+    width: 0; // 初始宽度为0
+    transition: 400ms ease all; // 过渡动画
+  }
+
+  // 下边框线伪元素
+  &::after {
+    right: inherit;
+    top: inherit;
+    left: 0; // 从左侧开始
+    bottom: 0; // 定位在底部
+  }
+}
+
+/**
+ * 自定义按钮基础样式
+ * 提供更简单的按钮样式，不带动画效果
+ */
+.custom-button {
+  display: inline-block;
+  line-height: 1;
+  white-space: nowrap; // 防止文本换行
+  cursor: pointer;
+  background: #fff;
+  color: #fff; // 注意：文字和背景相同颜色，可能需要调整
+  -webkit-appearance: none; // 移除WebKit浏览器的默认样式
+  text-align: center;
+  box-sizing: border-box;
+  outline: 0;
+  margin: 0;
+  padding: 10px 15px;
+  font-size: 14px;
+  border-radius: 4px;
+}

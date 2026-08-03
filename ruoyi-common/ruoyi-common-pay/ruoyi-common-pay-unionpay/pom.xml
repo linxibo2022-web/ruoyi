@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>plus.ruoyi</groupId>
+        <artifactId>ruoyi-common-pay</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ruoyi-common-pay-unionpay</artifactId>
+
+    <description>
+        银联开放平台支付模块
+
+        支持功能:
+        - 统一支付接口（支持多种支付方式）
+        - 二维码支付（扫码支付）
+        - WAP支付（手机网页支付）
+        - 订单查询、退款查询
+        - 支付回调处理
+
+        认证方式:
+        - OAuth2.0认证
+        - RSA签名验证
+        - SM2国密签名（可选）
+    </description>
+
+    <dependencies>
+        <!-- 支付核心模块 -->
+        <dependency>
+            <groupId>plus.ruoyi</groupId>
+            <artifactId>ruoyi-common-pay-core</artifactId>
+        </dependency>
+
+        <!-- JSON处理 -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+
+        <!-- 加密工具 - Bouncy Castle (用于RSA/SM2签名) -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk18on</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

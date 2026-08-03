@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, user-scalable=no">
+<title>计算器 - 历史记录</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f0f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .phone-frame { width: 375px; height: 812px; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; background: #f5f5f5; position: relative; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+  .status-bar { height: 44px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }
+  .status-bar span { color: #1c1c1e; font-size: 12px; font-weight: 600; }
+  .screen { flex: 1; overflow-y: auto; padding-bottom: 80px; }
+  .screen::-webkit-scrollbar { display: none; }
+  .tab-bar { position: absolute; bottom: 0; left: 0; right: 0; background: white; display: flex; border-top: 1px solid #e5e7eb; padding-bottom: 20px; z-index: 50; }
+  .tab-bar a { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 8px 0 4px; text-decoration: none; color: #9ca3af; font-size: 10px; gap: 2px; }
+  .tab-bar a.active { color: #0EA5E9; }
+  .tab-bar a i { width: 22px; height: 22px; }
+  .home-indicator { width: 134px; height: 5px; background: #1a1a1a; border-radius: 3px; margin: 0 auto; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span>9:41</span>
+    <span>●●●●○ ⚡ 85%</span>
+  </div>
+
+  <!-- Screen Content -->
+  <div class="screen">
+    <!-- Header -->
+    <div style="background: white; padding: 12px 16px 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0f0f0;">
+      <div style="font-size: 20px; font-weight: 700; color: #1f2937;">计算历史</div>
+      <div style="display: flex; align-items: center; gap: 4px; color: #ef4444; font-size: 13px; cursor: pointer;">
+        <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+        <span>清空</span>
+      </div>
+    </div>
+
+    <!-- Today -->
+    <div style="padding: 16px 16px 0;">
+      <div style="font-size: 13px; font-weight: 600; color: #6b7280; margin-bottom: 10px;">今天</div>
+
+      <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+        <!-- Record 1 -->
+        <div style="padding: 14px 16px; border-bottom: 1px solid #f5f5f5;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <div style="font-size: 15px; color: #6b7280; margin-bottom: 4px;">1024 × 8</div>
+              <div style="font-size: 24px; font-weight: 600; color: #1f2937;">= 8,192</div>
+            </div>
+            <div style="font-size: 11px; color: #9ca3af; margin-top: 2px;">14:32</div>
+          </div>
+        </div>
+        <!-- Record 2 -->
+        <div style="padding: 14px 16px; border-bottom: 1px solid #f5f5f5;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <div style="font-size: 15px; color: #6b7280; margin-bottom: 4px;">128 + 256</div>
+              <div style="font-size: 24px; font-weight: 600; color: #1f2937;">= 384</div>
+            </div>
+            <div style="font-size: 11px; color: #9ca3af; margin-top: 2px;">14:28</div>
+          </div>
+        </div>
+        <!-- Record 3 -->
+        <div style="padding: 14px 16px; border-bottom: 1px solid #f5f5f5;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <div style="font-size: 15px; color: #6b7280; margin-bottom: 4px;">999 ÷ 3</div>
+              <div style="font-size: 24px; font-weight: 600; color: #1f2937;">= 333</div>
+            </div>
+            <div style="font-size: 11px; color: #9ca3af; margin-top: 2px;">11:15</div>
+          </div>
+        </div>
+        <!-- Record 4 -->
+        <div style="padding: 14px 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <div style="font-size: 15px; color: #6b7280; margin-bottom: 4px;">50 × 20%</div>
+              <div style="font-size: 24px; font-weight: 600; color: #1f2937;">= 10</div>
+            </div>
+            <div style="font-size: 11px; color: #9ca3af; margin-top: 2px;">09:42</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Yesterday -->
+    <div style="padding: 16px 16px 0;">
+      <div style="font-size: 13px; font-weight: 600; color: #6b7280; margin-bottom: 10px;">昨天</div>
+
+      <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+        <!-- Record 5 -->
+        <div style="padding: 14px 16px; border-bottom: 1px solid #f5f5f5;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <div style="font-size: 15px; color: #6b7280; margin-bottom: 4px;">3.14 × 10²</div>
+              <div style="font-size: 24px; font-weight: 600; color: #1f2937;">= 314</div>
+            </div>
+            <div style="font-size: 11px; color: #9ca3af; margin-top: 2px;">20:05</div>
+          </div>
+        </div>
+        <!-- Record 6 -->
+        <div style="padding: 14px 16px; border-bottom: 1px solid #f5f5f5;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <div style="font-size: 15px; color: #6b7280; margin-bottom: 4px;">2048 − 512</div>
+              <div style="font-size: 24px; font-weight: 600; color: #1f2937;">= 1,536</div>
+            </div>
+            <div style="font-size: 11px; color: #9ca3af; margin-top: 2px;">16:47</div>
+          </div>
+        </div>
+        <!-- Record 7 -->
+        <div style="padding: 14px 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <div style="font-size: 15px; color: #6b7280; margin-bottom: 4px;">√144</div>
+              <div style="font-size: 24px; font-weight: 600; color: #1f2937;">= 12</div>
+            </div>
+            <div style="font-size: 11px; color: #9ca3af; margin-top: 2px;">10:22</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Earlier -->
+    <div style="padding: 16px 16px 20px;">
+      <div style="font-size: 13px; font-weight: 600; color: #6b7280; margin-bottom: 10px;">4月11日</div>
+
+      <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+        <!-- Record 8 -->
+        <div style="padding: 14px 16px; border-bottom: 1px solid #f5f5f5;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <div style="font-size: 15px; color: #6b7280; margin-bottom: 4px;">88 × 66</div>
+              <div style="font-size: 24px; font-weight: 600; color: #1f2937;">= 5,808</div>
+            </div>
+            <div style="font-size: 11px; color: #9ca3af; margin-top: 2px;">15:30</div>
+          </div>
+        </div>
+        <!-- Record 9 -->
+        <div style="padding: 14px 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <div style="font-size: 15px; color: #6b7280; margin-bottom: 4px;">1000 ÷ 7</div>
+              <div style="font-size: 24px; font-weight: 600; color: #1f2937;">= 142.857</div>
+            </div>
+            <div style="font-size: 11px; color: #9ca3af; margin-top: 2px;">09:18</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <a href="01-index.html">
+      <i data-lucide="calculator"></i>
+      <span>计算器</span>
+    </a>
+    <a href="02-science.html">
+      <i data-lucide="flask-conical"></i>
+      <span>科学</span>
+    </a>
+    <a href="03-history.html" class="active">
+      <i data-lucide="history"></i>
+      <span>历史</span>
+    </a>
+    <a href="04-converter.html">
+      <i data-lucide="arrow-left-right"></i>
+      <span>转换</span>
+    </a>
+  </div>
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+  lucide.createIcons();
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+{
+  "_doc_说明": "复制此文件并改名为 <模块名>.json，按下面字段填写裁剪清单。以 _ 开头的文件不会被列入可用预设列表。",
+  "_doc_delete_dirs": "要整个删除的目录（相对交付目录根，不含末尾 /）。脚本会 rmtree。不存在则跳过不报错。",
+  "_doc_remove_pom_lines": "从指定 pom.xml 删除任何包含 patterns 的整行（字符串 contains 匹配，非正则）。",
+  "_doc_manual_actions": "脚本无法自动完成的事，会在报告末尾提示用户。",
+
+  "name": "示例模块（中文名，用于报告）",
+  "description": "一句话说明这个预设删除什么",
+  "delete_dirs": [
+    "ruoyi-modules/ruoyi-xxx",
+    "plus-ui/src/views/business/xxx",
+    "plus-ui/src/api/business/xxx",
+    "plus-uniapp/src/api/xxx",
+    "plus-app/api/xxx"
+  ],
+  "delete_files": [
+    "script/sql/xxx-init.sql"
+  ],
+  "remove_pom_lines": [
+    {
+      "file": "ruoyi-modules/pom.xml",
+      "patterns": [
+        "<module>ruoyi-xxx</module>"
+      ]
+    },
+    {
+      "file": "ruoyi-admin/pom.xml",
+      "patterns": [
+        "<artifactId>ruoyi-xxx</artifactId>",
+        "<artifactId>ruoyi-common-xxx</artifactId>"
+      ]
+    }
+  ],
+  "manual_actions": [
+    "从 script/sql/ry_plus_new.sql 移除 xxx_ 开头的表和相关菜单",
+    "若是支付/AI 等用了 ruoyi-common-* 公共模块，确认其他模块没引用后才能删 common 模块"
+  ],
+  "depends_on": []
+}

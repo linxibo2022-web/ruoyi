@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, user-scalable=no">
+<title>在线学堂 - 我的</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f0f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .phone-frame { width: 375px; height: 812px; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; background: #f5f5f5; position: relative; display: flex; flex-direction: column; }
+  .status-bar { height: 44px; background: #059669; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }
+  .status-bar span { color: white; font-size: 12px; font-weight: 600; }
+  .screen { flex: 1; overflow-y: auto; padding-bottom: 80px; }
+  .screen::-webkit-scrollbar { display: none; }
+  .tab-bar { position: absolute; bottom: 0; left: 0; right: 0; background: white; display: flex; border-top: 1px solid #e5e7eb; padding-bottom: 20px; z-index: 50; }
+  .tab-bar a { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 8px 0 4px; text-decoration: none; color: #9ca3af; font-size: 10px; gap: 2px; }
+  .tab-bar a.active { color: #10B981; }
+  .tab-bar a i { width: 22px; height: 22px; }
+  .safe-area-bottom { height: 20px; background: white; }
+  .home-indicator { width: 134px; height: 5px; background: #1a1a1a; border-radius: 3px; margin: 0 auto; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span>9:41</span>
+    <span>●●●●○ ⚡ 85%</span>
+  </div>
+
+  <!-- Screen Content -->
+  <div class="screen">
+    <!-- Header -->
+    <div style="background: linear-gradient(135deg, #10B981, #059669); padding: 20px 16px 32px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <div style="width: 56px; height: 56px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid rgba(255,255,255,0.4);">
+            <i data-lucide="user" style="width: 28px; height: 28px; color: white;"></i>
+          </div>
+          <div>
+            <div style="color: white; font-size: 18px; font-weight: 700;">学习达人</div>
+            <div style="display: flex; gap: 6px; margin-top: 4px;">
+              <span style="background: rgba(255,255,255,0.2); color: white; font-size: 10px; padding: 2px 8px; border-radius: 10px;">Lv.8</span>
+              <span style="background: rgba(255,255,255,0.2); color: white; font-size: 10px; padding: 2px 8px; border-radius: 10px;">学习达人</span>
+            </div>
+          </div>
+        </div>
+        <div style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+          <i data-lucide="settings" style="width: 20px; height: 20px; color: rgba(255,255,255,0.8);"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- 数据卡片 -->
+    <div style="margin: -20px 16px 16px; background: white; border-radius: 14px; padding: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.06);">
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center;">
+        <div>
+          <div style="font-size: 20px; font-weight: 700; color: #1f2937;">12</div>
+          <div style="font-size: 10px; color: #9ca3af; margin-top: 2px;">已学课程</div>
+        </div>
+        <div>
+          <div style="font-size: 20px; font-weight: 700; color: #1f2937;">86h</div>
+          <div style="font-size: 10px; color: #9ca3af; margin-top: 2px;">学习时长</div>
+        </div>
+        <div>
+          <div style="font-size: 20px; font-weight: 700; color: #1f2937;">5</div>
+          <div style="font-size: 10px; color: #9ca3af; margin-top: 2px;">获得证书</div>
+        </div>
+        <div>
+          <div style="font-size: 20px; font-weight: 700; color: #1f2937;">2.8k</div>
+          <div style="font-size: 10px; color: #9ca3af; margin-top: 2px;">积分</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 功能宫格 -->
+    <div style="margin: 0 16px 16px; background: white; border-radius: 14px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);">
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; text-align: center;">
+        <div>
+          <div style="width: 44px; height: 44px; background: #ecfdf5; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px; font-size: 20px;">📚</div>
+          <div style="font-size: 11px; color: #374151;">我的课程</div>
+        </div>
+        <div>
+          <div style="width: 44px; height: 44px; background: #eff6ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px; font-size: 20px;">📋</div>
+          <div style="font-size: 11px; color: #374151;">学习计划</div>
+        </div>
+        <div>
+          <div style="width: 44px; height: 44px; background: #fef3c7; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px; font-size: 20px;">🏆</div>
+          <div style="font-size: 11px; color: #374151;">证书成就</div>
+        </div>
+        <div>
+          <div style="width: 44px; height: 44px; background: #fce7f3; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px; font-size: 20px;">📝</div>
+          <div style="font-size: 11px; color: #374151;">学习笔记</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 更多功能列表 -->
+    <div style="margin: 0 16px 16px; background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.04);">
+      <!-- Item 1 -->
+      <div style="display: flex; align-items: center; padding: 14px 16px; border-bottom: 1px solid #f5f5f5;">
+        <div style="width: 34px; height: 34px; background: #ecfdf5; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+          <i data-lucide="heart" style="width: 16px; height: 16px; color: #10B981;"></i>
+        </div>
+        <span style="flex: 1; font-size: 14px; color: #374151;">我的收藏</span>
+        <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: #d1d5db;"></i>
+      </div>
+      <!-- Item 2 -->
+      <div style="display: flex; align-items: center; padding: 14px 16px; border-bottom: 1px solid #f5f5f5;">
+        <div style="width: 34px; height: 34px; background: #eff6ff; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+          <i data-lucide="clock" style="width: 16px; height: 16px; color: #3b82f6;"></i>
+        </div>
+        <span style="flex: 1; font-size: 14px; color: #374151;">学习记录</span>
+        <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: #d1d5db;"></i>
+      </div>
+      <!-- Item 3 -->
+      <div style="display: flex; align-items: center; padding: 14px 16px; border-bottom: 1px solid #f5f5f5;">
+        <div style="width: 34px; height: 34px; background: #fef3c7; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+          <i data-lucide="wallet" style="width: 16px; height: 16px; color: #f59e0b;"></i>
+        </div>
+        <span style="flex: 1; font-size: 14px; color: #374151;">订单管理</span>
+        <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: #d1d5db;"></i>
+      </div>
+      <!-- Item 4 -->
+      <div style="display: flex; align-items: center; padding: 14px 16px; border-bottom: 1px solid #f5f5f5;">
+        <div style="width: 34px; height: 34px; background: #fce7f3; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+          <i data-lucide="gift" style="width: 16px; height: 16px; color: #ec4899;"></i>
+        </div>
+        <span style="flex: 1; font-size: 14px; color: #374151;">优惠券</span>
+        <span style="font-size: 11px; color: #f43f5e; margin-right: 8px;">3张可用</span>
+        <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: #d1d5db;"></i>
+      </div>
+      <!-- Item 5 -->
+      <div style="display: flex; align-items: center; padding: 14px 16px; border-bottom: 1px solid #f5f5f5;">
+        <div style="width: 34px; height: 34px; background: #f3e8ff; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+          <i data-lucide="message-circle" style="width: 16px; height: 16px; color: #8b5cf6;"></i>
+        </div>
+        <span style="flex: 1; font-size: 14px; color: #374151;">意见反馈</span>
+        <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: #d1d5db;"></i>
+      </div>
+      <!-- Item 6 -->
+      <div style="display: flex; align-items: center; padding: 14px 16px;">
+        <div style="width: 34px; height: 34px; background: #f1f5f9; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+          <i data-lucide="info" style="width: 16px; height: 16px; color: #64748b;"></i>
+        </div>
+        <span style="flex: 1; font-size: 14px; color: #374151;">关于我们</span>
+        <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: #d1d5db;"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <a href="01-index.html">
+      <i data-lucide="home"></i>
+      <span>首页</span>
+    </a>
+    <a href="02-course.html">
+      <i data-lucide="book-open"></i>
+      <span>课程</span>
+    </a>
+    <a href="03-study.html">
+      <i data-lucide="graduation-cap"></i>
+      <span>学习</span>
+    </a>
+    <a href="04-my.html" class="active">
+      <i data-lucide="user"></i>
+      <span>我的</span>
+    </a>
+  </div>
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+  lucide.createIcons();
+</script>
+</body>
+</html>

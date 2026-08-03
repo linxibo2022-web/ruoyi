@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, user-scalable=no">
+<title>在线考试 - 我的</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f0f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .phone-frame { width: 375px; height: 812px; border: 8px solid #1a1a1a; border-radius: 44px; overflow: hidden; background: #f5f7fa; display: flex; flex-direction: column; position: relative; }
+  .status-bar { height: 44px; background: #3B82F6; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }
+  .status-bar span { color: white; font-size: 12px; font-weight: 600; }
+  .page-content { flex: 1; overflow-y: auto; }
+  .page-content::-webkit-scrollbar { display: none; }
+  .tab-bar { display: flex; background: white; border-top: 1px solid #e5e7eb; padding: 6px 0; flex-shrink: 0; }
+  .tab-bar a { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; text-decoration: none; color: #9ca3af; font-size: 10px; padding: 4px 0; }
+  .tab-bar a.active { color: #3B82F6; }
+  .tab-bar a i { width: 22px; height: 22px; }
+  .safe-area-bottom { height: 20px; background: white; flex-shrink: 0; }
+  .home-indicator { width: 134px; height: 5px; background: #1a1a1a; border-radius: 3px; margin: 0 auto 8px; }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span>9:41</span>
+    <span>●●●●● ⚡ 100%</span>
+  </div>
+
+  <!-- Page Content -->
+  <div class="page-content">
+    <!-- Profile Header -->
+    <div style="background: linear-gradient(135deg, #3B82F6, #1D4ED8); padding: 20px 16px 32px;">
+      <div class="flex items-center gap-3">
+        <div class="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center text-2xl">👨‍🎓</div>
+        <div class="flex-1">
+          <div class="flex items-center gap-2">
+            <h2 class="text-white font-bold text-base">张三</h2>
+            <span class="bg-yellow-400 text-yellow-900 text-[10px] px-2 py-0.5 rounded-full font-medium">学霸</span>
+          </div>
+          <p class="text-blue-200 text-xs mt-1">ID: 2024001 · 计算机科学与技术</p>
+        </div>
+        <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+          <i data-lucide="settings" class="w-4 h-4 text-white"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="px-4 -mt-5">
+      <div class="bg-white rounded-2xl p-4 shadow-sm grid grid-cols-4 gap-2">
+        <div class="text-center">
+          <div class="text-lg font-bold text-blue-600">56</div>
+          <div class="text-[10px] text-gray-400 mt-0.5">考试次数</div>
+        </div>
+        <div class="text-center">
+          <div class="text-lg font-bold text-green-500">87</div>
+          <div class="text-[10px] text-gray-400 mt-0.5">平均分</div>
+        </div>
+        <div class="text-center">
+          <div class="text-lg font-bold text-orange-500">Top5</div>
+          <div class="text-[10px] text-gray-400 mt-0.5">排名</div>
+        </div>
+        <div class="text-center">
+          <div class="text-lg font-bold text-purple-500">32</div>
+          <div class="text-[10px] text-gray-400 mt-0.5">连续天数</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions Grid -->
+    <div class="px-4 mt-5">
+      <h2 class="text-sm font-bold text-gray-800 mb-3">功能入口</h2>
+      <div class="grid grid-cols-4 gap-3">
+        <div class="text-center">
+          <div class="w-12 h-12 bg-yellow-50 rounded-2xl flex items-center justify-center mx-auto text-xl">🏆</div>
+          <span class="text-[10px] text-gray-600 mt-1.5 block">我的证书</span>
+        </div>
+        <div class="text-center">
+          <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center mx-auto text-xl">📝</div>
+          <span class="text-[10px] text-gray-600 mt-1.5 block">错题本</span>
+        </div>
+        <div class="text-center">
+          <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto text-xl">⭐</div>
+          <span class="text-[10px] text-gray-600 mt-1.5 block">收藏题目</span>
+        </div>
+        <div class="text-center">
+          <div class="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center mx-auto text-xl">📋</div>
+          <span class="text-[10px] text-gray-600 mt-1.5 block">学习计划</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- More Functions -->
+    <div class="px-4 mt-5 mb-4">
+      <h2 class="text-sm font-bold text-gray-800 mb-3">更多功能</h2>
+
+      <!-- Item 1 -->
+      <div class="bg-white rounded-2xl shadow-sm mb-2">
+        <div class="flex items-center gap-3 p-3.5">
+          <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+            <i data-lucide="bar-chart-2" class="w-4 h-4 text-white"></i>
+          </div>
+          <span class="text-xs text-gray-700 flex-1">成绩分析</span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        </div>
+      </div>
+
+      <!-- Item 2 -->
+      <div class="bg-white rounded-2xl shadow-sm mb-2">
+        <div class="flex items-center gap-3 p-3.5">
+          <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+            <i data-lucide="trophy" class="w-4 h-4 text-white"></i>
+          </div>
+          <span class="text-xs text-gray-700 flex-1">排行榜</span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        </div>
+      </div>
+
+      <!-- Item 3 -->
+      <div class="bg-white rounded-2xl shadow-sm mb-2">
+        <div class="flex items-center gap-3 p-3.5">
+          <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
+            <i data-lucide="clock" class="w-4 h-4 text-white"></i>
+          </div>
+          <span class="text-xs text-gray-700 flex-1">考试历史</span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        </div>
+      </div>
+
+      <!-- Item 4 -->
+      <div class="bg-white rounded-2xl shadow-sm mb-2">
+        <div class="flex items-center gap-3 p-3.5">
+          <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+            <i data-lucide="download" class="w-4 h-4 text-white"></i>
+          </div>
+          <span class="text-xs text-gray-700 flex-1">离线题库</span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        </div>
+      </div>
+
+      <!-- Item 5 -->
+      <div class="bg-white rounded-2xl shadow-sm mb-2">
+        <div class="flex items-center gap-3 p-3.5">
+          <div class="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center">
+            <i data-lucide="message-circle" class="w-4 h-4 text-white"></i>
+          </div>
+          <span class="text-xs text-gray-700 flex-1">意见反馈</span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        </div>
+      </div>
+
+      <!-- Item 6 -->
+      <div class="bg-white rounded-2xl shadow-sm">
+        <div class="flex items-center gap-3 p-3.5">
+          <div class="w-8 h-8 bg-pink-500 rounded-lg flex items-center justify-center">
+            <i data-lucide="info" class="w-4 h-4 text-white"></i>
+          </div>
+          <span class="text-xs text-gray-700 flex-1">关于我们</span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <a href="01-index.html">
+      <i data-lucide="home"></i>
+      <span>首页</span>
+    </a>
+    <a href="02-bank.html">
+      <i data-lucide="database"></i>
+      <span>题库</span>
+    </a>
+    <a href="03-practice.html">
+      <i data-lucide="pen-tool"></i>
+      <span>练习</span>
+    </a>
+    <a href="04-my.html" class="active">
+      <i data-lucide="user"></i>
+      <span>我的</span>
+    </a>
+  </div>
+
+  <!-- Safe Area -->
+  <div class="safe-area-bottom">
+    <div class="home-indicator"></div>
+  </div>
+</div>
+
+<script>
+  lucide.createIcons();
+</script>
+</body>
+</html>

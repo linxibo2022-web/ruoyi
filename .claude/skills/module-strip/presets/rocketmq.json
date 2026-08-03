@@ -1,0 +1,29 @@
+{
+  "name": "RocketMQ 消息队列",
+  "description": "ruoyi-common-rocketmq 模块（异步消息/延迟消息/事务消息），删后业务不能再用 RMSendUtil 等",
+  "delete_dirs": [
+    "ruoyi-common/ruoyi-common-rocketmq"
+  ],
+  "delete_files": [],
+  "remove_pom_lines": [
+    {
+      "file": "ruoyi-common/pom.xml",
+      "patterns": [
+        "<module>ruoyi-common-rocketmq</module>"
+      ]
+    },
+    {
+      "file": "ruoyi-modules/ruoyi-business/pom.xml",
+      "patterns": [
+        "<artifactId>ruoyi-common-rocketmq</artifactId>"
+      ]
+    }
+  ],
+  "manual_actions": [
+    "✅ 实测：单独裁 rocketmq 编译通过（当前业务代码不引用 RMSendUtil/RMTopicUtil 等）",
+    "若后续业务代码新增 RMSendUtil/RMTopicUtil/@RocketMQMessageListener 引用，本预设需配套删除",
+    "删除 application.yml 中 rocketmq 配置（rocketmq.name-server / producer.group 等节点）",
+    "ruoyi-common-bom 中保留的 <ruoyi-common-rocketmq.version> 孤儿版本声明可不动（不影响构建）"
+  ],
+  "depends_on": []
+}

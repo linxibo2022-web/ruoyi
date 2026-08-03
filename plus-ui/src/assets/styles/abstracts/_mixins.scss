@@ -1,0 +1,173 @@
+/**
+ * SCSS混合器(Mixins)函数集
+ * 提供常用的可复用样式混合器，方便在项目中快速应用常见样式效果
+ */
+
+@use './variables' as *;
+
+/**
+ * 清除浮动混合器
+ * 使用伪元素方法清除包含浮动元素的容器浮动问题
+ *
+ * 使用方法:
+ * .container {
+ *   @include clearfix;
+ * }
+ */
+@mixin clearfix {
+  &:after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+/**
+ * 响应式断点混合器
+ * 直接使用断点值，避免映射查找问题
+ */
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == 'sm' {
+    @media (max-width: #{$sm}) {
+      @content;
+    }
+  } @else if $breakpoint == 'md' {
+    @media (max-width: #{$md}) {
+      @content;
+    }
+  } @else if $breakpoint == 'lg' {
+    @media (max-width: #{$lg}) {
+      @content;
+    }
+  } @else if $breakpoint == 'xl' {
+    @media (max-width: #{$xl}) {
+      @content;
+    }
+  } @else {
+    @warn "Unknown breakpoint: #{$breakpoint}";
+  }
+}
+
+/**
+ * 自定义滚动条样式混合器
+ * 为元素添加美化的webkit滚动条样式
+ *
+ * 使用方法:
+ * .scrollable-element {
+ *   @include scrollbar;
+ * }
+ */
+@mixin scrollbar {
+  &::-webkit-scrollbar-track-piece {
+    background: #d3dce6;
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #99a9bf;
+    border-radius: var(--radius-round);
+  }
+}
+
+/**
+ * 百分比宽度居中混合器
+ * 设置元素宽度为指定百分比并水平居中
+ *
+ * @param {Number} $pct - 宽度百分比值(不带%)
+ *
+ * 使用方法:
+ * .centered-element {
+ *   @include pct(80);  // 宽度80%并居中
+ * }
+ */
+@mixin pct($pct) {
+  width: $pct * 1%;
+  position: relative;
+  margin: 0 auto;
+}
+
+/**
+ * CSS三角形生成混合器
+ * 使用CSS边框技巧创建各个方向的三角形
+ *
+ * @param {Number} $width - 三角形基础宽度
+ * @param {Number} $height - 三角形高度
+ * @param {Color} $color - 三角形颜色
+ * @param {String} $direction - 三角形方向(up|right|down|left)
+ *
+ * 使用方法:
+ * .up-triangle {
+ *   @include triangle(10px, 5px, #f00, up);
+ * }
+ */
+@mixin triangle($width, $height, $color, $direction) {
+  $width: $width/2; // 计算边框宽度(三角形宽度的一半)
+  $color-border-style: $height solid $color; // 有颜色的边框样式
+  $transparent-border-style: $width solid transparent; // 透明边框样式
+  height: 0; // 元素高度为0
+  width: 0; // 元素宽度为0
+
+  // 根据方向设置不同的边框组合
+  @if $direction==up {
+    border-bottom: $color-border-style; // 底部边框有颜色，形成向上的三角形
+    border-left: $transparent-border-style;
+    border-right: $transparent-border-style;
+  } @else if $direction==right {
+    border-left: $color-border-style; // 左边框有颜色，形成向右的三角形
+    border-top: $transparent-border-style;
+    border-bottom: $transparent-border-style;
+  } @else if $direction==down {
+    border-top: $color-border-style; // 顶部边框有颜色，形成向下的三角形
+    border-left: $transparent-border-style;
+    border-right: $transparent-border-style;
+  } @else if $direction==left {
+    border-right: $color-border-style; // 右边框有颜色，形成向左的三角形
+    border-top: $transparent-border-style;
+    border-bottom: $transparent-border-style;
+  }
+}
+
+/**
+ * 卡片样式混合器
+ */
+@mixin card-style {
+  background-color: var(--bg-level-1);
+  border: 1px solid var(--bg-level-2);
+  border-radius: var(--radius-md) !important;
+  transition: box-shadow var(--duration-normal) ease;
+
+  &:hover {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/**
+ * 按钮基础样式混合器
+ */
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  // 不在此处统一抹掉边框，交由 Element Plus 原生按钮规则处理；
+  // 否则会覆盖所有 .el-button 的边框，导致 plain/default 按钮边框消失
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--duration-normal) ease;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// 创建工具类
+.clearfix {
+  @include clearfix;
+}
+
+.scrollable-element {
+  @include scrollbar;
+}
