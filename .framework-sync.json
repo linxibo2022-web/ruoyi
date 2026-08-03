@@ -1,0 +1,22 @@
+{
+  "upstream": {
+    "url": "https://gitlab.yugasoft.cn/yuga/group/ruoyi-plus-uniapp",
+    "branch": "master",
+    "initCommit": "25493d541cb28f23ac974ed61755443fa34abb2d",
+    "initDate": "2026-08-03T10:42:04+08:00"
+  },
+  "identifierMap": {
+    "old_id": "ryplus_uni",
+    "new_id": "erp_sys",
+    "old_hyphen": "ryplus-uni",
+    "new_hyphen": "erp-sys",
+    "old_port": "5500",
+    "new_port": "5504",
+    "old_title": "ryplus-uni后台管理",
+    "new_title": "ERP系统"
+  },
+  "retainedProjects": ["plus-ui"],
+  "lastSync": null,
+  "lastCommit": "25493d541cb28f23ac974ed61755443fa34abb2d",
+  "syncs": []
+}
