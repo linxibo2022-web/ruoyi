@@ -37,6 +37,17 @@
 
         <!-- ================ 功能增强模块 ================ -->
 
+        <!-- Flyway 数据库迁移 - 版本化管理数据库变更，Spring Boot 启动时自动执行 -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <!-- Flyway MySQL 支持 - 针对 MySQL 的扩展特性 -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-mysql</artifactId>
+        </dependency>
+
         <!-- 代码生成模块 - 提供代码自动生成功能，简化开发 -->
         <dependency>
             <groupId>plus.ruoyi</groupId>

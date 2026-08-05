@@ -57,6 +57,13 @@ ruoyi-uniapp/unpackage/
 *-local.*
 output/*
 
+# 本地敏感配置目录（密码、密钥等 — Orca 设置脚本从此处复制到 worktree）
+.local-env/
+
+# Orca 分支专属环境变量（自动生成，覆盖 ${DB_NAME}）
+.env.branch
+**/.env.branch
+
 # 部署相关（敏感配置和构建产物）
 .deploy-config.json
 *.tar.gz

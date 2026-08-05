@@ -28,6 +28,18 @@ spring.boot.admin.client:
 ################## 数据源配置 ##################
 --- # 数据源配置
 spring:
+  # Flyway 数据库迁移配置
+  # 主分支（erp_sys 已有表）→ baseline-on-migrate 跳过低版本
+  # 新分支（空库）→ 从 V1 开始完整迁移
+  flyway:
+    enabled: true
+    # 独立配置 url 绕过 dynamic-datasource，直连目标库
+    url: jdbc:mysql://${DB_HOST:127.0.0.1}:${DB_PORT:3306}/${DB_NAME:erp_sys}?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+    user: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+    # 已有表的数据源（如主分支 erp_sys）跳过已存在的 V1~V4，只执行新版本
+    baseline-on-migrate: true
+    baseline-version: 4
   datasource:
     # 数据源类型
     type: com.zaxxer.hikari.HikariDataSource
