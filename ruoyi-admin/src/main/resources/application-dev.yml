@@ -56,20 +56,18 @@ spring:
         # 主库数据源
         master:
           type: ${spring.datasource.type}
-          driverClassName: com.mysql.cj.jdbc.Driver
-          # jdbc 所有参数配置参考 https://lionli.blog.csdn.net/article/details/122018562
-          # rewriteBatchedStatements=true 批处理优化 大幅提升批量插入更新删除性能
-          url: jdbc:mysql://${DB_HOST:127.0.0.1}:${DB_PORT:3306}/${DB_NAME:erp_sys}?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
-          username: ${DB_USERNAME:root}
-          password: ${DB_PASSWORD:root}
+          driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+          url: jdbc:sqlserver://${DB_HOST:127.0.0.1}:${DB_PORT:1433};DatabaseName=${DB_NAME:erp_sys};SelectMethod=cursor;encrypt=${DB_ENCRYPT:false};rewriteBatchedStatements=true
+          username: ${DB_USERNAME:sa}
+          password: ${DB_PASSWORD:Ruoyi@123456}
         # 从库数据源
         slave:
           lazy: true
           type: ${spring.datasource.type}
-          driverClassName: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://${DB_SLAVE_HOST:127.0.0.1}:${DB_SLAVE_PORT:3306}/${DB_SLAVE_NAME:erp_sys}?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
-          username: ${DB_SLAVE_USERNAME:root}
-          password: ${DB_SLAVE_PASSWORD:root}
+          driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+          url: jdbc:sqlserver://${DB_SLAVE_HOST:127.0.0.1}:${DB_SLAVE_PORT:1433};DatabaseName=${DB_SLAVE_NAME:erp_sys};SelectMethod=cursor;encrypt=${DB_SLAVE_ENCRYPT:false};rewriteBatchedStatements=true
+          username: ${DB_SLAVE_USERNAME:sa}
+          password: ${DB_SLAVE_PASSWORD:Ruoyi@123456}
 #        # Oracle数据库配置
 #        oracle:
 #          type: ${spring.datasource.type}
