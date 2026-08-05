@@ -39,3 +39,4 @@ if ($LASTEXITCODE -eq 0) { Write-Host "       ✅ 已删除" } else { Write-Host
 Write-Host "============================================"
 Write-Host "  ✅ 清理完成 | 数据库/本地/远程分支均已删除"
 Write-Host "============================================"
+
