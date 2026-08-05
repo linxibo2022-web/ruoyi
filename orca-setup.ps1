@@ -1,7 +1,5 @@
-# Orca 设置脚本 — 创建 worktree 时自动执行 (PowerShell)
-# 环境变量: $env:ORCA_ROOT_PATH, $env:ORCA_WORKTREE_PATH, $env:ORCA_WORKSPACE_NAME
-
-$ErrorActionPreference = "Continue"
+# Orca 设置脚本 — 创建 worktree 时自动执行
+# 环境变量: ORCA_ROOT_PATH, ORCA_WORKTREE_PATH, ORCA_WORKSPACE_NAME
 
 Write-Host "[1/4] 解析分支名..."
 $Branch = $env:ORCA_WORKSPACE_NAME -replace '[^a-zA-Z0-9_]', '_'
@@ -21,7 +19,6 @@ Write-Host "[3/4] 复制本地敏感配置..."
 $LocalEnv = "$env:ORCA_ROOT_PATH\.local-env"
 $targetRes = "$env:ORCA_WORKTREE_PATH\ruoyi-admin\src\main\resources"
 $targetUi = "$env:ORCA_WORKTREE_PATH\plus-ui\env"
-
 if (Test-Path "$LocalEnv\application-dev-local.yml") {
     if (!(Test-Path $targetRes)) { New-Item -ItemType Directory -Path $targetRes -Force | Out-Null }
     Copy-Item "$LocalEnv\application-dev-local.yml" $targetRes -Force
