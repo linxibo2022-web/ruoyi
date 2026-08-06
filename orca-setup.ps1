@@ -37,63 +37,37 @@ function Write-Info  { Write-Host "       ℹ️  $args" -ForegroundColor Cyan }
 function Write-Step  { param([int]$N,[int]$T,[string]$M) Write-Host "[$N/$T] $M" -ForegroundColor White }
 
 # ============================================================
-# 加载 orca.yaml 团队共享配置
+# 团队共享配置（修改后提交 Git，全团队同步）
+# 各人可通过同名环境变量覆盖以下默认值
 # ============================================================
-$ConfigFile = Join-Path $env:ORCA_ROOT_PATH "orca.yaml"
-if (Test-Path $ConfigFile) {
-    # 简易 YAML 解析（避免依赖外部模块）
-    $Config = @{}
-    $currentKey = $null
-    $indent = $null
-    Get-Content $ConfigFile -Encoding UTF8 | ForEach-Object {
-        $line = $_
-        if ($line -match '^\s*#|^\s*$') { return }  # 跳过注释和空行
-        if ($line -match '^(\w[\w-]*):\s*(.*)') {
-            $key = $Matches[1]
-            $val = $Matches[2].Trim()
-            if ($val) {
-                $Config[$key] = $val
-            } else {
-                $Config[$key] = @{}
-                $currentKey = $key
-            }
-        } elseif ($line -match '^\s+(\w[\w-]*):\s*(.*)') {
-            $subKey = $Matches[1]
-            $subVal = $Matches[2].Trim()
-            $Config[$currentKey][$subKey] = $subVal
-        }
-    }
-    Write-Info "已加载 orca.yaml 团队配置"
-} else {
-    Write-Warn "orca.yaml 不存在，使用脚本内置默认值"
-    $Config = @{}
-}
 
-# 配置提取（YAML 值优先，回退到默认值）
-$DB_HOST     = if ($Config['database']['host'])        { $Config['database']['host'] }        else { "127.0.0.1" }
-$DB_PORT     = if ($Config['database']['port'])        { $Config['database']['port'] }        else { "3306" }
-$DB_USER     = if ($Config['database']['user'])        { $Config['database']['user'] }        else { "root" }
-$DB_PREFIX   = if ($Config['database']['name-prefix']) { $Config['database']['name-prefix'] } else { "erp_sys_" }
-$DB_PASSWORD = if ($env:DB_PASSWORD)                   { $env:DB_PASSWORD }                   else { "root" }
+# -- 数据库连接（密码不写这里，由各人本地配置提供）--
+$DB_HOST     = if ($env:DB_HOST)     { $env:DB_HOST }     else { "127.0.0.1" }
+$DB_PORT     = if ($env:DB_PORT)     { $env:DB_PORT }     else { "3306" }
+$DB_USER     = if ($env:DB_USER)     { $env:DB_USER }     else { "root" }
+$DB_PREFIX   = if ($env:DB_PREFIX)   { $env:DB_PREFIX }   else { "erp_sys_" }
+$DB_PASSWORD = if ($env:DB_PASSWORD) { $env:DB_PASSWORD } else { "root" }
 
-# 本地配置源路径（环境变量 > YAML 自定义路径 > 默认路径）
-$LocalConfigEnv = if ($Config['local-config']['env-var']) { $Config['local-config']['env-var'] } else { "ORCA_LOCAL_CONFIG" }
-$LocalConfigPath = if (Test-Path env:$LocalConfigEnv) {
-    (Get-Item env:$LocalConfigEnv).Value
+# -- 本地敏感配置来源（各人磁盘路径，通过 ORCA_LOCAL_CONFIG 环境变量自定义）--
+$LocalConfigPath = if ($env:ORCA_LOCAL_CONFIG) {
+    $env:ORCA_LOCAL_CONFIG
 } else {
     Join-Path (Split-Path $env:ORCA_ROOT_PATH -Parent) "orca-local-config"
 }
 
-# 步骤开关
-$StepValidate = if ($Config['steps']['validate']) { $Config['steps']['validate'] -ne 'false' } else { $true }
-$StepBranch   = if ($Config['steps']['branch'])   { $Config['steps']['branch'] -ne 'false' }   else { $true }
-$StepDatabase = if ($Config['steps']['database']) { $Config['steps']['database'] -ne 'false' } else { $true }
-$StepDeps     = if ($Config['steps']['deps'])     { $Config['steps']['deps'] -ne 'false' }     else { $true }
-$StepConfig   = if ($Config['steps']['config'])   { $Config['steps']['config'] -ne 'false' }   else { $true }
-$StepEnvFile  = if ($Config['steps']['env-file']) { $Config['steps']['env-file'] -ne 'false' }  else { $true }
+# -- 受保护分支（禁止删除）--
+$ProtectedBranches = @("main", "master")
 
 Write-Info "数据库: ${DB_USER}@${DB_HOST}:${DB_PORT}"
 Write-Info "配置源: $LocalConfigPath"
+
+# -- 步骤开关 --
+$StepValidate = $true
+$StepBranch   = $true
+$StepDatabase = $true
+$StepDeps     = $true
+$StepConfig   = $true
+$StepEnvFile  = $true
 
 # ============================================================
 # 步骤 1: 解析分支/数据库名

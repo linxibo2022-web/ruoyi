@@ -34,31 +34,14 @@ function Write-Info  { Write-Host "       ℹ️  $args" -ForegroundColor Cyan }
 function Write-Step  { param([int]$N,[int]$T,[string]$M) Write-Host "[$N/$T] $M" -ForegroundColor White }
 
 # ============================================================
-# 加载 orca.yaml 团队共享配置
+# 团队共享配置（与 orca-setup.ps1 保持一致）
 # ============================================================
-$ConfigFile = Join-Path $env:ORCA_ROOT_PATH "orca.yaml"
-if (Test-Path $ConfigFile) {
-    $Config = @{}
-    $currentKey = $null
-    Get-Content $ConfigFile -Encoding UTF8 | ForEach-Object {
-        $line = $_
-        if ($line -match '^\s*#|^\s*$') { return }
-        if ($line -match '^(\w[\w-]*):\s*(.*)') {
-            $key = $Matches[1]; $val = $Matches[2].Trim()
-            if ($val) { $Config[$key] = $val } else { $Config[$key] = @{}; $currentKey = $key }
-        } elseif ($line -match '^\s+(\w[\w-]*):\s*(.*)') {
-            $subKey = $Matches[1]; $subVal = $Matches[2].Trim()
-            $Config[$currentKey][$subKey] = $subVal
-        }
-    }
-}
-
-$DB_HOST     = if ($Config['database']['host'])        { $Config['database']['host'] }        else { "127.0.0.1" }
-$DB_PORT     = if ($Config['database']['port'])        { $Config['database']['port'] }        else { "3306" }
-$DB_USER     = if ($Config['database']['user'])        { $Config['database']['user'] }        else { "root" }
-$DB_PREFIX   = if ($Config['database']['name-prefix']) { $Config['database']['name-prefix'] } else { "erp_sys_" }
-$DB_PASSWORD = if ($env:DB_PASSWORD)                   { $env:DB_PASSWORD }                   else { "root" }
-$Protected   = if ($Config['protected-branches'])      { $Config['protected-branches'] }      else { @("main","master") }
+$DB_HOST     = if ($env:DB_HOST)     { $env:DB_HOST }     else { "127.0.0.1" }
+$DB_PORT     = if ($env:DB_PORT)     { $env:DB_PORT }     else { "3306" }
+$DB_USER     = if ($env:DB_USER)     { $env:DB_USER }     else { "root" }
+$DB_PREFIX   = if ($env:DB_PREFIX)   { $env:DB_PREFIX }   else { "erp_sys_" }
+$DB_PASSWORD = if ($env:DB_PASSWORD) { $env:DB_PASSWORD } else { "root" }
+$ProtectedBranches = @("main", "master")
 
 # ============================================================
 # 步骤 1: 解析分支/数据库名
@@ -75,7 +58,7 @@ Write-Info "数据库: $DB_NAME"
 Write-Step 2 6 "安全检查..."
 
 # --- 2.1 主分支保护 ---
-if ($Protected -contains $env:ORCA_WORKSPACE_NAME) {
+if ($ProtectedBranches -contains $env:ORCA_WORKSPACE_NAME) {
     Write-Err "禁止删除受保护分支 ($($Protected -join '/'))！"
     exit 1
 }

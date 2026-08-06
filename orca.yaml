@@ -1,40 +1,7 @@
-# ============================================================
 # Orca 工作树配置（提交 Git，团队共享）
-# 敏感信息不写这里，由各脚本从本地磁盘或环境变量读取
-# ============================================================
-
-# ---- 数据库（团队共享的连接信息，密码由各人本地配置）----
-database:
-  host: 127.0.0.1
-  port: 3306
-  user: root
-  # password 不写这里！由 orca-local-config/application-dev-local.yml 的 DB_PASSWORD 提供
-  name-prefix: erp_sys_
-
-# ---- 本地敏感配置来源 ----
-# 各开发者把 application-dev-local.yml 放到自己的本地目录
-# ORCA_LOCAL_CONFIG 环境变量未设置时使用默认值（见 orca-setup.ps1 脚本内 fallback）
-local-config:
-  env-var: ORCA_LOCAL_CONFIG
-  files:
-    - application-dev-local.yml
-
-# ---- Flyway 数据库迁移 ----
-flyway:
-  enabled: true
-  baseline-on-migrate: true
-  baseline-version: 4
-
-# ---- 受保护分支（禁止删除）----
-protected-branches:
-  - main
-  - master
-
-# ---- 步骤开关（按需跳过某些步骤）----
-steps:
-  validate: true      # 前置校验
-  branch: true        # 创建远程分支
-  database: true      # 创建数据库
-  deps: true          # 检查依赖
-  config: true        # 复制本地敏感配置
-  env-file: true      # 生成 .env.branch
+issueCommand: "/brainstorm 现在开始处理Issue {{artifact_url}}，请基于项目现状进行调研和评估，并编写可行的实施方案。"
+scripts:
+  setup:
+    powershell -NoProfile -ExecutionPolicy Bypass -File "%ORCA_ROOT_PATH%\orca-setup.ps1"
+  archive:
+    powershell -NoProfile -ExecutionPolicy Bypass -File "%ORCA_ROOT_PATH%\orca-archive.ps1"
