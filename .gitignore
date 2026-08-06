@@ -54,10 +54,11 @@ nbdist/
 ruoyi-uniapp/unpackage/
 
 # 本地文件（不提交到远程仓库）
-*-local.*
+*-local.yml
+!*.example            # 但 .example 模板文件要提交（供团队成员复制使用）
 output/*
 
-# 本地敏感配置目录（密码、密钥等 — Orca 设置脚本从此处复制到 worktree）
+# 本地敏感配置目录（已废弃，敏感文件移至 D:\ruoyi_project\orca-local-config\）
 .local-env/
 
 # Orca 分支专属环境变量（自动生成，覆盖 ${DB_NAME}）

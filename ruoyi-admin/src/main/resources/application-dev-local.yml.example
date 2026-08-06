@@ -1,0 +1,59 @@
+############################################################
+# 本地敏感配置模板
+# 存放位置: D:\ruoyi_project\orca-local-config\application-dev-local.yml
+#            （不在 Git 仓库内，Orca 脚本自动复制到 worktree）
+#
+# 使用方法：
+#   1. 复制本文件到 D:\ruoyi_project\orca-local-config\application-dev-local.yml
+#   2. 填入你的真实密码和密钥
+#   3. Orca 创建 worktree 时会自动复制到正确位置
+#
+# 注意：只写需要覆盖的值，其他值沿用 application-dev.yml 的默认值
+############################################################
+
+# ==================== 数据库 ====================
+DB_HOST: 127.0.0.1
+DB_PORT: 3306
+DB_NAME: erp_sys
+DB_USERNAME: root
+DB_PASSWORD: 你的MySQL密码
+
+# ==================== Redis ====================
+# 如果 Redis 无密码，整行删除即可（application-dev.yml 默认为空）
+# REDIS_HOST: 127.0.0.1
+# REDIS_PORT: 6379
+# REDIS_PASSWORD: 你的Redis密码
+
+# ==================== 安全密钥（生产环境必须更换！）====================
+# JWT 密钥 — 生产环境请用随机字符串替换
+# JWT_SECRET_KEY: 你的JWT密钥
+
+# API 加密密钥 — 生产环境请重新生成 RSA 密钥对
+# API_REQUEST_PRIVATE_KEY: 你的请求解密私钥
+# API_RESPONSE_PUBLIC_KEY: 你的响应加密公钥
+
+# ==================== 第三方服务 ====================
+# 短信（阿里云）
+# SMS_ALI_ACCESS_KEY: 你的AccessKey
+# SMS_ALI_ACCESS_SECRET: 你的AccessSecret
+# SMS_ALI_SIGNATURE: 你的短信签名
+
+# 邮件
+# MAIL_HOST: smtp.163.com
+# MAIL_PORT: 465
+# MAIL_USERNAME: xxx@163.com
+# MAIL_PASSWORD: 你的邮箱授权码
+# MAIL_FROM: xxx@163.com
+
+# OAuth 第三方登录（按需配置）
+# GITEE_CLIENT_ID: 你的ClientId
+# GITEE_CLIENT_SECRET: 你的ClientSecret
+# WECHAT_OPEN_CLIENT_ID: 你的AppId
+# WECHAT_OPEN_CLIENT_SECRET: 你的AppSecret
+
+# ==================== 其他服务开关 ====================
+# 关闭不需要的服务，加速启动
+# P6SPY_ENABLED: false        # 关闭 SQL 日志（性能更好）
+# ROCKETMQ_ENABLED: false      # 关闭 RocketMQ
+# SNAIL_JOB_ENABLED: false     # 关闭定时任务
+# MQTT_ENABLED: false           # 关闭 MQTT
