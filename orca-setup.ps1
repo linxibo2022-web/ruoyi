@@ -34,7 +34,7 @@ Log "LocalConfig: $LocalConfigPath"
 Log ""
 
 # ---- 步骤 1: 解析分支/数据库名 ----
-Log "[1/7] Parse branch name..."
+Log "[1/8] Parse branch name..."
 $Branch = $env:ORCA_WORKSPACE_NAME -replace '[^a-zA-Z0-9_]', '_'
 $DB_NAME = $DB_PREFIX + $Branch
 $IsMain = ($Branch -eq "main" -or $Branch -eq "master")
@@ -42,7 +42,7 @@ Log "       DB_NAME = $DB_NAME"
 Log "       IsMain  = $IsMain"
 
 # ---- 步骤 2: 前置校验 ----
-Log "[2/7] Validate prerequisites..."
+Log "[2/8] Validate prerequisites..."
 
 # 2.1 Git remote
 Push-Location $env:ORCA_ROOT_PATH
@@ -67,7 +67,7 @@ Log "       git=$gitOk mysql=$mysqlOk"
 Pop-Location
 
 # ---- 步骤 3: 创建远程分支 ----
-Log "[3/7] Create remote branch..."
+Log "[3/8] Create remote branch..."
 if ($IsMain) {
     Log "       Main branch, skip."
 } else {
@@ -93,20 +93,37 @@ if ($IsMain) {
 }
 
 # ---- 步骤 4: 创建数据库 ----
-Log "[4/7] Create database $DB_NAME..."
+Log "[4/8] Create database $DB_NAME..."
 $createDbSql = "CREATE DATABASE IF NOT EXISTS ``$DB_NAME`` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
 $mysqlArgs = "-u", $DB_USER, "-p$DB_PASSWORD", "--default-character-set=utf8mb4", "-e", $createDbSql
 $dbOut = & mysql $mysqlArgs 2>&1
 Log "       exit=$LASTEXITCODE"
 if ($LASTEXITCODE -ne 0) {
     Log "       ERROR: $dbOut"
-
-exit 1
+    exit 1
 }
 Log "       Database $DB_NAME ready."
 
-# ---- 步骤 5: 检查依赖 ----
-Log "[5/7] Check dependencies..."
+# ---- 步骤 5: 执行 Flyway 迁移（建表 + 初始化数据）----
+Log "[5/8] Run Flyway migrations..."
+$migrationDir = Join-Path $env:ORCA_WORKTREE_PATH "ruoyi-admin\src\main\resources\db\migration"
+if (Test-Path $migrationDir) {
+    $migrationFiles = Get-ChildItem $migrationDir -Filter "V*.sql" | Sort-Object Name
+    foreach ($file in $migrationFiles) {
+        $mysqlArgs = "-u", $DB_USER, "-p$DB_PASSWORD", $DB_NAME
+        Get-Content $file.FullName -Raw | & mysql $mysqlArgs 2>&1
+        if ($LASTEXITCODE -ne 0) {
+            Log "       ERROR: Migration $($file.Name) failed"
+            exit 1
+        }
+        Log "       $($file.Name) OK"
+    }
+    Log "       All migrations applied."
+} else {
+    Log "       WARN: Migration directory not found, skip."
+}
+# ---- 步骤 6: 检查依赖 ----
+Log "[6/8] Check dependencies..."
 $deps = @("javac","mvn","node","pnpm")
 foreach ($d in $deps) {
     $found = Get-Command $d -ErrorAction SilentlyContinue
@@ -118,8 +135,8 @@ foreach ($d in $deps) {
     }
 }
 
-# ---- 步骤 6: 复制本地配置 ----
-Log "[6/7] Copy local config..."
+# ---- 步骤 7: 复制本地配置 ----
+Log "[7/8] Copy local config..."
 $targetRes = Join-Path $env:ORCA_WORKTREE_PATH "ruoyi-admin\src\main\resources"
 $sourceFile = Join-Path $LocalConfigPath "application-dev-local.yml"
 Log "       Source: $sourceFile"
@@ -133,8 +150,8 @@ if (Test-Path $sourceFile) {
     Log "       WARN: Source file not found! Skipping."
 }
 
-# ---- 步骤 7: 生成 .env.branch ----
-Log "[7/7] Generate .env.branch..."
+# ---- 步骤 8: 生成 .env.branch ----
+Log "[8/8] Generate .env.branch..."
 $envContent = "# Orca branch env`r`nDB_NAME=$DB_NAME`r`n"
 $envFile = Join-Path $env:ORCA_WORKTREE_PATH ".env.branch"
 $envContent | Out-File -FilePath $envFile -Encoding UTF8
