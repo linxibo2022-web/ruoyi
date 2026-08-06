@@ -101,8 +101,6 @@ Pop-Location
 Log "[6/6] Clean up residual files..."
 $count = 0
 
-$branchEnv = Join-Path $env:ORCA_WORKTREE_PATH ".env.branch"
-if (Test-Path $branchEnv) { Remove-Item $branchEnv -Force; Log "       Removed .env.branch"; $count++ }
 
 $localYml = Join-Path $env:ORCA_WORKTREE_PATH "ruoyi-admin\src\main\resources\application-dev-local.yml"
 if (Test-Path $localYml) { Remove-Item $localYml -Force; Log "       Removed application-dev-local.yml"; $count++ }

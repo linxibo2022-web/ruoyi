@@ -61,9 +61,9 @@ output/*
 # 本地敏感配置目录（已废弃，敏感文件移至 D:\ruoyi_project\orca-local-config\）
 .local-env/
 
-# Orca 分支专属环境变量（自动生成，覆盖 ${DB_NAME}）
-.env.branch
-**/.env.branch
+# Orca 分支专属环境变量（已废弃，DB_NAME 合并到 application-dev-local.yml）
+# .env.branch
+# **/.env.branch
 
 # 部署相关（敏感配置和构建产物）
 .deploy-config.json
