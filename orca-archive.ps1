@@ -1,14 +1,35 @@
-# Orca 存档脚本 — 删除 worktree 时自动执行 (PowerShell)
+﻿# Orca 存档脚本 — 删除 worktree 时自动执行 (PowerShell)
 # 环境变量: $env:ORCA_ROOT_PATH, $env:ORCA_WORKTREE_PATH, $env:ORCA_WORKSPACE_NAME
 
-$ErrorActionPreference = "Continue"
+$ErrorActionPreference = "Stop"
+$ScriptStartTime = Get-Date
+
+# 全局异常捕获
+trap {
+    Write-Host ""
+    Write-Host "============================================" -ForegroundColor Red
+    Write-Host "  ❌ Orca Archive 脚本执行失败！" -ForegroundColor Red
+    Write-Host "  错误: $_" -ForegroundColor Red
+    Write-Host "  位置: $($_.InvocationInfo.ScriptLineNumber) 行" -ForegroundColor Red
+    Write-Host "============================================" -ForegroundColor Red
+    exit 1
+}
+
+# 启动横幅
+Write-Host ""
+Write-Host "============================================" -ForegroundColor Cyan
+Write-Host "  Orca Archive 开始执行" -ForegroundColor Cyan
+Write-Host "  时间: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" -ForegroundColor Cyan
+Write-Host "  分支: $env:ORCA_WORKSPACE_NAME" -ForegroundColor Cyan
+Write-Host "============================================" -ForegroundColor Cyan
+Write-Host ""
 
 # ============================================================
 # 颜色辅助函数
 # ============================================================
 function Write-OK    { Write-Host "       ✅ $args" -ForegroundColor Green }
 function Write-Warn  { Write-Host "       ⚠️  $args" -ForegroundColor Yellow }
-function Write-Err   { Write-Host "       ❌ $args" -ForegroundColor Red }
+function Write-Err   { Write-Host "       ❌ $args" -ForegroundColor Red; Write-Host "       错误详情: $args" }
 function Write-Info  { Write-Host "       ℹ️  $args" -ForegroundColor Cyan }
 function Write-Step  { param([int]$N,[int]$T,[string]$M) Write-Host "[$N/$T] $M" -ForegroundColor White }
 
