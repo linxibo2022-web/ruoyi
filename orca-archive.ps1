@@ -34,11 +34,38 @@ function Write-Info  { Write-Host "       ℹ️  $args" -ForegroundColor Cyan }
 function Write-Step  { param([int]$N,[int]$T,[string]$M) Write-Host "[$N/$T] $M" -ForegroundColor White }
 
 # ============================================================
+# 加载 orca.yaml 团队共享配置
+# ============================================================
+$ConfigFile = Join-Path $env:ORCA_ROOT_PATH "orca.yaml"
+if (Test-Path $ConfigFile) {
+    $Config = @{}
+    $currentKey = $null
+    Get-Content $ConfigFile -Encoding UTF8 | ForEach-Object {
+        $line = $_
+        if ($line -match '^\s*#|^\s*$') { return }
+        if ($line -match '^(\w[\w-]*):\s*(.*)') {
+            $key = $Matches[1]; $val = $Matches[2].Trim()
+            if ($val) { $Config[$key] = $val } else { $Config[$key] = @{}; $currentKey = $key }
+        } elseif ($line -match '^\s+(\w[\w-]*):\s*(.*)') {
+            $subKey = $Matches[1]; $subVal = $Matches[2].Trim()
+            $Config[$currentKey][$subKey] = $subVal
+        }
+    }
+}
+
+$DB_HOST     = if ($Config['database']['host'])        { $Config['database']['host'] }        else { "127.0.0.1" }
+$DB_PORT     = if ($Config['database']['port'])        { $Config['database']['port'] }        else { "3306" }
+$DB_USER     = if ($Config['database']['user'])        { $Config['database']['user'] }        else { "root" }
+$DB_PREFIX   = if ($Config['database']['name-prefix']) { $Config['database']['name-prefix'] } else { "erp_sys_" }
+$DB_PASSWORD = if ($env:DB_PASSWORD)                   { $env:DB_PASSWORD }                   else { "root" }
+$Protected   = if ($Config['protected-branches'])      { $Config['protected-branches'] }      else { @("main","master") }
+
+# ============================================================
 # 步骤 1: 解析分支/数据库名
 # ============================================================
 Write-Step 1 6 "解析数据库名..."
 $Branch = $env:ORCA_WORKSPACE_NAME -replace '[^a-zA-Z0-9_]', '_'
-$DB_NAME = "erp_sys_$Branch"
+$DB_NAME = $DB_PREFIX + $Branch
 Write-Info "分支: $env:ORCA_WORKSPACE_NAME"
 Write-Info "数据库: $DB_NAME"
 
@@ -48,8 +75,8 @@ Write-Info "数据库: $DB_NAME"
 Write-Step 2 6 "安全检查..."
 
 # --- 2.1 主分支保护 ---
-if ($env:ORCA_WORKSPACE_NAME -eq "main" -or $env:ORCA_WORKSPACE_NAME -eq "master") {
-    Write-Err "⚠️  禁止删除主分支 (main/master)！"
+if ($Protected -contains $env:ORCA_WORKSPACE_NAME) {
+    Write-Err "禁止删除受保护分支 ($($Protected -join '/'))！"
     exit 1
 }
 Write-OK "非主分支，允许删除"
@@ -88,7 +115,7 @@ try {
 Write-Step 3 6 "删除数据库 $DB_NAME ..."
 
 # --- 3.1 确认数据库存在 ---
-$dbCheck = cmd /c "mysql -u root -proot -e `"SHOW DATABASES LIKE '$DB_NAME';`" 2>&1"
+$dbCheck = cmd /c "mysql -u $DB_USER -p$DB_PASSWORD -e `"SHOW DATABASES LIKE '$DB_NAME';`" 2>&1"
 if ($dbCheck -match $DB_NAME) {
     Write-Info "数据库 $DB_NAME 存在，正在删除..."
 } else {
@@ -96,7 +123,7 @@ if ($dbCheck -match $DB_NAME) {
 }
 
 # --- 3.2 执行 DROP ---
-cmd /c "mysql -u root -proot -e `"DROP DATABASE IF EXISTS ``$DB_NAME``;`" 2>&1"
+cmd /c "mysql -u $DB_USER -p$DB_PASSWORD -e `"DROP DATABASE IF EXISTS ``$DB_NAME``;`" 2>&1"
 if ($LASTEXITCODE -ne 0) {
     Write-Err "数据库删除失败 (exit code: $LASTEXITCODE)"
     exit 1
