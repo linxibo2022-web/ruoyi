@@ -4,15 +4,12 @@ param()
 
 $ErrorActionPreference = "Continue"
 
-# 日志函数
-function Log { param([string]$Msg) Write-Host $Msg }
+function Log { param([string]$Msg) Write-Output $Msg }
 
 Log ""
-Log "========== Orca Archive =========="
+Log "========== Orca Archive Start =========="
 Log "Time:    $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
 Log "Branch:  $env:ORCA_WORKSPACE_NAME"
-Log "Worktree: $env:ORCA_WORKTREE_PATH"
-Log "=================================="
 
 # ---- 团队共享配置 ----
 $DB_HOST     = if ($env:DB_HOST)     { $env:DB_HOST }     else { "127.0.0.1" }
@@ -31,32 +28,26 @@ Log "       DB_NAME = $DB_NAME"
 # ---- 步骤 2: 安全检查 ----
 Log "[2/6] Safety checks..."
 
-# 2.1 Protected branch check
 if ($ProtectedBranches -contains $env:ORCA_WORKSPACE_NAME) {
     Log "       ERROR: Cannot delete protected branch: $env:ORCA_WORKSPACE_NAME"
     exit 1
 }
-Log "       Not a protected branch."
+Log "       Not protected, OK."
 
-# 2.2 Verify remote exists
 Push-Location $env:ORCA_ROOT_PATH
 $remoteHead = git ls-remote --heads origin $env:ORCA_WORKSPACE_NAME 2>&1
 if (-not $remoteHead) {
-    Log "       ERROR: Remote branch origin/$env:ORCA_WORKSPACE_NAME does not exist!"
-
+    Log "       ERROR: Remote branch not found!"
     Pop-Location
     exit 1
 }
-Log "       Remote branch confirmed."
+Log "       Remote branch exists."
 
-# 2.3 Check unpushed commits
 $localBranch = git branch --list $env:ORCA_WORKSPACE_NAME 2>&1
 if ($localBranch) {
     $unpushed = git log origin/$env:ORCA_WORKSPACE_NAME..$env:ORCA_WORKSPACE_NAME --oneline 2>&1
     if ($unpushed) {
-        Log "       ERROR: Unpushed commits exist!"
-        Log "       $unpushed"
-    
+        Log "       ERROR: Unpushed commits: $unpushed"
         Pop-Location
         exit 1
     }
@@ -66,17 +57,15 @@ Pop-Location
 
 # ---- 步骤 3: 删除数据库 ----
 Log "[3/6] Drop database $DB_NAME..."
-
-# Check if exists
-$mysqlArgs = "-u", $DB_USER, "-p$DB_PASSWORD", "-e", "SHOW DATABASES LIKE '$DB_NAME';"
+$checkSql = "SHOW DATABASES LIKE '$DB_NAME';"
+$mysqlArgs = "-u", $DB_USER, "-p$DB_PASSWORD", "-e", $checkSql
 $dbCheck = & mysql $mysqlArgs 2>&1
 if ($dbCheck -match $DB_NAME) {
-    Log "       Database found, dropping..."
-    $dropArgs = "-u", $DB_USER, "-p$DB_PASSWORD", "-e", "DROP DATABASE IF EXISTS ``$DB_NAME``;"
-    $dropOut = & mysql $dropArgs 2>&1
+    $dropSql = "DROP DATABASE IF EXISTS ``$DB_NAME``;"
+    $mysqlArgs = "-u", $DB_USER, "-p$DB_PASSWORD", "-e", $dropSql
+    & mysql $mysqlArgs 2>&1
     if ($LASTEXITCODE -ne 0) {
-        Log "       ERROR: Drop failed: $dropOut"
-    
+        Log "       ERROR: Drop failed (exit=$LASTEXITCODE)"
         exit 1
     }
     Log "       Database dropped."
@@ -87,47 +76,43 @@ if ($dbCheck -match $DB_NAME) {
 # ---- 步骤 4: 删除远程分支 ----
 Log "[4/6] Delete remote branch..."
 Push-Location $env:ORCA_ROOT_PATH
-$deleteOut = git push origin --delete $env:ORCA_WORKSPACE_NAME 2>&1
+git push origin --delete $env:ORCA_WORKSPACE_NAME 2>&1
 Log "       exit=$LASTEXITCODE"
-if ($LASTEXITCODE -ne 0) { Log "       WARN: $deleteOut" } else { Log "       Deleted." }
 Pop-Location
 
 # ---- 步骤 5: 删除本地分支 ----
 Log "[5/6] Delete local branch..."
 Push-Location $env:ORCA_ROOT_PATH
 $localExists = git branch --list $env:ORCA_WORKSPACE_NAME 2>&1
-if (-not $localExists) {
-    Log "       Local branch does not exist, skip."
-} else {
+if ($localExists) {
     $currentBranch = git branch --show-current 2>&1
     if ($currentBranch -eq $env:ORCA_WORKSPACE_NAME) {
         git checkout main 2>&1
         if ($LASTEXITCODE -ne 0) { git checkout master 2>&1 }
-        Log "       Switched off $env:ORCA_WORKSPACE_NAME"
     }
     git branch -D $env:ORCA_WORKSPACE_NAME 2>&1
     Log "       exit=$LASTEXITCODE"
+} else {
+    Log "       Local branch not found, skip."
 }
 Pop-Location
 
-# ---- 步骤 6: 清理残留 ----
+# ---- 步骤 6: 清理残留文件 ----
 Log "[6/6] Clean up residual files..."
-
-$residualCount = 0
+$count = 0
 
 $branchEnv = Join-Path $env:ORCA_WORKTREE_PATH ".env.branch"
-if (Test-Path $branchEnv) { Remove-Item $branchEnv -Force; Log "       Removed .env.branch"; $residualCount++ }
+if (Test-Path $branchEnv) { Remove-Item $branchEnv -Force; Log "       Removed .env.branch"; $count++ }
 
 $localYml = Join-Path $env:ORCA_WORKTREE_PATH "ruoyi-admin\src\main\resources\application-dev-local.yml"
-if (Test-Path $localYml) { Remove-Item $localYml -Force; Log "       Removed application-dev-local.yml"; $residualCount++ }
+if (Test-Path $localYml) { Remove-Item $localYml -Force; Log "       Removed application-dev-local.yml"; $count++ }
 
-if ($residualCount -eq 0) { Log "       No residual files." }
+if ($count -eq 0) { Log "       No residual files." }
 
 # ---- Done ----
 Log ""
-Log "========== Orca Archive Complete =========="
-Log "DB dropped:   $DB_NAME"
-Log "Branch:       $env:ORCA_WORKSPACE_NAME"
-Log "=========================================="
-
+Log "========== Orca Archive Done =========="
+Log "   DB:      $DB_NAME"
+Log "   Branch:  $env:ORCA_WORKSPACE_NAME"
+Log "========================================"
 exit 0
