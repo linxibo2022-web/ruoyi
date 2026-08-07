@@ -26,6 +26,8 @@ Log "DB: $DB_USER@$DB_HOST`:$DB_PORT/$DB_NAME"
 # Part A: Git 分支（失败不影响数据库创建）
 # ================================================================
 Log "[A] Git branch..."
+Log "       git fetch..."
+git fetch origin 2>$null
 $IsMain = ($Branch -eq "main" -or $Branch -eq "master")
 if (-not $IsMain) {
     try {
