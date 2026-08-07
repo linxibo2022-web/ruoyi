@@ -80,26 +80,37 @@ if ($LASTEXITCODE -ne 0) {
 }
 Log "       Database $DB_NAME created."
 
-# ---- 步骤 5: Flyway 建表 ----
+# ---- 步骤 5: Flyway 建表（仅空库执行）----
 Log "[5/7] Run Flyway migrations..."
-$migrationDir = Join-Path $env:ORCA_WORKTREE_PATH "ruoyi-admin\src\main\resources\db\migration"
-Log "       Migration dir: $migrationDir"
-if (Test-Path $migrationDir) {
-    $files = Get-ChildItem $migrationDir -Filter "V*.sql" | Sort-Object Name
-    Log "       Found $($files.Count) migration files"
-    foreach ($f in $files) {
-        $sqlFile = $f.FullName
-        $cmd = "mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < `"$sqlFile`" 2>&1"
-        cmd /c $cmd
-        if ($LASTEXITCODE -ne 0) {
-            Log "       ERROR: $($f.Name) failed (exit=$LASTEXITCODE)"
-            exit 1
-        }
-        Log "       $($f.Name) OK"
-    }
-    Log "       All migrations done."
+
+$tableCount = 0
+$countSql = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '$DB_NAME';"
+$mysqlArgs = "-u", $DB_USER, "-p$DB_PASSWORD", "-N", "-e", $countSql
+$result = & mysql $mysqlArgs 2>&1
+if ($LASTEXITCODE -eq 0) { $tableCount = [int]$result }
+
+if ($tableCount -gt 0) {
+    Log "       Database has $tableCount tables, skip migrations."
 } else {
-    Log "       WARN: Migration dir not found, skip."
+    $migrationDir = Join-Path $env:ORCA_WORKTREE_PATH "ruoyi-admin\src\main\resources\db\migration"
+    Log "       Migration dir: $migrationDir"
+    if (Test-Path $migrationDir) {
+        $files = Get-ChildItem $migrationDir -Filter "V*.sql" | Sort-Object Name
+        Log "       Running $($files.Count) migration files..."
+        foreach ($f in $files) {
+            $sqlFile = $f.FullName
+            $cmd = "mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < `"$sqlFile`" 2>&1"
+            cmd /c $cmd
+            if ($LASTEXITCODE -ne 0) {
+                Log "       ERROR: $($f.Name) failed (exit=$LASTEXITCODE)"
+                exit 1
+            }
+            Log "       $($f.Name) OK"
+        }
+        Log "       All migrations done."
+    } else {
+        Log "       WARN: Migration dir not found, skip."
+    }
 }
 
 # ---- 步骤 6: 检查依赖 ----
