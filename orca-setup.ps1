@@ -58,7 +58,10 @@ if (-not $IsMain) {
     if ($remoteExists) {
         Log "       Remote branch already exists, skip."
     } else {
-        git branch $env:ORCA_WORKSPACE_NAME 2>&1
+        $localExists = git branch --list $env:ORCA_WORKSPACE_NAME 2>&1
+        if (-not $localExists) {
+            git branch $env:ORCA_WORKSPACE_NAME 2>$null
+        }
         $pushOut = git push -u origin $env:ORCA_WORKSPACE_NAME 2>&1
         if ($LASTEXITCODE -ne 0) {
             Log "       WARN: Push issue: $pushOut"
@@ -86,8 +89,8 @@ Log "[5/7] Run Flyway migrations..."
 $tableCount = 0
 $countSql = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '$DB_NAME';"
 $mysqlArgs = "-u", $DB_USER, "-p$DB_PASSWORD", "-N", "-e", $countSql
-$result = & mysql $mysqlArgs 2>&1
-if ($LASTEXITCODE -eq 0) { $tableCount = [int]$result }
+$result = & mysql $mysqlArgs 2>$null
+if ($LASTEXITCODE -eq 0 -and $result) { $tableCount = [int]($result -replace '\D') }
 
 if ($tableCount -gt 0) {
     Log "       Database has $tableCount tables, skip migrations."
