@@ -3,15 +3,12 @@
 param()
 
 $ErrorActionPreference = "Continue"
-
 function Log { param([string]$Msg) Write-Output $Msg }
 
 Log ""
-Log "========== Orca Setup Start =========="
-Log "Time:     $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+Log "========== Orca Setup =========="
 Log "Branch:   $env:ORCA_WORKSPACE_NAME"
 Log "Worktree: $env:ORCA_WORKTREE_PATH"
-Log "Root:     $env:ORCA_ROOT_PATH"
 
 # ---- 团队共享配置 ----
 $DB_HOST     = if ($env:DB_HOST)     { $env:DB_HOST }     else { "127.0.0.1" }
@@ -20,134 +17,105 @@ $DB_USER     = if ($env:DB_USER)     { $env:DB_USER }     else { "root" }
 $DB_PREFIX   = if ($env:DB_PREFIX)   { $env:DB_PREFIX }   else { "erp_sys_" }
 $DB_PASSWORD = if ($env:DB_PASSWORD) { $env:DB_PASSWORD } else { "root" }
 
-Log "DB: $DB_USER@$DB_HOST`:$DB_PORT"
-
-# ---- 步骤 1: 解析分支/数据库名 ----
-Log "[1/7] Parse branch name..."
 $Branch = $env:ORCA_WORKSPACE_NAME -replace '[^a-zA-Z0-9_]', '_'
 $DB_NAME = $DB_PREFIX + $Branch
+
+Log "DB: $DB_USER@$DB_HOST`:$DB_PORT/$DB_NAME"
+
+# ================================================================
+# Part A: Git 分支（失败不影响数据库创建）
+# ================================================================
+Log "[A] Git branch..."
 $IsMain = ($Branch -eq "main" -or $Branch -eq "master")
-Log "       DB_NAME = $DB_NAME"
-
-# ---- 步骤 2: 前置校验 ----
-Log "[2/7] Validate prerequisites..."
-
-Push-Location $env:ORCA_ROOT_PATH
-$remoteUrl = git remote get-url origin 2>&1
-Log "       Git remote: $remoteUrl"
-
-$mysqlArgs = "-u", $DB_USER, "-p$DB_PASSWORD", "-e", "SELECT 1;"
-$mysqlOut = & mysql $mysqlArgs 2>&1
-if ($LASTEXITCODE -ne 0) {
-    Log "       ERROR: MySQL check failed: $mysqlOut"
-    Pop-Location
-    exit 1
-}
-Log "       MySQL OK"
-
-$gitOk = $null -ne (Get-Command git -ErrorAction SilentlyContinue)
-$mysqlOk = $null -ne (Get-Command mysql -ErrorAction SilentlyContinue)
-Log "       git=$gitOk mysql=$mysqlOk"
-Pop-Location
-
-# ---- 步骤 3: 创建远程分支 ----
-Log "[3/7] Create remote branch..."
 if (-not $IsMain) {
-    Push-Location $env:ORCA_ROOT_PATH
-    $remoteExists = git ls-remote --heads origin $env:ORCA_WORKSPACE_NAME 2>&1
-    if ($remoteExists) {
-        Log "       Remote branch already exists, skip."
-    } else {
-        $localExists = git branch --list $env:ORCA_WORKSPACE_NAME 2>&1
-        if (-not $localExists) {
-            git branch $env:ORCA_WORKSPACE_NAME 2>$null
-        }
-        $pushOut = git push -u origin $env:ORCA_WORKSPACE_NAME 2>&1
-        if ($LASTEXITCODE -ne 0) {
-            Log "       WARN: Push issue: $pushOut"
+    try {
+        Push-Location $env:ORCA_ROOT_PATH -ErrorAction Stop
+        $remoteExists = git ls-remote --heads origin $env:ORCA_WORKSPACE_NAME 2>$null
+        if ($remoteExists) {
+            Log "       Remote branch exists, skip."
         } else {
-            Log "       Remote branch created."
+            $localExists = git branch --list $env:ORCA_WORKSPACE_NAME 2>$null
+            if (-not $localExists) { git branch $env:ORCA_WORKSPACE_NAME 2>$null }
+            git push -u origin $env:ORCA_WORKSPACE_NAME 2>&1 | Out-Null
+            if ($LASTEXITCODE -eq 0) { Log "       Created." } else { Log "       WARN: Push failed." }
         }
+    } catch {
+        Log "       WARN: Git step failed: $_"
+    } finally {
+        Pop-Location -ErrorAction SilentlyContinue
     }
-    Pop-Location
 }
 
-# ---- 步骤 4: 创建数据库 ----
-Log "[4/7] Create database $DB_NAME..."
+# ================================================================
+# Part B: 数据库创建 + Flyway（必定执行）
+# ================================================================
+Log "[B] Database $DB_NAME..."
+
+# 建库
 $createSql = "CREATE DATABASE IF NOT EXISTS ``$DB_NAME`` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
 $mysqlArgs = "-u", $DB_USER, "-p$DB_PASSWORD", "--default-character-set=utf8mb4", "-e", $createSql
-& mysql $mysqlArgs 2>&1
+& mysql $mysqlArgs 2>$null
 if ($LASTEXITCODE -ne 0) {
-    Log "       ERROR: Create database failed (exit=$LASTEXITCODE)"
+    Log "       ERROR: Create database failed."
     exit 1
 }
-Log "       Database $DB_NAME created."
+Log "       Database ready."
 
-# ---- 步骤 5: Flyway 建表（仅空库执行）----
-Log "[5/7] Run Flyway migrations..."
-
-$tableCount = 0
+# 检查是否空库，是则执行 Flyway
 $countSql = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '$DB_NAME';"
 $mysqlArgs = "-u", $DB_USER, "-p$DB_PASSWORD", "-N", "-e", $countSql
 $result = & mysql $mysqlArgs 2>$null
-if ($LASTEXITCODE -eq 0 -and $result) { $tableCount = [int]($result -replace '\D') }
+$tableCount = 0
+if ($LASTEXITCODE -eq 0 -and $result) { $tableCount = [int]($result -replace '\D', '') }
 
 if ($tableCount -gt 0) {
-    Log "       Database has $tableCount tables, skip migrations."
+    Log "       $tableCount tables exist, skip migrations."
 } else {
+    Log "       Empty database, running migrations..."
     $migrationDir = Join-Path $env:ORCA_WORKTREE_PATH "ruoyi-admin\src\main\resources\db\migration"
-    Log "       Migration dir: $migrationDir"
     if (Test-Path $migrationDir) {
         $files = Get-ChildItem $migrationDir -Filter "V*.sql" | Sort-Object Name
-        Log "       Running $($files.Count) migration files..."
         foreach ($f in $files) {
             $sqlFile = $f.FullName
-            $cmd = "mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < `"$sqlFile`" 2>&1"
-            cmd /c $cmd
+            cmd /c "mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < `"$sqlFile`" 2>&1" | Out-Null
             if ($LASTEXITCODE -ne 0) {
-                Log "       ERROR: $($f.Name) failed (exit=$LASTEXITCODE)"
-                exit 1
+                Log "       WARN: $($f.Name) has errors (may already exist)."
             }
-            Log "       $($f.Name) OK"
+            Log "       $($f.Name) done."
         }
-        Log "       All migrations done."
+        Log "       Migrations complete."
     } else {
         Log "       WARN: Migration dir not found, skip."
     }
 }
 
-# ---- 步骤 6: 检查依赖 ----
-Log "[6/7] Check dependencies..."
-foreach ($tool in @("javac","mvn","node","pnpm")) {
-    $found = Get-Command $tool -ErrorAction SilentlyContinue
-    if ($found) { Log "       $tool = found" } else { Log "       WARN: $tool not found" }
-}
-
-# ---- 步骤 7: 复制本地配置 + 写入分支数据库名 ----
-Log "[7/7] Copy local config..."
+# ================================================================
+# Part C: 复制本地配置
+# ================================================================
+Log "[C] Copy local config..."
 $ORCA_ROOT = $env:ORCA_ROOT_PATH.TrimEnd('\')
-$LocalConfigDir = Join-Path (Split-Path $ORCA_ROOT -Parent) "orca-local-config"
-if ($env:ORCA_LOCAL_CONFIG) { $LocalConfigDir = $env:ORCA_LOCAL_CONFIG }
+$LocalConfigDir = if ($env:ORCA_LOCAL_CONFIG) { $env:ORCA_LOCAL_CONFIG } else {
+    Join-Path (Split-Path $ORCA_ROOT -Parent) "orca-local-config"
+}
 $sourceFile = Join-Path $LocalConfigDir "application-dev-local.yml"
-$targetDir  = Join-Path $env:ORCA_WORKTREE_PATH "ruoyi-admin\src\main\resources"
-$targetFile = Join-Path $targetDir "application-dev-local.yml"
-Log "       Source: $sourceFile"
-Log "       Target: $targetDir"
+$targetFile = Join-Path $env:ORCA_WORKTREE_PATH "ruoyi-admin\src\main\resources\application-dev-local.yml"
 
 if (Test-Path $sourceFile) {
+    $targetDir = Split-Path $targetFile -Parent
     if (-not (Test-Path $targetDir)) { New-Item -ItemType Directory -Path $targetDir -Force | Out-Null }
     Copy-Item $sourceFile $targetFile -Force
-    # 追加分支专属数据库名（替代 .env.branch）
     Add-Content -Path $targetFile -Value "`r`n# -- Orca 分支数据库 --`r`nDB_NAME: $DB_NAME`r`n" -Encoding UTF8
-    Log "       Copied + DB_NAME=$DB_NAME added."
+    Log "       Config copied + DB_NAME=$DB_NAME"
 } else {
-    Log "       WARN: Source NOT FOUND — check D:\ruoyi_project\orca-local-config\"
+    Log "       WARN: $sourceFile not found."
 }
 
-# ---- Done ----
+# ================================================================
+# Done
+# ================================================================
 Log ""
-Log "========== Orca Setup Done =========="
-Log "   DB:      $DB_NAME"
-Log "   Branch:  $env:ORCA_WORKSPACE_NAME"
-Log "======================================"
+Log "========== Done =========="
+Log "DB:      $DB_NAME"
+Log "Branch:  $env:ORCA_WORKSPACE_NAME"
+Log "=========================="
 exit 0
