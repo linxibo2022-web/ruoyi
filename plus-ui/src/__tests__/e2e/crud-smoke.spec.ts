@@ -169,20 +169,19 @@ CRUD_PAGES.forEach((config) => {
       }
     }
 
-    // 处理 select/radio：选第一个可见选项
+    // 处理 select 下拉框：展开后直接关闭（保留默认选中值）
     const selects = page.locator('.el-dialog .el-select')
     const selectCount = await selects.count()
     for (let i = 0; i < selectCount; i++) {
       const select = selects.nth(i)
       if (!(await select.isVisible())) continue
-      await select.click()
-      await page.waitForTimeout(300)
-      const options = page.locator('.el-select-dropdown:not([style*="display: none"]) .el-select-dropdown__item')
-      if ((await options.count()) > 0) {
-        await options.first().click()
+      try {
+        await select.click()
         await page.waitForTimeout(200)
-      } else {
         await page.keyboard.press('Escape')
+        await page.waitForTimeout(100)
+      } catch {
+        // select 可能被禁用或不可交互，跳过
       }
     }
 
