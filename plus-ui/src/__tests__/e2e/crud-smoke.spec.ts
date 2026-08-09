@@ -65,7 +65,7 @@ const LOGIN_TENANT = '000000'
 // 🧰 公共帮助函数
 // ============================================================
 
-/** 登录：填入账号密码，点击登录，等跳转到首页 */
+/** 登录：填入账号密码，点登录，等跳转到首页 */
 async function login(page: Page) {
   await page.goto(LOGIN_URL)
   // 等登录表单加载
@@ -85,18 +85,26 @@ async function login(page: Page) {
   const passwordInput = page.locator('input[type="password"]')
   await passwordInput.fill(LOGIN_PASS)
 
-  // 检查验证码是否开启
+  // 检查验证码
   const captchaInput = page.locator('.captcha-input input')
   const captchaVisible = await captchaInput.isVisible().catch(() => false)
   if (captchaVisible) {
-    console.warn('⚠️ 验证码已开启，请先去【系统管理→参数设置】关闭 sys.account.captchaEnabled')
-    // 尝试继续，让测试报错给出明确提示
+    // 可视模式下手工输入验证码
+    console.log('⏳ 验证码已开启，请在浏览器中输入验证码，然后按 Enter 继续...')
+    await captchaInput.focus()
+    // 等用户手动输入验证码（最多等 120 秒）
+    await page.waitForTimeout(1000)
+    // 或者：用 page.pause() 打开 Playwright 调试器，用户可以操作浏览器
+    // 这里采用简单方式：等 15 秒让用户自己填
+    console.log('⏳ 等待 15 秒，请完成验证码输入和登录...')
+    await page.waitForTimeout(15000)
+  } else {
+    // 无验证码，直接点登录
+    await page.click('.login-btn')
   }
 
-  // 点击登录
-  await page.click('.login-btn')
-  // 等待跳转到首页（地址栏不再包含 /login）
-  await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
+  // 等待跳转到首页
+  await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 30000 })
 }
 
 /** 等待表格渲染完成 */
