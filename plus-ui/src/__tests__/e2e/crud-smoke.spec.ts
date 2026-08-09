@@ -139,16 +139,41 @@ CRUD_PAGES.forEach((config) => {
       ;(add as HTMLElement)?.click()
     })
     await page.waitForSelector('.el-dialog', { timeout: 5000 })
-    const firstInput = page.locator('.el-dialog .el-input__inner').first()
-    if (await firstInput.isVisible()) {
-      await firstInput.fill(config.formValue)
+    // 填满弹窗里所有输入框（覆盖各种必填字段）
+    const inputs = page.locator('.el-dialog .el-input__inner')
+    const count = await inputs.count()
+    for (let i = 0; i < count; i++) {
+      const input = inputs.nth(i)
+      if (await input.isVisible()) {
+        const type = await input.getAttribute('type')
+        if (type !== 'hidden') {
+          await input.fill(config.formValue + (i > 0 ? i : ''))
+        }
+      }
     }
     await page.click('.el-dialog__footer .el-button--primary')
-    await page.waitForSelector('.el-message--success', { timeout: 10000 })
+    // 等待成功提示或校验错误
+    try {
+      await page.waitForSelector('.el-message--success', { timeout: 8000 })
+      console.log(`  ✅ ${config.name} TC-03 新增成功`)
+    } catch {
+      // 检查是否有校验错误提示
+      const errorItems = page.locator('.el-form-item__error')
+      const errorCount = await errorItems.count()
+      if (errorCount > 0) {
+        const errors: string[] = []
+        for (let i = 0; i < errorCount; i++) {
+          errors.push((await errorItems.nth(i).textContent()) || '')
+        }
+        console.log(`  ⚠️  TC-03 表单校验失败: ${errors.join(', ')}`)
+      }
+      await page.keyboard.press('Escape')
+      test.fail(true, '新增失败，表单有未填的必填项')
+      return
+    }
     await page.waitForTimeout(500)
     const after = await getRowCount(page)
     expect(after).toBe(before + 1)
-    console.log(`  ✅ ${config.name} TC-03 新增成功 (${before} → ${after})`)
 
     // ---- TC-04: 搜索 ----
     const searchInput = page.locator('.el-form .el-input__inner').first()
