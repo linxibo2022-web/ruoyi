@@ -73,3 +73,8 @@ output/*
 # Delivery 交付物管理（本地状态，绝不提交）
 .delivery-sync.json
 .deliveryignore
+
+# Playwright E2E 测试产物
+playwright-report/
+test-results/
+playwright-auth.json
