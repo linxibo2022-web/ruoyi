@@ -122,23 +122,17 @@ async function getRowCount(page: Page): Promise<number> {
 // ============================================================
 
 CRUD_PAGES.forEach((config) => {
-  test.describe(`冒烟测试: ${config.name}`, () => {
+  // serial: 用例按顺序执行，共享浏览器上下文（登录态自然保持）
+  test.describe.serial(`冒烟测试: ${config.name}`, () => {
 
-    // 整个模块只登录一次，所有用例共享登录态
-    test.beforeAll(async ({ browser }) => {
-      const context = await browser.newContext()
-      const page = await context.newPage()
-      await login(page)
-      // 保存登录态到文件，后续用例自动加载
-      await context.storageState({ path: 'playwright-auth.json' })
-      await context.close()
-    })
+    // 第一个用例负责登录，后续用例直接复用 cookie
+    let loggedIn = false
 
-    // 每个用例自动使用已保存的登录态
-    test.use({ storageState: 'playwright-auth.json' })
-
-    // 每个用例前导航到目标页
     test.beforeEach(async ({ page }) => {
+      if (!loggedIn) {
+        await login(page)
+        loggedIn = true
+      }
       await page.goto(`${BASE_URL}${config.route}`)
       await waitForTable(page)
     })
