@@ -1,0 +1,72 @@
+# GitLab CI — 测试门禁
+# PR/MR 创建后自动执行，任何失败都会拦截合并
+
+stages:
+  - test-backend
+  - test-frontend
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  PNPM_HOME: "$CI_PROJECT_DIR/.pnpm"
+
+# ============================================
+# 后端：Maven 编译 + 单元测试
+# ============================================
+backend-test:
+  stage: test-backend
+  image: maven:3.9-eclipse-temurin-21
+  script:
+    - mvn -DskipTests=false test -pl ruoyi-modules/ruoyi-business -am
+  cache:
+    paths:
+      - .m2/repository
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH != "main"
+
+# ============================================
+# 前端：Vitest 单元测试
+# ============================================
+vitest:
+  stage: test-frontend
+  image: node:22-alpine
+  before_script:
+    - corepack enable
+    - corepack prepare pnpm@latest --activate
+    - cd plus-ui
+    - pnpm install --frozen-lockfile
+  script:
+    - cd plus-ui
+    - pnpm test:unit
+  cache:
+    paths:
+      - plus-ui/node_modules
+      - .pnpm
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH != "main"
+
+# ============================================
+# 前端：Playwright 冒烟测试
+# (需要前后端都启动，仅 MR 时跑)
+# ============================================
+playwright:
+  stage: test-frontend
+  image: mcr.microsoft.com/playwright:v1.62.1-noble
+  before_script:
+    - corepack enable
+    - corepack prepare pnpm@latest --activate
+    - cd plus-ui
+    - pnpm install --frozen-lockfile
+  script:
+    - cd plus-ui
+    - pnpm test:e2e
+  artifacts:
+    when: always
+    paths:
+      - plus-ui/playwright-report
+      - plus-ui/test-results
+    expire_in: 7 days
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  allow_failure: false
