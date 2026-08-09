@@ -24,31 +24,13 @@ interface CrudPageConfig {
 
 const CRUD_PAGES: CrudPageConfig[] = [
   {
-    route: '/business/base/bind',
-    name: '绑定管理',
-    apiPage: '/base/bind/pageBinds',
-    apiAdd: '/base/bind/addBind',
-    searchKeyword: '测试',
-    formValue: 'E2E冒烟测试绑定',
-    editValue: 'E2E修改测试绑定'
-  },
-  {
-    route: '/business/base/payment',
-    name: '支付配置',
-    apiPage: '/base/payment/pagePayments',
-    apiAdd: '/base/payment/addPayment',
-    searchKeyword: '测试',
-    formValue: 'E2E冒烟测试支付',
-    editValue: 'E2E修改测试支付'
-  },
-  {
-    route: '/business/base/platform',
-    name: '平台配置',
-    apiPage: '/base/platform/pagePlatforms',
-    apiAdd: '/base/platform/addPlatform',
-    searchKeyword: '测试',
-    formValue: 'E2E冒烟测试平台',
-    editValue: 'E2E修改测试平台'
+    route: '/system/user',
+    name: '用户管理',
+    apiPage: '/system/user/pageUsers',
+    apiAdd: '/system/user/addUser',
+    searchKeyword: 'admin',
+    formValue: 'E2E冒烟测试用户',
+    editValue: 'E2E修改测试用户'
   }
 ]
 
