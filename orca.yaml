@@ -2,6 +2,6 @@
 issueCommand: "/brainstorm 现在开始处理Issue {{artifact_url}}，请基于项目现状进行调研和评估，并编写可行的实施方案。"
 scripts:
   setup:
-    powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\orca-setup.ps1"
+    C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\orca-setup.ps1"
   archive:
-    powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\orca-archive.ps1"
+    C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\orca-archive.ps1"
