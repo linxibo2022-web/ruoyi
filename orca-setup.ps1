@@ -143,8 +143,8 @@ if ($tableCount -gt 0) {
         $idx = 0
         foreach ($f in $files) {
             $idx++
-            $sqlFile = $f.FullName -replace '\\', '/'
-            cmd /c "mysql --default-character-set=utf8mb4 -u $DB_USER -p$DB_PASSWORD $DB_NAME < `"$sqlFile`" 2>&1" | Out-Null
+            $sqlFile = $f.FullName
+            Get-Content $sqlFile -Raw | mysql --default-character-set=utf8mb4 -u $DB_USER -p$DB_PASSWORD $DB_NAME 2>&1 | Out-Null
             if ($LASTEXITCODE -ne 0) {
                 Write-Warn "[$idx/$total] $($f.Name) — 有警告（可能已存在）"
             } else {
