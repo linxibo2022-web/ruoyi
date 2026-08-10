@@ -1,4 +1,4 @@
-# Orca Setup — 创建 worktree 时自动执行
+﻿# Orca Setup — 创建 worktree 时自动执行
 # env: ORCA_ROOT_PATH, ORCA_WORKTREE_PATH, ORCA_WORKSPACE_NAME
 param()
 

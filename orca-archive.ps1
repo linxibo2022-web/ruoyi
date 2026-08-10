@@ -1,4 +1,4 @@
-# Orca Archive — 删除 worktree 时自动执行
+﻿# Orca Archive — 删除 worktree 时自动执行
 # env: ORCA_ROOT_PATH, ORCA_WORKTREE_PATH, ORCA_WORKSPACE_NAME
 param()
 
