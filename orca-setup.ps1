@@ -144,8 +144,8 @@ if ($tableCount -gt 0) {
         foreach ($f in $files) {
             $idx++
             $sqlFile = $f.FullName
-            cmd /c "mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < `"$sqlFile`" 2>&1" | Out-Null
-            if ($LASTEXITCODE -ne 0) {
+            $proc = Start-Process -FilePath "mysql" -ArgumentList "--default-character-set=utf8mb4", "-u", $DB_USER, "-p$DB_PASSWORD", $DB_NAME -RedirectStandardInput $sqlFile -NoNewWindow -Wait -PassThru
+            if ($proc.ExitCode -ne 0) {
                 Write-Warn "[$idx/$total] $($f.Name) — 有警告（可能已存在）"
             } else {
                 Write-OK "[$idx/$total] $($f.Name)"
