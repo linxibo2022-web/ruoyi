@@ -141,10 +141,11 @@ if ($tableCount -gt 0) {
         $files = Get-ChildItem $migrationDir -Filter "V*.sql" | Sort-Object Name
         $total = $files.Count
         $idx = 0
+        $OutputEncoding = [System.Text.UTF8Encoding]::new()
         foreach ($f in $files) {
             $idx++
             $sqlFile = $f.FullName
-            Get-Content $sqlFile -Raw | mysql --default-character-set=utf8mb4 -u $DB_USER -p$DB_PASSWORD $DB_NAME 2>&1 | Out-Null
+            Get-Content $sqlFile -Raw -Encoding UTF8 | mysql --default-character-set=utf8mb4 -u $DB_USER -p$DB_PASSWORD $DB_NAME 2>&1 | Out-Null
             if ($LASTEXITCODE -ne 0) {
                 Write-Warn "[$idx/$total] $($f.Name) — 有警告（可能已存在）"
             } else {
