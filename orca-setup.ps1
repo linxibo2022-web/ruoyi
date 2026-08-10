@@ -144,12 +144,8 @@ if ($tableCount -gt 0) {
         foreach ($f in $files) {
             $idx++
             $sqlFile = $f.FullName
-            $tmpFile = [System.IO.Path]::GetTempFileName()
-            $content = Get-Content $sqlFile -Raw -Encoding UTF8
-            [System.IO.File]::WriteAllText($tmpFile, $content, [System.Text.UTF8Encoding]::new($false))
-            $proc = Start-Process -FilePath "mysql" -ArgumentList "--default-character-set=utf8mb4", "-u", $DB_USER, "-p$DB_PASSWORD", $DB_NAME -RedirectStandardInput $tmpFile -NoNewWindow -Wait -PassThru
-            Remove-Item $tmpFile -Force
-            if ($proc.ExitCode -ne 0) {
+            cmd /c "mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < `"$sqlFile`" 2>&1" | Out-Null
+            if ($LASTEXITCODE -ne 0) {
                 Write-Warn "[$idx/$total] $($f.Name) — 有警告（可能已存在）"
             } else {
                 Write-OK "[$idx/$total] $($f.Name)"
