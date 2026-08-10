@@ -75,6 +75,29 @@ $DB_NAME = $DB_PREFIX + $Branch
 Write-Detail "DB" "$DB_USER@$DB_HOST`:$DB_PORT/$DB_NAME"
 
 # ================================================================
+# 环境预检：自动发现 mysql
+# ================================================================
+Write-Step "0" "环境预检"
+
+try {
+    $mysqlPath = (Get-Command mysql -ErrorAction Stop).Source
+    Write-Info "mysql: $mysqlPath"
+} catch {
+    Write-Error "未找到 mysql！请确保 MySQL 已安装且在 PATH 中"
+    Write-Info "安装指引: https://dev.mysql.com/downloads/mysql/"
+    exit 1
+}
+
+$preCheckResult = & $mysqlPath -u $DB_USER "--password=$DB_PASSWORD" -e "SELECT 1;" 2>&1
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "mysql 连接失败 ($DB_USER@$DB_HOST`:$DB_PORT)"
+    Write-Info "错误详情: $preCheckResult"
+    Write-Info "请检查 MySQL 服务是否启动、用户名密码是否正确"
+    exit 1
+}
+Write-OK "mysql 连接正常"
+
+# ================================================================
 # Part A: Git 分支（失败不影响数据库创建）
 # ================================================================
 Write-Step "A" "Git 分支检查与创建"
@@ -117,8 +140,7 @@ Write-Info "目标库: $DB_NAME"
 
 # 建库
 $createSql = "CREATE DATABASE IF NOT EXISTS ``$DB_NAME`` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
-$mysqlArgs = "-u", $DB_USER, "-p$DB_PASSWORD", "--default-character-set=utf8mb4", "-e", $createSql
-& mysql $mysqlArgs 2>$null
+& $mysqlPath --default-character-set=utf8mb4 -u $DB_USER "--password=$DB_PASSWORD" -e $createSql 2>&1 | Out-Null
 if ($LASTEXITCODE -ne 0) {
     Write-Error "创建数据库失败！请检查 MySQL 连接与权限"
     exit 1
@@ -127,10 +149,9 @@ Write-OK "数据库就绪"
 
 # 检查是否空库，是则执行 Flyway
 $countSql = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '$DB_NAME';"
-$mysqlArgs = "-u", $DB_USER, "-p$DB_PASSWORD", "-N", "-e", $countSql
-$result = & mysql $mysqlArgs 2>$null
+$result = & $mysqlPath -u $DB_USER "--password=$DB_PASSWORD" -N -e $countSql 2>&1
 $tableCount = 0
-if ($LASTEXITCODE -eq 0 -and $result) { $tableCount = [int]($result -replace '\D', '') }
+if ($LASTEXITCODE -eq 0 -and $result) { $tableCount = [int](($result -join '') -replace '\D', '') }
 
 if ($tableCount -gt 0) {
     Write-Warn "已有 $tableCount 张表，跳过 Flyway 迁移"
@@ -144,9 +165,9 @@ if ($tableCount -gt 0) {
         foreach ($f in $files) {
             $idx++
             $sqlFile = $f.FullName
-            $proc = Start-Process -FilePath "mysql" -ArgumentList "--default-character-set=utf8mb4", "-u", $DB_USER, "-p$DB_PASSWORD", $DB_NAME -RedirectStandardInput $sqlFile -NoNewWindow -Wait -PassThru
+            $proc = Start-Process -FilePath $mysqlPath -ArgumentList "--default-character-set=utf8mb4", "-u", $DB_USER, "--password=$DB_PASSWORD", $DB_NAME -RedirectStandardInput $sqlFile -NoNewWindow -Wait -PassThru
             if ($proc.ExitCode -ne 0) {
-                Write-Warn "[$idx/$total] $($f.Name) — 有警告（可能已存在）"
+                Write-Warn "[$idx/$total] $($f.Name) — 导入失败 (exit=$($proc.ExitCode))"
             } else {
                 Write-OK "[$idx/$total] $($f.Name)"
             }

@@ -78,6 +78,23 @@ $DB_NAME = $DB_PREFIX + $Branch
 Write-Detail "DB_NAME" $DB_NAME
 Write-OK "解析完成"
 
+# ---- 环境预检：自动发现 mysql ----
+try {
+    $mysqlPath = (Get-Command mysql -ErrorAction Stop).Source
+    Write-Info "mysql: $mysqlPath"
+} catch {
+    Write-Error "未找到 mysql！请确保 MySQL 已安装且在 PATH 中"
+    exit 1
+}
+
+$preCheckResult = & $mysqlPath -u $DB_USER "--password=$DB_PASSWORD" -e "SELECT 1;" 2>&1
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "mysql 连接失败 ($DB_USER@$DB_HOST`:$DB_PORT)"
+    Write-Info "错误详情: $preCheckResult"
+    exit 1
+}
+Write-OK "mysql 连接正常"
+
 # ---- 步骤 2: 安全检查 ----
 Write-Step "2/6" "安全检查"
 
@@ -114,12 +131,10 @@ Write-Step "3/6" "删除数据库"
 Write-Info "目标: $DB_NAME"
 
 $checkSql = "SHOW DATABASES LIKE '$DB_NAME';"
-$mysqlArgs = "-u", $DB_USER, "-p$DB_PASSWORD", "-e", $checkSql
-$dbCheck = & mysql $mysqlArgs 2>&1
+$dbCheck = & $mysqlPath -u $DB_USER "--password=$DB_PASSWORD" -e $checkSql 2>&1
 if ($dbCheck -match $DB_NAME) {
     $dropSql = "DROP DATABASE IF EXISTS ``$DB_NAME``;"
-    $mysqlArgs = "-u", $DB_USER, "-p$DB_PASSWORD", "-e", $dropSql
-    & mysql $mysqlArgs 2>&1
+    & $mysqlPath -u $DB_USER "--password=$DB_PASSWORD" -e $dropSql 2>&1
     if ($LASTEXITCODE -ne 0) {
         Write-Error "删除失败 (exit=$LASTEXITCODE)"
         exit 1
