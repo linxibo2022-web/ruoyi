@@ -39,9 +39,14 @@ import org.springframework.test.context.ActiveProfiles;
  *     }
  * }
  * </pre>
+ * <p>
+ * ⚠️ 本基类激活了 "test" profile，自动排除 Redisson/lock4j（见 application-test.yml）。
+ * 需要 Redis/Redisson 的测试可覆盖：{@code @ActiveProfiles("dev")}
+ * </p>
  *
  * @author 抓蛙师
  */
+@ActiveProfiles("test")
 @SpringBootTest(
     classes = TestApplication.class,  // ✅ 统一使用 test 模块的启动类
     webEnvironment = SpringBootTest.WebEnvironment.NONE  // 不启动 Web 容器

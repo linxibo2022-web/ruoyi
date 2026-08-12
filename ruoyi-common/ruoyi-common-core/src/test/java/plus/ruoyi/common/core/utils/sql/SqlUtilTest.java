@@ -57,17 +57,17 @@ public class SqlUtilTest extends BaseUnitTest {
     }
 
     @Test
-    @DisplayName("测试escapeOrderBySql-包含SQL关键字应抛出异常")
+    @DisplayName("测试escapeOrderBySql-包含非法字符应抛出异常")
     public void testEscapeOrderBySqlWithSqlKeywords() {
-        // 包含SQL关键字
+        // 包含分号等非法字符
         assertThrows(IllegalArgumentException.class,
             () -> SqlUtil.escapeOrderBySql("name; DROP TABLE users"));
 
         assertThrows(IllegalArgumentException.class,
             () -> SqlUtil.escapeOrderBySql("name WHERE 1=1"));
-
-        assertThrows(IllegalArgumentException.class,
-            () -> SqlUtil.escapeOrderBySql("name FROM users"));
+        // 注意: escapeOrderBySql 只校验字符级白名单[a-zA-Z0-9_ \,\.]
+        // "name FROM users" 全为合法字符，不会抛异常
+        // 如需检测SQL关键字，请使用 filterKeyword() 方法
     }
 
     @Test

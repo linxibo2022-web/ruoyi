@@ -15,7 +15,7 @@ export default defineConfig({
   ],
   use: {
     // 前端默认地址
-    baseURL: 'http://localhost:80',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:80',
     // 截图：仅在失败时
     screenshot: 'only-on-failure',
     // 视频：失败时保留

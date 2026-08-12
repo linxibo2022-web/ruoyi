@@ -60,8 +60,8 @@ package-lock.json
 # yarn锁定文件
 yarn.lock
 
-# pnpm锁定文件
-pnpm-lock.yaml
+# pnpm锁定文件（需提交到仓库，CI --frozen-lockfile 依赖此文件）
+# pnpm-lock.yaml
 
 # ESLint自动导入插件配置
 .eslintrc-auto-import.json

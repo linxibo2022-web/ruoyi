@@ -1,0 +1,10 @@
+# 测试环境专用配置 — BaseSpringTest 通过 @ActiveProfiles("test") 自动激活
+# 排除测试环境不需要的自动配置，避免依赖外部 Redis 等中间件
+spring:
+  autoconfigure:
+    exclude:
+      # Redisson 客户端 — 测试环境无 Redis
+      - org.redisson.spring.starter.RedissonAutoConfigurationV2
+      # lock4j 分布式锁 — 依赖 RedissonClient
+      - com.baomidou.lock.spring.boot.autoconfigure.LockAutoConfiguration
+      - com.baomidou.lock.spring.boot.autoconfigure.RedissonLockAutoConfiguration

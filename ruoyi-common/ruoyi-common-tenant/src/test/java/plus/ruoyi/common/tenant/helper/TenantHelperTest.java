@@ -1,7 +1,9 @@
 package plus.ruoyi.common.tenant.helper;
 
 import cn.dev33.satoken.context.SaHolder;
+import cn.dev33.satoken.context.model.SaRequest;
 import cn.dev33.satoken.context.model.SaStorage;
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import org.junit.jupiter.api.*;
 import org.mockito.MockedStatic;
@@ -500,7 +502,8 @@ class TenantHelperTest extends BaseUnitTest {
                 String tenantId = TenantHelper.getDynamic();
                 assertEquals("local-tenant", tenantId, "非全局模式应存储到线程本地");
 
-                TenantHelper.clearDynamic();
+                // 非全局模式只需清理线程本地即可(避免clearDynamic需要StpUtil)
+                TenantHelper.clearDynamicLocal();
             }
         }
 
@@ -510,7 +513,8 @@ class TenantHelperTest extends BaseUnitTest {
             try (MockedStatic<SpringUtil> springUtilMock = Mockito.mockStatic(SpringUtil.class);
                  MockedStatic<LoginHelper> loginHelperMock = Mockito.mockStatic(LoginHelper.class);
                  MockedStatic<RedisUtils> redisUtilsMock = Mockito.mockStatic(RedisUtils.class);
-                 MockedStatic<SaHolder> saHolderMock = Mockito.mockStatic(SaHolder.class)) {
+                 MockedStatic<SaHolder> saHolderMock = Mockito.mockStatic(SaHolder.class);
+                 MockedStatic<StpUtil> stpUtilMock = Mockito.mockStatic(StpUtil.class)) {
 
                 springUtilMock.when(() -> SpringUtil.getProperty("tenant.enable"))
                     .thenReturn("true");
@@ -519,6 +523,8 @@ class TenantHelperTest extends BaseUnitTest {
 
                 SaStorage mockStorage = mock(SaStorage.class);
                 saHolderMock.when(SaHolder::getStorage).thenReturn(mockStorage);
+                // Mock StpUtil.getTokenValue() 避免 NPE（全局模式需要token生成Redis key）
+                stpUtilMock.when(StpUtil::getTokenValue).thenReturn("mock-token-value");
 
                 // 全局模式
                 TenantHelper.setDynamic("global-tenant", true);
