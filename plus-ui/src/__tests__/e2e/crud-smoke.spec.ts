@@ -37,8 +37,9 @@ const CRUD_PAGES: CrudPageConfig[] = [
 // ============================================================
 // 🔐 登录配置
 // ============================================================
-const LOGIN_URL = 'http://localhost:80/login'
-const BASE_URL = 'http://localhost:80'
+// 使用相对路径，由 playwright.config.ts 的 baseURL 拼接完整 URL
+// 本地默认 http://localhost:80，CI 通过 PLAYWRIGHT_BASE_URL 覆盖
+const LOGIN_URL = '/login'
 const LOGIN_USER = 'superadmin'
 const LOGIN_PASS = 'admin123'
 const LOGIN_TENANT = '000000'
@@ -110,7 +111,7 @@ CRUD_PAGES.forEach((config) => {
     await login(page)
 
     // 导航到目标页
-    await page.goto(`${BASE_URL}${config.route}`)
+    await page.goto(config.route)
     await waitForTable(page)
 
     // ---- TC-01: 页面加载 ----
