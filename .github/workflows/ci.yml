@@ -111,6 +111,14 @@ jobs:
             curl -s http://localhost:$BACKEND_PORT > /dev/null 2>&1 && echo "后端就绪" && break || sleep 2
           done
 
+      # 后端启动后 Flyway 已写入 sys_config 表，关闭验证码以便自动化登录
+      - name: Disable captcha
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq mysql-client
+          mysql -h 127.0.0.1 -u root -proot erp_sys \
+            -e "UPDATE sys_config SET config_value='false' WHERE config_key='system.security.captcha-enabled';"
+          echo "验证码已关闭"
+
       - uses: pnpm/action-setup@v4
         with:
           version: latest

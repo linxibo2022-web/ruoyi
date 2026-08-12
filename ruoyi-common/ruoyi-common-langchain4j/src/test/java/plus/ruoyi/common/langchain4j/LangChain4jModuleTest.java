@@ -45,16 +45,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 // langchain4j.yml 默认 enabled=false（生产场景需用环境变量显式打开），测试中强制启用，
 // 并把 memory-store-type 改为本地内存，避免单测时依赖 Redis
-// 同时排除 Redisson + lock4j 自动配置，因为本测试不需要分布式锁 / Redis
-// ⚠️ 以下三个类名随 Redisson / lock4j 版本而定，升级这些依赖后如果测试报
-//    NoSuchBeanDefinition / UnsatisfiedDependency，优先检查类名是否已变更
+// Redisson/lock4j 自动配置已在 TestApplication 统一排除，此处无需重复
 @TestPropertySource(properties = {
     "langchain4j.enabled=true",
-    "langchain4j.chat.memory-store-type=memory",
-    "spring.autoconfigure.exclude="
-        + "org.redisson.spring.starter.RedissonAutoConfigurationV2,"
-        + "com.baomidou.lock.spring.boot.autoconfigure.LockAutoConfiguration,"
-        + "com.baomidou.lock.spring.boot.autoconfigure.RedissonLockAutoConfiguration"
+    "langchain4j.chat.memory-store-type=memory"
 })
 public class LangChain4jModuleTest extends BaseSpringTest {
 
