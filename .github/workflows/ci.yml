@@ -1,13 +1,4 @@
-# GitHub Actions — 测试门禁
-# push:  快速检查（编译）+ 缓存预热（不卡推送）
-# PR:    全量测试（backend + vitest + playwright），卡合并
-#
-# 策略：
-# - push 到非 main 分支 → quick-check（~2min，快速反馈）
-# - PR → 全量三层（backend-test + vitest + playwright）
-# - PR 存在时不触发 push 流水线（避免重复）
-# - 分支保护绑在 main/develop，只卡 PR 合并
-
+# CI — push 仅编译检查，PR 跑全量测试
 name: CI
 
 on:
@@ -16,66 +7,24 @@ on:
     branches-ignore:
       - main
 
-# 全局环境变量
-env:
-  DB_HOST: 127.0.0.1
-  DB_PORT: 3306
-  DB_NAME: erp_sys
-  DB_USERNAME: root
-  DB_PASSWORD: root
-  REDIS_HOST: 127.0.0.1
-  REDIS_PORT: 6379
-
 jobs:
-  # ============================================
-  # push: 快速检查（并行：后端编译 + 前端类型检查）
-  # 冷缓存 ~2min，热缓存 ~30s
-  # ============================================
-  quick-backend:
+  # push: 仅后端编译（不卡推送）
+  compile:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           java-version: 21
           distribution: temurin
-
-      - name: Cache Maven dependencies
-        uses: actions/cache@v4
+      - uses: actions/cache@v4
         with:
           path: ~/.m2/repository
           key: maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: maven-
+      - run: mvn compile -q
 
-      - name: Maven compile check (no tests)
-        run: mvn compile -q
-
-  quick-frontend:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push'
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
-        with:
-          version: latest
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-          cache-dependency-path: plus-ui/pnpm-lock.yaml
-
-      - name: Install & type-check
-        run: |
-          cd plus-ui
-          pnpm install --frozen-lockfile
-          npx vue-tsc --noEmit
-
-  # ============================================
   # PR: 后端单元测试
   # ============================================
   backend-test:
