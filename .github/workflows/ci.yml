@@ -6,6 +6,8 @@ on:
 
 jobs:
   # 后端单元测试
+  # 注意：不配 Redis service，因为 LangChain4jModuleTest 通过
+  # spring.autoconfigure.exclude 排除了 Redisson 自动配置（该测试用内存存储，不需要 Redis）
   backend-test:
     runs-on: ubuntu-latest
     container: maven:3.9-eclipse-temurin-21
@@ -14,6 +16,7 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: root
+          # 库名 — 与 application.yml 的 app.id 一致
           MYSQL_DATABASE: erp_sys
         ports:
           - 3306:3306
@@ -29,9 +32,11 @@ jobs:
           restore-keys: maven-
 
       - name: Run backend tests
+        # -pl ruoyi-modules/ruoyi-business: 测试 business 模块及其所有依赖链
         run: mvn -DskipTests=false test -pl ruoyi-modules/ruoyi-business -am
 
   # 前端 Vitest 单元测试
+  # 纯逻辑测试，不依赖后端/数据库/浏览器
   vitest:
     runs-on: ubuntu-latest
     steps:
@@ -45,12 +50,14 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
+          # 锁文件路径 — 与 plus-ui/ 目录绑定
           cache-dependency-path: plus-ui/pnpm-lock.yaml
 
       - name: Install dependencies
         run: cd plus-ui && pnpm install --frozen-lockfile
 
       - name: Run Vitest
+        # 脚本定义在 plus-ui/package.json 的 test:unit
         run: cd plus-ui && pnpm test:unit
 
   # Playwright E2E 冒烟测试
@@ -70,6 +77,13 @@ jobs:
         ports:
           - 6379:6379
         options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=5
+    env:
+      # 前端端口 — CI 用非特权端口 (>1024)，与 playwright.config.ts 的 PLAYWRIGHT_BASE_URL 配套
+      FRONTEND_PORT: '5173'
+      # 后端端口 — 与 ruoyi-admin/…/application.yml 的 SERVER_PORT 默认值一致
+      BACKEND_PORT: '5504'
+      # JAR 名 — 与 ruoyi-admin/pom.xml 的 artifactId 一致
+      JAR_NAME: 'erp_sys'
     steps:
       - uses: actions/checkout@v4
 
@@ -91,10 +105,10 @@ jobs:
 
       - name: Start backend
         run: |
-          nohup java -jar ruoyi-admin/target/erp_sys.jar --spring.profiles.active=dev > /tmp/backend.log 2>&1 &
+          nohup java -jar ruoyi-admin/target/$JAR_NAME.jar --spring.profiles.active=dev > /tmp/backend.log 2>&1 &
           echo "等待后端启动..."
           for i in $(seq 1 60); do
-            curl -s http://localhost:5504 > /dev/null 2>&1 && echo "后端就绪" && break || sleep 2
+            curl -s http://localhost:$BACKEND_PORT > /dev/null 2>&1 && echo "后端就绪" && break || sleep 2
           done
 
       - uses: pnpm/action-setup@v4
@@ -112,14 +126,14 @@ jobs:
 
       - name: Start frontend
         run: |
-          cd plus-ui && nohup pnpm dev > /tmp/frontend.log 2>&1 &
+          cd plus-ui && VITE_APP_PORT=$FRONTEND_PORT nohup pnpm dev > /tmp/frontend.log 2>&1 &
           echo "等待前端启动..."
           for i in $(seq 1 30); do
-            curl -s http://localhost:80 > /dev/null 2>&1 && echo "前端就绪" && break || sleep 2
+            curl -s http://localhost:$FRONTEND_PORT > /dev/null 2>&1 && echo "前端就绪" && break || sleep 2
           done
 
       - name: Run Playwright E2E
-        run: cd plus-ui && pnpm test:e2e
+        run: cd plus-ui && PLAYWRIGHT_BASE_URL=http://localhost:$FRONTEND_PORT pnpm test:e2e
 
       - name: Upload test report
         if: always()
@@ -134,3 +148,7 @@ jobs:
       - name: Print backend log (on failure)
         if: failure()
         run: cat /tmp/backend.log 2>/dev/null || true
+
+      - name: Print frontend log (on failure)
+        if: failure()
+        run: cat /tmp/frontend.log 2>/dev/null || true
