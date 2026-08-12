@@ -87,7 +87,7 @@ jobs:
           restore-keys: maven-
 
       - name: Build backend
-        run: mvn package -DskipTests -pl ruoyi-modules/ruoyi-business -am -q
+        run: mvn package -DskipTests -pl ruoyi-admin -am -q
 
       - name: Start backend
         run: |
