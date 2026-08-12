@@ -1,0 +1,158 @@
+# GitHub Actions — 测试门禁
+# PR 创建后自动执行，任何失败都会拦截合并
+#
+# 策略：
+# - push 到非 main 分支 → backend-test + vitest（快速反馈）
+# - PR → 全量三层（backend + vitest + playwright）
+# - PR 存在时不触发 push 流水线（避免重复）
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches-ignore:
+      - main
+
+# 全局环境变量
+env:
+  DB_HOST: 127.0.0.1
+  DB_PORT: 3306
+  DB_NAME: erp_sys
+  DB_USERNAME: root
+  DB_PASSWORD: root
+  REDIS_HOST: 127.0.0.1
+  REDIS_PORT: 6379
+
+jobs:
+  # ============================================
+  # 后端：Maven 编译 + 单元测试
+  # ============================================
+  backend-test:
+    runs-on: ubuntu-latest
+    container: maven:3.9-eclipse-temurin-21
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: erp_sys
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: maven-
+      - name: Run backend tests
+        run: mvn -DskipTests=false test -pl ruoyi-modules/ruoyi-business -am
+
+  # ============================================
+  # 前端：Vitest 单元测试
+  # ============================================
+  vitest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: latest
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: plus-ui/pnpm-lock.yaml
+      - name: Install dependencies
+        run: cd plus-ui && pnpm install --frozen-lockfile
+      - name: Run Vitest
+        run: cd plus-ui && pnpm test:unit
+
+  # ============================================
+  # E2E：Playwright 冒烟测试
+  # 启动 MySQL + Redis → 构建启动后端 → 构建启动前端 → 跑测试
+  # 仅 PR 时触发
+  # ============================================
+  playwright:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: erp_sys
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: maven-
+
+      - name: Build backend
+        run: mvn package -DskipTests -pl ruoyi-modules/ruoyi-business -am -q
+
+      - name: Start backend
+        run: |
+          nohup java -jar ruoyi-admin/target/ruoyi-admin.jar --spring.profiles.active=dev > /tmp/backend.log 2>&1 &
+          echo "等待后端启动..."
+          for i in $(seq 1 60); do
+            curl -s http://localhost:5500 > /dev/null 2>&1 && echo "后端就绪" && break || sleep 2
+          done
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: latest
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: plus-ui/pnpm-lock.yaml
+
+      - name: Install Playwright
+        run: cd plus-ui && pnpm install --frozen-lockfile && npx playwright install --with-deps chromium
+
+      - name: Start frontend
+        run: |
+          cd plus-ui && nohup pnpm dev > /tmp/frontend.log 2>&1 &
+          echo "等待前端启动..."
+          for i in $(seq 1 30); do
+            curl -s http://localhost:80 > /dev/null 2>&1 && echo "前端就绪" && break || sleep 2
+          done
+
+      - name: Run Playwright E2E
+        run: cd plus-ui && pnpm test:e2e
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            plus-ui/playwright-report
+            plus-ui/test-results
+          retention-days: 7
+
+      - name: Print backend log (on failure)
+        if: failure()
+        run: cat /tmp/backend.log 2>/dev/null || true

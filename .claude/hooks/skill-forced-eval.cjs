@@ -95,7 +95,8 @@ const instructions = `## 强制技能激活流程（必须执行）
 - task-tracker: 任务跟踪/记录进度/继续任务/恢复上下文/多步骤开发/进度管理/任务归档
 - writing-plans: 写计划/制定计划/实施计划/拆解任务/任务拆解/计划层/把方案落地/详细步骤/可执行计划/计划文档/writing-plans/开发计划
 - tech-decision: 技术选型/方案对比
-- brainstorm: 头脑风暴/创意/方案设计
+- brainstorming: 头脑风暴/创意/方案设计
+- design-review: 方案评审/设计评审/审查方案/检查方案/评审设计/把关/设计审查/检查漏洞/方案检查/架构评审/需求评审
 - collaborating-with-codex: Codex协作/多模型/后端原型/算法分析/代码审查/codex-plugin-cc/codex插件/官方插件/codex review/codex rescue/adversarial-review/review-gate
 - collaborating-with-gemini: Gemini协作/多模型/前端原型/UI设计/样式审查
 - test-development: 测试/单元测试/@Test/JUnit5/Mockito/断言/测试用例/测试覆盖率

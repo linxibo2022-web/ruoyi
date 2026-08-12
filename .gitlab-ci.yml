@@ -1,13 +1,26 @@
 # GitLab CI — 测试门禁
 # PR/MR 创建后自动执行，任何失败都会拦截合并
+#
+# 流水线策略：
+# - push 到非 main 分支且无 MR → 跑 backend-test + vitest（快速反馈）
+# - 创建 MR → 跑 backend-test + vitest + playwright（全面门禁）
+# - 已存在 MR 的 push → 跳过（避免重复流水线，MR 流水线接管）
 
 stages:
   - test-backend
   - test-frontend
+  - test-e2e
 
+# 全局 CI 变量（所有 job 共享）
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
   PNPM_HOME: "$CI_PROJECT_DIR/.pnpm"
+
+# 防止重复流水线：有 MR 时只跑 MR 流水线，不跑 push 流水线
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH != "main"
 
 # ============================================
 # 后端：Maven 编译 + 单元测试
@@ -47,20 +60,54 @@ vitest:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH != "main"
 
 # ============================================
-# 前端：Playwright 冒烟测试
-# (需要前后端都启动，仅 MR 时跑)
+# E2E：Playwright 冒烟测试
+# 启动 MySQL + Redis → 构建启动后端 → 构建启动前端 → 跑测试
+# 仅 MR 时触发（需要"整车启动"的完整环境）
 # ============================================
 playwright:
-  stage: test-frontend
-  image: mcr.microsoft.com/playwright:v1.62.1-noble
+  stage: test-e2e
+  image: maven:3.9-eclipse-temurin-21
+  services:
+    - name: mysql:8.0
+      variables:
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_DATABASE: erp_sys
+    - redis:7-alpine
+  variables:
+    # 将后端数据库连接指向 CI service 容器
+    DB_HOST: mysql
+    DB_PORT: 3306
+    DB_NAME: erp_sys
+    DB_USERNAME: root
+    DB_PASSWORD: root
+    # Redis 指向 CI service 容器
+    REDIS_HOST: redis
+    REDIS_PORT: 6379
   before_script:
-    - corepack enable
-    - corepack prepare pnpm@latest --activate
-    - cd plus-ui
-    - pnpm install --frozen-lockfile
+    # 安装 Node.js + pnpm
+    - apt-get update -qq && apt-get install -y -qq nodejs npm > /dev/null 2>&1
+    - npm install -g pnpm > /dev/null 2>&1
+    # 安装 Playwright Chromium 浏览器
+    - cd plus-ui && pnpm install --frozen-lockfile
+    - npx playwright install --with-deps chromium > /dev/null 2>&1
+    - cd ..
+    # 编译后端（跳过单元测试，已经在 backend-test job 跑过了）
+    - mvn package -DskipTests -pl ruoyi-modules/ruoyi-business -am -q
+    # 后台启动后端
+    - nohup java -jar ruoyi-admin/target/ruoyi-admin.jar --spring.profiles.active=dev > /tmp/backend.log 2>&1 &
+    - echo "等待后端启动..."
+    - for i in $(seq 1 60); do curl -s http://localhost:5500 > /dev/null 2>&1 && echo "后端就绪" && break || sleep 2; done
+    # 后台启动前端
+    - cd plus-ui && nohup pnpm dev > /tmp/frontend.log 2>&1 &
+    - echo "等待前端启动..."
+    - for i in $(seq 1 30); do curl -s http://localhost:80 > /dev/null 2>&1 && echo "前端就绪" && break || sleep 2; done
   script:
     - cd plus-ui
     - pnpm test:e2e
+  after_script:
+    # 打印后端日志（排查启动失败用）
+    - cat /tmp/backend.log 2>/dev/null || true
+    - cat /tmp/frontend.log 2>/dev/null || true
   artifacts:
     when: always
     paths:

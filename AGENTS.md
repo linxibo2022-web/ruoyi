@@ -156,6 +156,7 @@ TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M'
 | `git-workflow` | Git、提交、commit、分支 |
 | `tech-decision` | 技术选型、方案对比 |
 | `brainstorm` | 头脑风暴、创意、方案设计 |
+| `design-review` | 方案评审/设计评审/审查方案/检查方案/把关/设计审查/检查漏洞/架构评审/需求评审 |
 | `collaborating-with-codex` | Codex 协作/多模型/原型/Diff/代码审查/codex-plugin-cc/codex 插件/官方插件/codex review/codex rescue/adversarial-review/review-gate |
 | `collaborating-with-gemini` | Gemini 协作/多模型/前端原型/UI 设计/样式审查 |
 | `task-tracker` | 任务跟踪、进度管理、继续任务 |
