@@ -1,61 +1,19 @@
-# GitLab CI — 测试门禁
-# push:  快速检查（编译，不卡推送）
-# MR:    全量测试（backend + vitest + e2e），卡合并
-#
-# 与 .github/workflows/ci.yml 保持同等逻辑，仅语法不同
+# GitLab CI — 仅 MR 触发，push 不跑
+# 与 .github/workflows/ci.yml 保持同等逻辑
 
 stages:
-  - quick-check
   - test
   - e2e
 
-# 全局变量
 variables:
-  DB_HOST: 127.0.0.1
-  DB_PORT: 3306
-  DB_NAME: erp_sys
-  DB_USERNAME: root
-  DB_PASSWORD: root
-  REDIS_HOST: 127.0.0.1
-  REDIS_PORT: 6379
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
 
-# Maven 依赖缓存
 cache:
   paths:
     - .m2/repository/
     - plus-ui/node_modules/
 
-# ============================================
-# push: 快速检查（仅编译，不跑测试）
-# ============================================
-quick-check:
-  stage: quick-check
-  image: maven:3.9-eclipse-temurin-21
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH != "main"
-  script:
-    - mvn compile -q
-  interruptible: true
-
-# 前端编译检查
-frontend-check:
-  stage: quick-check
-  image: node:22
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH != "main"
-  before_script:
-    - corepack enable
-    - corepack prepare pnpm@latest --activate
-  script:
-    - cd plus-ui
-    - pnpm install --frozen-lockfile
-    - pnpm build
-  interruptible: true
-
-# ============================================
-# MR: 后端单元测试
-# ============================================
+# 后端单元测试
 backend-test:
   stage: test
   image: maven:3.9-eclipse-temurin-21
@@ -69,9 +27,7 @@ backend-test:
   script:
     - mvn -DskipTests=false test -pl ruoyi-modules/ruoyi-business -am
 
-# ============================================
-# MR: 前端 Vitest 单元测试
-# ============================================
+# 前端 Vitest 单元测试
 vitest:
   stage: test
   image: node:22
@@ -81,13 +37,9 @@ vitest:
     - corepack enable
     - corepack prepare pnpm@latest --activate
   script:
-    - cd plus-ui
-    - pnpm install --frozen-lockfile
-    - pnpm test:unit
+    - cd plus-ui && pnpm install --frozen-lockfile && pnpm test:unit
 
-# ============================================
-# MR: E2E 冒烟测试
-# ============================================
+# E2E 冒烟测试
 e2e:
   stage: e2e
   image: maven:3.9-eclipse-temurin-21
@@ -100,34 +52,18 @@ e2e:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   before_script:
-    # 安装 Node.js + pnpm（maven 镜像不包含）
     - apt-get update && apt-get install -y curl gnupg
     - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
     - apt-get install -y nodejs
-    - corepack enable
-    - corepack prepare pnpm@latest --activate
-    # Playwright 依赖
+    - corepack enable && corepack prepare pnpm@latest --activate
     - apt-get install -y libnss3 libnspr4 libatk-bridge2.0-0 libdrm2 libxkbcommon0 libgbm1 libasound2
   script:
-    # 构建后端
     - mvn package -DskipTests -pl ruoyi-modules/ruoyi-business -am -q
-    # 启动后端
     - nohup java -jar ruoyi-admin/target/ruoyi-admin.jar --spring.profiles.active=dev > /tmp/backend.log 2>&1 &
-    - |
-      for i in $(seq 1 60); do
-        curl -s http://localhost:5500 > /dev/null 2>&1 && echo "后端就绪" && break || sleep 2
-      done
-    # 安装前端依赖 + Playwright
-    - cd plus-ui
-    - pnpm install --frozen-lockfile
-    - npx playwright install --with-deps chromium
-    # 启动前端
+    - for i in $(seq 1 60); do curl -s http://localhost:5500 > /dev/null 2>&1 && echo "后端就绪" && break || sleep 2; done
+    - cd plus-ui && pnpm install --frozen-lockfile && npx playwright install --with-deps chromium
     - nohup pnpm dev > /tmp/frontend.log 2>&1 &
-    - |
-      for i in $(seq 1 30); do
-        curl -s http://localhost:80 > /dev/null 2>&1 && echo "前端就绪" && break || sleep 2
-      done
-    # 跑 E2E
+    - for i in $(seq 1 30); do curl -s http://localhost:80 > /dev/null 2>&1 && echo "前端就绪" && break || sleep 2; done
     - pnpm test:e2e
   artifacts:
     when: always
