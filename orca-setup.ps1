@@ -69,8 +69,36 @@ $DB_USER     = if ($env:DB_USER)     { $env:DB_USER }     else { "root" }
 $DB_PREFIX   = if ($env:DB_PREFIX)   { $env:DB_PREFIX }   else { "erp_sys_" }
 $DB_PASSWORD = if ($env:DB_PASSWORD) { $env:DB_PASSWORD } else { "root" }
 
+# ---- 解析项目名称 ----
+# 优先级: ORCA_PROJECT_NAME > 远程仓库名 > 根目录名
+if ($env:ORCA_PROJECT_NAME) {
+    $ProjectName = $env:ORCA_PROJECT_NAME
+} else {
+    try {
+        Push-Location $env:ORCA_ROOT_PATH -ErrorAction Stop
+        $remoteUrl = git remote get-url origin 2>$null
+        if ($remoteUrl -match '[:/]([^/]+?)(?:\.git)?$') {
+            $ProjectName = $matches[1] -replace '[^a-zA-Z0-9_\-]', '_'
+        } else {
+            $ProjectName = (Split-Path $env:ORCA_ROOT_PATH -Leaf) -replace '[^a-zA-Z0-9_\-]', '_'
+        }
+    } catch {
+        $ProjectName = (Split-Path $env:ORCA_ROOT_PATH -Leaf) -replace '[^a-zA-Z0-9_\-]', '_'
+    } finally {
+        Pop-Location -ErrorAction SilentlyContinue
+    }
+}
+Write-Detail "Project" $ProjectName
+
 $Branch = $env:ORCA_WORKSPACE_NAME -replace '[^a-zA-Z0-9_]', '_'
-$DB_NAME = $DB_PREFIX + $Branch
+# DB 命名: 前缀_项目名_分支名，确保不同项目之间隔离
+$DB_NAME = $DB_PREFIX + $ProjectName + '_' + $Branch
+# 限制数据库名长度（MySQL 最大 64 字符）
+if ($DB_NAME.Length -gt 64) {
+    $hash = [BitConverter]::ToString([System.Security.Cryptography.MD5]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($DB_NAME))).Replace('-','').Substring(0,8).ToLower()
+    $DB_NAME = ($DB_PREFIX + $ProjectName).Substring(0, 55 - $hash.Length) + '_' + $hash
+    Write-Warn "数据库名超长，已截断: $DB_NAME"
+}
 
 Write-Detail "DB" "$DB_USER@$DB_HOST`:$DB_PORT/$DB_NAME"
 
