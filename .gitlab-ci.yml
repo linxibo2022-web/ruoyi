@@ -1,119 +1,139 @@
 # GitLab CI — 测试门禁
-# PR/MR 创建后自动执行，任何失败都会拦截合并
+# push:  快速检查（编译，不卡推送）
+# MR:    全量测试（backend + vitest + e2e），卡合并
 #
-# 流水线策略：
-# - push 到非 main 分支且无 MR → 跑 backend-test + vitest（快速反馈）
-# - 创建 MR → 跑 backend-test + vitest + playwright（全面门禁）
-# - 已存在 MR 的 push → 跳过（避免重复流水线，MR 流水线接管）
+# 与 .github/workflows/ci.yml 保持同等逻辑，仅语法不同
 
 stages:
-  - test-backend
-  - test-frontend
-  - test-e2e
+  - quick-check
+  - test
+  - e2e
 
-# 全局 CI 变量（所有 job 共享）
+# 全局变量
 variables:
+  DB_HOST: 127.0.0.1
+  DB_PORT: 3306
+  DB_NAME: erp_sys
+  DB_USERNAME: root
+  DB_PASSWORD: root
+  REDIS_HOST: 127.0.0.1
+  REDIS_PORT: 6379
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
-  PNPM_HOME: "$CI_PROJECT_DIR/.pnpm"
 
-# 防止重复流水线：有 MR 时只跑 MR 流水线，不跑 push 流水线
-workflow:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH != "main"
+# Maven 依赖缓存
+cache:
+  paths:
+    - .m2/repository/
+    - plus-ui/node_modules/
 
 # ============================================
-# 后端：Maven 编译 + 单元测试
+# push: 快速检查（仅编译，不跑测试）
 # ============================================
-backend-test:
-  stage: test-backend
+quick-check:
+  stage: quick-check
   image: maven:3.9-eclipse-temurin-21
-  script:
-    - mvn -DskipTests=false test -pl ruoyi-modules/ruoyi-business -am
-  cache:
-    paths:
-      - .m2/repository
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH != "main"
+  script:
+    - mvn compile -q
+  interruptible: true
 
-# ============================================
-# 前端：Vitest 单元测试
-# ============================================
-vitest:
-  stage: test-frontend
-  image: node:22-alpine
+# 前端编译检查
+frontend-check:
+  stage: quick-check
+  image: node:22
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH != "main"
   before_script:
     - corepack enable
     - corepack prepare pnpm@latest --activate
+  script:
     - cd plus-ui
     - pnpm install --frozen-lockfile
-  script:
-    - cd plus-ui
-    - pnpm test:unit
-  cache:
-    paths:
-      - plus-ui/node_modules
-      - .pnpm
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH != "main"
+    - pnpm build
+  interruptible: true
 
 # ============================================
-# E2E：Playwright 冒烟测试
-# 启动 MySQL + Redis → 构建启动后端 → 构建启动前端 → 跑测试
-# 仅 MR 时触发（需要"整车启动"的完整环境）
+# MR: 后端单元测试
 # ============================================
-playwright:
-  stage: test-e2e
+backend-test:
+  stage: test
   image: maven:3.9-eclipse-temurin-21
   services:
-    - name: mysql:8.0
-      variables:
-        MYSQL_ROOT_PASSWORD: root
-        MYSQL_DATABASE: erp_sys
-    - redis:7-alpine
+    - mysql:8.0
   variables:
-    # 将后端数据库连接指向 CI service 容器
-    DB_HOST: mysql
-    DB_PORT: 3306
-    DB_NAME: erp_sys
-    DB_USERNAME: root
-    DB_PASSWORD: root
-    # Redis 指向 CI service 容器
-    REDIS_HOST: redis
-    REDIS_PORT: 6379
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_DATABASE: erp_sys
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  script:
+    - mvn -DskipTests=false test -pl ruoyi-modules/ruoyi-business -am
+
+# ============================================
+# MR: 前端 Vitest 单元测试
+# ============================================
+vitest:
+  stage: test
+  image: node:22
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   before_script:
-    # 安装 Node.js + pnpm
-    - apt-get update -qq && apt-get install -y -qq nodejs npm > /dev/null 2>&1
-    - npm install -g pnpm > /dev/null 2>&1
-    # 安装 Playwright Chromium 浏览器
-    - cd plus-ui && pnpm install --frozen-lockfile
-    - npx playwright install --with-deps chromium > /dev/null 2>&1
-    - cd ..
-    # 编译后端（跳过单元测试，已经在 backend-test job 跑过了）
-    - mvn package -DskipTests -pl ruoyi-modules/ruoyi-business -am -q
-    # 后台启动后端
-    - nohup java -jar ruoyi-admin/target/ruoyi-admin.jar --spring.profiles.active=dev > /tmp/backend.log 2>&1 &
-    - echo "等待后端启动..."
-    - for i in $(seq 1 60); do curl -s http://localhost:5500 > /dev/null 2>&1 && echo "后端就绪" && break || sleep 2; done
-    # 后台启动前端
-    - cd plus-ui && nohup pnpm dev > /tmp/frontend.log 2>&1 &
-    - echo "等待前端启动..."
-    - for i in $(seq 1 30); do curl -s http://localhost:80 > /dev/null 2>&1 && echo "前端就绪" && break || sleep 2; done
+    - corepack enable
+    - corepack prepare pnpm@latest --activate
   script:
     - cd plus-ui
+    - pnpm install --frozen-lockfile
+    - pnpm test:unit
+
+# ============================================
+# MR: E2E 冒烟测试
+# ============================================
+e2e:
+  stage: e2e
+  image: maven:3.9-eclipse-temurin-21
+  services:
+    - mysql:8.0
+    - redis:7-alpine
+  variables:
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_DATABASE: erp_sys
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  before_script:
+    # 安装 Node.js + pnpm（maven 镜像不包含）
+    - apt-get update && apt-get install -y curl gnupg
+    - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+    - apt-get install -y nodejs
+    - corepack enable
+    - corepack prepare pnpm@latest --activate
+    # Playwright 依赖
+    - apt-get install -y libnss3 libnspr4 libatk-bridge2.0-0 libdrm2 libxkbcommon0 libgbm1 libasound2
+  script:
+    # 构建后端
+    - mvn package -DskipTests -pl ruoyi-modules/ruoyi-business -am -q
+    # 启动后端
+    - nohup java -jar ruoyi-admin/target/ruoyi-admin.jar --spring.profiles.active=dev > /tmp/backend.log 2>&1 &
+    - |
+      for i in $(seq 1 60); do
+        curl -s http://localhost:5500 > /dev/null 2>&1 && echo "后端就绪" && break || sleep 2
+      done
+    # 安装前端依赖 + Playwright
+    - cd plus-ui
+    - pnpm install --frozen-lockfile
+    - npx playwright install --with-deps chromium
+    # 启动前端
+    - nohup pnpm dev > /tmp/frontend.log 2>&1 &
+    - |
+      for i in $(seq 1 30); do
+        curl -s http://localhost:80 > /dev/null 2>&1 && echo "前端就绪" && break || sleep 2
+      done
+    # 跑 E2E
     - pnpm test:e2e
-  after_script:
-    # 打印后端日志（排查启动失败用）
-    - cat /tmp/backend.log 2>/dev/null || true
-    - cat /tmp/frontend.log 2>/dev/null || true
   artifacts:
     when: always
     paths:
-      - plus-ui/playwright-report
-      - plus-ui/test-results
+      - plus-ui/playwright-report/
+      - plus-ui/test-results/
     expire_in: 7 days
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-  allow_failure: false
+  after_script:
+    - cat /tmp/backend.log 2>/dev/null || true
