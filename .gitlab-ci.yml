@@ -59,8 +59,8 @@ e2e:
     - apt-get install -y libnss3 libnspr4 libatk-bridge2.0-0 libdrm2 libxkbcommon0 libgbm1 libasound2
   script:
     - mvn package -DskipTests -pl ruoyi-modules/ruoyi-business -am -q
-    - nohup java -jar ruoyi-admin/target/ruoyi-admin.jar --spring.profiles.active=dev > /tmp/backend.log 2>&1 &
-    - for i in $(seq 1 60); do curl -s http://localhost:5500 > /dev/null 2>&1 && echo "后端就绪" && break || sleep 2; done
+    - nohup java -jar ruoyi-admin/target/erp_sys.jar --spring.profiles.active=dev > /tmp/backend.log 2>&1 &
+    - for i in $(seq 1 60); do curl -s http://localhost:5504 > /dev/null 2>&1 && echo "后端就绪" && break || sleep 2; done
     - cd plus-ui && pnpm install --frozen-lockfile && npx playwright install --with-deps chromium
     - nohup pnpm dev > /tmp/frontend.log 2>&1 &
     - for i in $(seq 1 30); do curl -s http://localhost:80 > /dev/null 2>&1 && echo "前端就绪" && break || sleep 2; done
