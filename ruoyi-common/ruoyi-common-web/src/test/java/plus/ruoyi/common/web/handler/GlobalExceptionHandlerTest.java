@@ -145,14 +145,14 @@ class GlobalExceptionHandlerTest extends BaseUnitTest {
     class ServletExceptionTests {
 
         @Test
-        @DisplayName("Servlet异常 - 应返回错误消息")
+        @DisplayName("Servlet异常 - 应返回通用错误消息(不泄露内部异常详情)")
         void testServletException() {
             ServletException exception = new ServletException("Servlet处理错误");
 
             R<Void> result = handler.handleServletException(exception, mockRequest);
 
             assertNotNull(result);
-            assertEquals("Servlet处理错误", result.getMsg());
+            assertEquals("发生未知异常，请联系管理员", result.getMsg());
         }
     }
 
@@ -340,14 +340,14 @@ class GlobalExceptionHandlerTest extends BaseUnitTest {
     class RuntimeExceptionTests {
 
         @Test
-        @DisplayName("RuntimeException - 应返回错误消息")
+        @DisplayName("RuntimeException - 应返回通用错误消息(不泄露内部异常详情)")
         void testRuntimeException() {
             RuntimeException exception = new RuntimeException("未知错误");
 
             R<Void> result = handler.handleRuntimeException(exception, mockRequest);
 
             assertNotNull(result);
-            assertEquals("未知错误", result.getMsg());
+            assertEquals("发生未知异常，请联系管理员", result.getMsg());
         }
 
         @Test
@@ -368,14 +368,14 @@ class GlobalExceptionHandlerTest extends BaseUnitTest {
     class GenericExceptionTests {
 
         @Test
-        @DisplayName("Exception - 兜底异常处理")
+        @DisplayName("Exception - 兜底异常处理(返回通用消息不泄露内部详情)")
         void testGenericException() {
             Exception exception = new Exception("系统异常");
 
             R<Void> result = handler.handleException(exception, mockRequest);
 
             assertNotNull(result);
-            assertEquals("系统异常", result.getMsg());
+            assertEquals("发生系统异常，请联系管理员", result.getMsg());
         }
     }
 

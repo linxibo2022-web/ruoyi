@@ -211,6 +211,7 @@ public class LangChain4jModuleTest extends BaseSpringTest {
     @Test
     @Order(10)
     @DisplayName("10. 测试单轮同步对话 (DeepSeek)")
+    @Disabled("需要配置DeepSeek API Key，CI 环境不可用")
     void testSingleChat() {
         if (chatService == null) {
             log.warn("⊘ ChatService未配置，跳过测试");
@@ -246,6 +247,7 @@ public class LangChain4jModuleTest extends BaseSpringTest {
     @Test
     @Order(11)
     @DisplayName("11. 测试多轮连续对话 (DeepSeek)")
+    @Disabled("需要配置DeepSeek API Key，CI 环境不可用")
     void testContinuousChat() {
         if (chatService == null) {
             log.warn("⊘ ChatService未配置，跳过测试");
@@ -295,6 +297,7 @@ public class LangChain4jModuleTest extends BaseSpringTest {
     @Test
     @Order(12)
     @DisplayName("12. 测试流式对话 (DeepSeek)")
+    @Disabled("需要配置DeepSeek API Key，CI 环境不可用")
     void testStreamChat() throws InterruptedException {
         if (chatService == null) {
             log.warn("⊘ ChatService未配置，跳过测试");
@@ -468,6 +471,7 @@ public class LangChain4jModuleTest extends BaseSpringTest {
     @Test
     @Order(50)
     @DisplayName("50. 测试自定义系统提示词 (DeepSeek)")
+    @Disabled("需要配置DeepSeek API Key，CI 环境不可用")
     void testSystemPrompt() {
         if (chatService == null) {
             log.warn("⊘ ChatService未配置，跳过测试");

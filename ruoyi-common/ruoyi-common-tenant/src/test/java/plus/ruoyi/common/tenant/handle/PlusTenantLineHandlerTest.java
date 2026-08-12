@@ -244,7 +244,7 @@ class PlusTenantLineHandlerTest extends BaseUnitTest {
         }
 
         @Test
-        @DisplayName("ignoreTable - 数据源名称为null时视为master数据源")
+        @DisplayName("ignoreTable - 数据源名称为null时视为master数据源(累加模式)")
         void testIgnoreTableWithNullDataSource() {
             try (MockedStatic<DynamicDataSourceContextHolder> contextHolderMock =
                      Mockito.mockStatic(DynamicDataSourceContextHolder.class)) {
@@ -264,11 +264,11 @@ class PlusTenantLineHandlerTest extends BaseUnitTest {
                 // 创建拦截器
                 PlusTenantLineHandler handler = new PlusTenantLineHandler(properties);
 
-                // 验证：null 被视为 master，使用 master 数据源配置
+                // 验证：累加模式 — 全局配置 + 数据源配置都生效
                 assertTrue(handler.ignoreTable("sys_config"),
-                    "数据源为null时应视为master，使用master数据源配置");
-                assertFalse(handler.ignoreTable("sys_dict"),
-                    "数据源为null时应视为master，不使用全局配置（因为master有专门配置）");
+                    "数据源级别的表应被忽略");
+                assertTrue(handler.ignoreTable("sys_dict"),
+                    "累加模式下全局配置的表也应被忽略（即使master有独立配置）");
             }
         }
 
