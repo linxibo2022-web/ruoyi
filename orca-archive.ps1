@@ -68,7 +68,7 @@ $DB_PORT     = if ($env:DB_PORT)     { $env:DB_PORT }     else { "3306" }
 $DB_USER     = if ($env:DB_USER)     { $env:DB_USER }     else { "root" }
 $DB_PREFIX   = if ($env:DB_PREFIX)   { $env:DB_PREFIX }   else { "erp_sys_" }
 $DB_PASSWORD = if ($env:DB_PASSWORD) { $env:DB_PASSWORD } else { "root" }
-$ProtectedBranches = @("main", "master")
+$ProtectedBranches = @("main", "master", "develop")
 
 # 密码改用 MYSQL_PWD 环境变量传递，避免出现在进程命令行中（仅本进程及子进程可见）
 $env:MYSQL_PWD = $DB_PASSWORD
@@ -133,8 +133,20 @@ Write-OK "mysql 连接正常"
 # ---- 步骤 2: 安全检查 ----
 Write-Step "2/6" "安全检查"
 
-if ($ProtectedBranches -contains $env:ORCA_WORKSPACE_NAME) {
-    Write-Error "禁止删除受保护分支: $env:ORCA_WORKSPACE_NAME"
+# 解析 worktree 实际签出的分支：高级选项填的分支名可能与 workspace 名不同
+# （如 brant 工作树的实际分支是 feature/test），后续检查与删除需一并覆盖
+$worktreeBranch = $null
+Push-Location $env:ORCA_WORKTREE_PATH -ErrorAction SilentlyContinue
+$wtHead = git rev-parse --abbrev-ref HEAD 2>$null
+if ($wtHead -and $wtHead -ne "HEAD") { $worktreeBranch = $wtHead }
+Pop-Location -ErrorAction SilentlyContinue
+if ($worktreeBranch -and $worktreeBranch -ne $env:ORCA_WORKSPACE_NAME) {
+    Write-Info "worktree 实际分支: $worktreeBranch"
+}
+
+# 受保护分支检查（同时覆盖 workspace 名与实际分支，防止高级选项绕过保护）
+if ($ProtectedBranches -contains $env:ORCA_WORKSPACE_NAME -or $ProtectedBranches -contains $worktreeBranch) {
+    Write-Error "禁止删除受保护分支: $env:ORCA_WORKSPACE_NAME / $worktreeBranch"
     exit 1
 }
 Write-OK "非受保护分支，通过"
@@ -158,6 +170,17 @@ if ($localBranch) {
     }
 }
 Write-OK "无未推送提交"
+
+# worktree 实际分支的未推送检查（其 upstream 经桥接指向 origin/<workspace>，防止误删未推送提交）
+if ($worktreeBranch -and $worktreeBranch -ne $env:ORCA_WORKSPACE_NAME) {
+    $unpushedWt = git log origin/$env:ORCA_WORKSPACE_NAME..$worktreeBranch --oneline 2>&1
+    if ($unpushedWt -and $LASTEXITCODE -eq 0) {
+        Write-Error "worktree 实际分支存在未推送提交: $unpushedWt"
+        Pop-Location
+        exit 1
+    }
+    Write-OK "worktree 实际分支无未推送提交"
+}
 Pop-Location
 
 # ---- 步骤 3: 删除数据库 ----
@@ -211,6 +234,20 @@ if ($localExists) {
     }
 } else {
     Write-Warn "本地分支不存在，跳过"
+}
+
+# 删除 worktree 实际分支（如 feature/test、linxibo2022-web/dev），与 workspace 名不同时需单独清理
+# 注: 该分支此刻仍被本 worktree 签出，-D 可能失败，失败时提示手动清理
+if ($worktreeBranch -and $worktreeBranch -ne $env:ORCA_WORKSPACE_NAME) {
+    $wtExists = git branch --list $worktreeBranch 2>&1
+    if ($wtExists) {
+        git branch -D $worktreeBranch 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            Write-OK "worktree 实际分支已删除: $worktreeBranch"
+        } else {
+            Write-Warn "实际分支仍被 worktree 签出，无法删除: $worktreeBranch（worktree 删除后手动执行: git branch -D $worktreeBranch）"
+        }
+    }
 }
 Pop-Location
 
