@@ -2,7 +2,7 @@
 
 **创建时间**: 2026-08-13 01:29
 **最后更新**: 2026-08-13 02:25
-**状态**: P0 已实施；S1（测试边界重构，方案 C）已实施并本地验证；P1-P3 待定
+**状态**: P0 已实施；S1（测试边界重构，方案 C）已实施并本地验证；S2（E2E 假绿重构）已本地验证全绿；P1-P3 待定
 
 ---
 
@@ -129,3 +129,19 @@ PR #1（CI 简化为仅 PR/MR 触发）引入后，三个检查经历了 4 轮�
 - 试跑暴露并修复 2 个测试 bug：`OrderServiceTest` 同毫秒订单号撞唯一索引（加 nanoTime 后缀）；`SysDeptServiceTest` 状态语义写反（项目规范 1=正常，测试查 `"0"`）
 
 验证：本地全量 `mvn test -pl ruoyi-admin -am` BUILD SUCCESS（admin 11 个 ServiceTest 77 方法全绿，integration 确认未执行）；CI 首次运行待观察
+
+### 2026-08-13 S2 假绿修复验证（本地 E2E 全绿）
+S2 硬断言重构后**第一次本地运行即失败**——这正是重构的目的：旧版 TC-03 失败 `return` 不抛异常导致假绿，硬断言立刻暴露了真实 bug。
+
+**根因**：select 填充循环 `select.click()` 后**立即** `option.isVisible()` 判断。Element Plus 的 popper **首次打开才懒挂载 DOM** 且带过渡动画，立即判断必为 false（假阴性）→ try/catch 静默吞掉 → 4 个下拉全空 → "角色"必填校验拦截 → 无成功提示。
+
+**修复过程中实测出的 Element Plus 行为事实（写进测试注释，避免后人重踩）**：
+1. popper 懒挂载：click 后必须 `waitFor`，不能立即 `isVisible()`
+2. 项目 AModal 标题类名是 `.amodal-header__title`（非原生 `.el-dialog__title`），且点标题**无法**触发 popper 的 click-outside 关闭
+3. 多选选中后 popper 不自动收起，再点触发器 toggle **实测也关不掉**；Esc 可行（AModal 弹窗不受 Esc 影响）
+4. `AFormTreeSelect` 树节点 label 也渲染为 `.el-select-dropdown__item`，无需特判树节点
+5. 收起判断要用 `aria-expanded`，`:visible` 会把正在淡出的残留 popper 误算上
+
+**顺带加固**：手机号/邮箱改运行唯一值（上一轮失败残留的用户会撞"已存在"唯一校验，阻断本轮新增）。
+
+**结果**：本地 `pnpm test:e2e` 全绿（TC-01~07 硬断言通过，TC-08 仅一页软跳过），13s 完成，远低于 60s 预算。

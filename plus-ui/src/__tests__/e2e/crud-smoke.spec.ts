@@ -49,6 +49,9 @@ const LOGIN_TENANT = '000000'
 // 本次运行唯一用户名 — TC-03 新增该用户，TC-05/06 搜索定位后编辑/删除，
 // 闭环自洽，不依赖列表首行（首行可能是受保护的内置用户）
 const uniqueUserName = `e2e_${Date.now()}`
+// 手机号/邮箱也用运行唯一值：上一轮失败残留的用户会撞"手机号/邮箱已存在"唯一校验，阻断本轮新增
+const uniquePhone = `13800138${String(Date.now() % 1000).padStart(3, '0')}` // 11 位，138 开头合法手机号
+const uniqueEmail = `${uniqueUserName}@test.com`
 
 // ============================================================
 // 🧰 公共帮助函数
@@ -150,9 +153,9 @@ CRUD_PAGES.forEach((config) => {
 
       // 根据 label 判断字段类型
       if (label.includes('手机') || label.includes('phone')) {
-        await input.fill('13800138000')
+        await input.fill(uniquePhone)
       } else if (label.includes('邮箱') || label.includes('email')) {
-        await input.fill('test@erp.com')
+        await input.fill(uniqueEmail)
       } else if (label.includes('密码') || label.includes('password')) {
         await input.fill('Test123456')
       } else if (label.includes('用户名称') || label.includes('用户名')) {
@@ -163,20 +166,36 @@ CRUD_PAGES.forEach((config) => {
       }
     }
 
-    // 处理 select 下拉框：展开后选中第一个选项（满足"角色"等必填字段），Esc 收起
+    // 处理 select 下拉框：展开后等待选项渲染再选中
+    // ⚠️ Element Plus 的 popper 首次打开才懒挂载 DOM 且带过渡动画，
+    //    click 后立即 isVisible() 判断必为 false（假阴性），必须 waitFor 等待；
+    //    用 .last() 定位刚打开的下拉，避免匹配到正在淡出卸载的旧 popper
+    // ⚠️ AFormTreeSelect（如归属部门）的树节点 label 也渲染为 .el-select-dropdown__item，
+    //    无需特判树节点，统一走选项点击
     const selects = page.locator('.el-dialog .el-select')
     const selectCount = await selects.count()
     for (let i = 0; i < selectCount; i++) {
       const select = selects.nth(i)
-      if (!(await select.isVisible())) continue
+      if (!(await select.isVisible().catch(() => false))) continue
       try {
-        await select.click()
-        const option = page.locator('.el-select-dropdown:visible .el-select-dropdown__item').first()
+        await select.click({ timeout: 5000 })
+        const dropdown = page.locator('.el-select-dropdown:visible').last()
+        await dropdown.waitFor({ state: 'visible', timeout: 3000 })
+        // 点第一个可用选项（跳过禁用项）；无选项（如本地库无岗位数据）时跳过，提交由硬断言兜底
+        const option = dropdown.locator('.el-select-dropdown__item:not(.is-disabled)').first()
         if (await option.isVisible().catch(() => false)) {
-          await option.click()
+          await option.click({ timeout: 5000 })
         }
-        await page.keyboard.press('Escape')
-        await page.waitForTimeout(100)
+        // 收起仍展开的下拉：单选/树形选中后 aria-expanded 自动变 false；
+        // 多选选中后仍展开（再点触发器 toggle 实测关不掉），用 Esc 收起（AModal 弹窗不受 Esc 影响）
+        // 用 aria-expanded 判断真实展开态——:visible 会把正在淡出的残留 popper 也误算上
+        if ((await select.locator('[aria-expanded="true"]').count()) > 0) {
+          await page.keyboard.press('Escape')
+        }
+        // 等下拉完全淡出（display:none），避免下一轮 .last() 匹配到残留 popper
+        await expect(page.locator('.el-select-dropdown:visible'))
+          .toHaveCount(0, { timeout: 5000 })
+          .catch(() => {})
       } catch {
         // select 可能被禁用或不可交互，跳过（提交失败时由下方硬断言暴露）
       }
