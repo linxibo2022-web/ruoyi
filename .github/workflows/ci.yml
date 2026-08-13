@@ -11,6 +11,10 @@ jobs:
   backend-test:
     runs-on: ubuntu-latest
     container: maven:3.9-eclipse-temurin-21
+    env:
+      # 容器化 job：service 容器通过 docker 网络主机名访问（非 127.0.0.1），与 GitLab 侧 variables 一致
+      DB_HOST: mysql
+      REDIS_HOST: redis
     services:
       mysql:
         image: mysql:8.0
