@@ -95,6 +95,12 @@ if ($env:ORCA_PROJECT_NAME) {
 Write-Detail "Project" $ProjectName
 
 $Branch = $env:ORCA_WORKSPACE_NAME -replace '[^a-zA-Z0-9_]', '_'
+# 端口派生: 分支名 MD5 映射到 5505~5599（5504 是主工作区默认端口，必须避开）
+# 保证多个 orca 工作树同时跑后端时端口互不冲突
+$md5 = [BitConverter]::ToString([System.Security.Cryptography.MD5]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($Branch))).Replace('-','').ToLower()
+$PORT_RANGE = 95
+# 注意必须用 ToInt64：8 位十六进制可能超过 Int32 上限导致溢出为负数，端口会掉出 5505~5599 区间
+$BranchPort = 5505 + ([Convert]::ToInt64($md5.Substring(0,8), 16) % $PORT_RANGE)
 # DB 命名: 前缀_项目名_分支名，确保不同项目之间隔离
 $DB_NAME = $DB_PREFIX + $ProjectName + '_' + $Branch
 # 限制数据库名长度（MySQL 最大 64 字符）
@@ -149,7 +155,14 @@ if (-not $IsMain) {
             Write-OK "远程分支已存在，无需创建"
         } else {
             $localExists = git branch --list $env:ORCA_WORKSPACE_NAME 2>$null
-            if (-not $localExists) { git branch $env:ORCA_WORKSPACE_NAME 2>$null }
+            if (-not $localExists) {
+                # 分支起点：优先 ORCA_BASE_BRANCH 环境变量（自主选择），
+                # 其次 origin/develop（与 orca 侧 worktreeBaseRef 默认一致），都不存在则回退 origin/main
+                $baseRef = "origin/develop"
+                if ($env:ORCA_BASE_BRANCH) { $baseRef = $env:ORCA_BASE_BRANCH }
+                if (-not (git ls-remote --heads origin ($baseRef -replace '^origin/','') 2>$null)) { $baseRef = "origin/main" }
+                git branch $env:ORCA_WORKSPACE_NAME $baseRef 2>$null
+            }
             git push -u origin $env:ORCA_WORKSPACE_NAME 2>&1 | Out-Null
             if ($LASTEXITCODE -eq 0) {
                 Write-OK "远程分支创建成功"
@@ -235,11 +248,51 @@ if (Test-Path $sourceFile) {
     $targetDir = Split-Path $targetFile -Parent
     if (-not (Test-Path $targetDir)) { New-Item -ItemType Directory -Path $targetDir -Force | Out-Null }
     Copy-Item $sourceFile $targetFile -Force
-    # 用 .NET 显式无 BOM 的 UTF8 追加：PS 5.1 的 -Encoding UTF8 会写入 BOM，违反项目 UTF-8 无 BOM 规范
-    [System.IO.File]::AppendAllText($targetFile, "`r`n# -- Orca 分支数据库 --`r`nDB_NAME: $DB_NAME`r`n", (New-Object System.Text.UTF8Encoding($false)))
-    Write-OK "配置已复制 + 注入 DB_NAME=$DB_NAME"
+
+    # 幂等注入：先清掉历史注入段（DB_NAME/SERVER_PORT/APP_BASE_API 由本脚本统一管理），再追加新段
+    # 用 .NET 显式无 BOM 的 UTF8 读写：PS 5.1 的 -Encoding UTF8 会写入 BOM，违反项目 UTF-8 无 BOM 规范
+    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+    $lines = [System.IO.File]::ReadAllLines($targetFile)
+    $clean = $lines | Where-Object { $_ -notmatch '^# -- Orca 分支' -and $_ -notmatch '^(DB_NAME|SERVER_PORT|APP_BASE_API):' }
+    [System.IO.File]::WriteAllLines($targetFile, $clean, $utf8NoBom)
+    $injectBlock = "`r`n# -- Orca 分支专属配置（自动生成，勿手改） --`r`nDB_NAME: $DB_NAME`r`nSERVER_PORT: $BranchPort`r`nAPP_BASE_API: http://127.0.0.1:$BranchPort`r`n"
+    [System.IO.File]::AppendAllText($targetFile, $injectBlock, $utf8NoBom)
+    Write-OK "配置已复制 + 注入 DB_NAME=$DB_NAME, SERVER_PORT=$BranchPort"
 } else {
     Write-Warn "未找到源配置文件: $sourceFile"
+}
+
+# ================================================================
+# Part D: 分支 upstream 桥接（失败静默降级，不影响启动）
+# ================================================================
+# 背景: orca 创建的本地分支名带 remote owner 前缀（如 linxibo2022-web/dev），
+# 而远程分支名为纯 workspace 名（dev），两者不同名导致 VS Code 显示"发布分支"，
+# 误点会把 owner/分支 这个新名字推到 GitHub。这里把 worktree 实际分支的
+# upstream 指到 origin/<workspace>，让提交按钮、push/pull 都走对远程分支。
+Write-Step "D" "分支 upstream 桥接"
+
+if (-not $IsMain) {
+    try {
+        Push-Location $env:ORCA_WORKTREE_PATH -ErrorAction Stop
+        $worktreeBranch = git rev-parse --abbrev-ref HEAD 2>$null
+        if ($worktreeBranch -and $worktreeBranch -ne "HEAD" -and $worktreeBranch -ne $env:ORCA_WORKSPACE_NAME) {
+            $remoteHead = git ls-remote --heads origin $env:ORCA_WORKSPACE_NAME 2>$null
+            if ($remoteHead) {
+                git branch --set-upstream-to="origin/$env:ORCA_WORKSPACE_NAME" $worktreeBranch 2>$null
+                if ($LASTEXITCODE -eq 0) {
+                    Write-OK "upstream 已桥接: $worktreeBranch -> origin/$env:ORCA_WORKSPACE_NAME"
+                } else {
+                    Write-Warn "upstream 桥接失败（不影响启动，VS Code 将显示发布分支）"
+                }
+            }
+        } else {
+            Write-Info "本地分支名与远程一致或未检出，跳过桥接"
+        }
+    } catch {
+        Write-Warn "Part D 跳过: $_"
+    } finally {
+        Pop-Location -ErrorAction SilentlyContinue
+    }
 }
 
 # ================================================================
@@ -247,6 +300,7 @@ if (Test-Path $sourceFile) {
 # ================================================================
 Write-DoneBox @{
     "DB"     = $DB_NAME
+    "Port"   = $BranchPort
     "Branch" = $env:ORCA_WORKSPACE_NAME
 }
 exit 0
