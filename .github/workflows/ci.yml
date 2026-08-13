@@ -1,4 +1,5 @@
 # CI — 仅 PR 触发，push 不跑
+# ⚠️ 与 .gitlab-ci.yml 保持同等逻辑 — 修改本文件时必须同步检查另一份
 name: CI
 
 on:
@@ -6,11 +7,14 @@ on:
 
 jobs:
   # 后端单元测试
-  # 注意：不配 Redis service，因为 LangChain4jModuleTest 通过
-  # spring.autoconfigure.exclude 排除了 Redisson 自动配置（该测试用内存存储，不需要 Redis）
+  # 测试走 application-test.yml（test profile）：需要 MySQL（数据源）+ Redis（完整上下文含 Redisson）
   backend-test:
     runs-on: ubuntu-latest
     container: maven:3.9-eclipse-temurin-21
+    env:
+      # 容器化 job：service 容器通过 docker 网络主机名访问（非 127.0.0.1），与 GitLab 侧 variables 一致
+      DB_HOST: mysql
+      REDIS_HOST: redis
     services:
       mysql:
         image: mysql:8.0
@@ -21,6 +25,11 @@ jobs:
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=5
     steps:
       - uses: actions/checkout@v4
 
@@ -32,8 +41,10 @@ jobs:
           restore-keys: maven-
 
       - name: Run backend tests
-        # -pl ruoyi-modules/ruoyi-business: 测试 business 模块及其所有依赖链
-        run: mvn -DskipTests=false test -pl ruoyi-modules/ruoyi-business -am
+        # -pl ruoyi-admin -am: 测试 admin 及其依赖链（business/system/common）。
+        # surefire groups=${profiles.active}=dev，只跑 @Tag("dev") 的测试；
+        # @Tag("integration") 的集成测试需 Redis 等完整环境，已在 excludedGroups 排除
+        run: mvn -DskipTests=false test -pl ruoyi-admin -am
 
   # 前端 Vitest 单元测试
   # 纯逻辑测试，不依赖后端/数据库/浏览器
@@ -110,6 +121,8 @@ jobs:
           for i in $(seq 1 60); do
             curl -s http://localhost:$BACKEND_PORT > /dev/null 2>&1 && echo "后端就绪" && break || sleep 2
           done
+          # 循环结束后仍未就绪则直接失败，避免后续步骤报误导性错误
+          curl -s http://localhost:$BACKEND_PORT > /dev/null || { echo "❌ 后端 120 秒内未就绪"; exit 1; }
 
       # 后端启动后 Flyway 已写入 sys_config 表，关闭验证码以便自动化登录
       - name: Disable captcha
@@ -117,6 +130,10 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq mysql-client
           mysql -h 127.0.0.1 -u root -proot erp_sys \
             -e "UPDATE sys_config SET config_value='false' WHERE config_key='system.security.captcha-enabled';"
+          # 校验关闭结果：0 行匹配或值异常立即失败，避免 E2E 登录超时后误导排查方向
+          captcha_value=$(mysql -h 127.0.0.1 -u root -proot -N erp_sys \
+            -e "SELECT config_value FROM sys_config WHERE config_key='system.security.captcha-enabled';")
+          [ "$captcha_value" = "false" ] || { echo "❌ 验证码关闭失败（当前值: ${captcha_value:-无此配置项}）"; exit 1; }
           echo "验证码已关闭"
 
       - uses: pnpm/action-setup@v4
@@ -139,6 +156,8 @@ jobs:
           for i in $(seq 1 30); do
             curl -s http://localhost:$FRONTEND_PORT > /dev/null 2>&1 && echo "前端就绪" && break || sleep 2
           done
+          # 循环结束后仍未就绪则直接失败，避免后续步骤报误导性错误
+          curl -s http://localhost:$FRONTEND_PORT > /dev/null || { echo "❌ 前端 60 秒内未就绪"; exit 1; }
 
       - name: Run Playwright E2E
         run: cd plus-ui && PLAYWRIGHT_BASE_URL=http://localhost:$FRONTEND_PORT pnpm test:e2e

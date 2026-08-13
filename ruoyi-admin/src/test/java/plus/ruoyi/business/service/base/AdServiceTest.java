@@ -7,6 +7,7 @@ import plus.ruoyi.business.base.domain.vo.AdVo;
 import plus.ruoyi.business.base.service.IAdService;
 import plus.ruoyi.common.mybatis.core.page.PageQuery;
 import plus.ruoyi.common.mybatis.core.page.PageResult;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional // 关键!测试结束自动回滚
 @DisplayName("广告配置服务测试")
+@Tag("dev")
 public class AdServiceTest extends BaseServiceTest {
 
     @Autowired

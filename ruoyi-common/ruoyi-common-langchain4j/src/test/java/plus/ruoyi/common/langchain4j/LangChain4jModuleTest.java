@@ -44,8 +44,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @Tag("dev")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 // langchain4j.yml 默认 enabled=false（生产场景需用环境变量显式打开），测试中强制启用，
-// 并把 memory-store-type 改为本地内存，避免单测时依赖 Redis
-// Redisson/lock4j 自动配置已在 TestApplication 统一排除，此处无需重复
+// 并把 memory-store-type 改为本地内存，不依赖 Redis 存会话
+// 完整 Spring 上下文（含 Redisson）由 application-test.yml 的 test profile 提供，
+// Redis/MySQL 由 CI backend-test 的 service 容器供给（容器内经 DB_HOST/REDIS_HOST 主机名访问）
 @TestPropertySource(properties = {
     "langchain4j.enabled=true",
     "langchain4j.chat.memory-store-type=memory"

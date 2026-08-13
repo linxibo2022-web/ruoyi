@@ -69,6 +69,10 @@ $DB_USER     = if ($env:DB_USER)     { $env:DB_USER }     else { "root" }
 $DB_PREFIX   = if ($env:DB_PREFIX)   { $env:DB_PREFIX }   else { "erp_sys_" }
 $DB_PASSWORD = if ($env:DB_PASSWORD) { $env:DB_PASSWORD } else { "root" }
 
+# 密码改用 MYSQL_PWD 环境变量传递，避免出现在进程命令行中（仅本进程及子进程可见）
+$env:MYSQL_PWD = $DB_PASSWORD
+# 所有 mysql 调用显式携带 -h/-P 参数（PS 5.1 不支持 splatting 混合参数，故不用参数数组）
+
 # ---- 解析项目名称 ----
 # 优先级: ORCA_PROJECT_NAME > 远程仓库名 > 根目录名
 if ($env:ORCA_PROJECT_NAME) {
@@ -96,7 +100,11 @@ $DB_NAME = $DB_PREFIX + $ProjectName + '_' + $Branch
 # 限制数据库名长度（MySQL 最大 64 字符）
 if ($DB_NAME.Length -gt 64) {
     $hash = [BitConverter]::ToString([System.Security.Cryptography.MD5]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($DB_NAME))).Replace('-','').Substring(0,8).ToLower()
-    $DB_NAME = ($DB_PREFIX + $ProjectName).Substring(0, 55 - $hash.Length) + '_' + $hash
+    # 前缀部分可能短于截断长度（如 erp_sys_develop），直接 Substring 会抛异常，先判断长度
+    $head = $DB_PREFIX + $ProjectName
+    $maxHead = 55 - $hash.Length
+    if ($head.Length -gt $maxHead) { $head = $head.Substring(0, $maxHead) }
+    $DB_NAME = $head + '_' + $hash
     Write-Warn "数据库名超长，已截断: $DB_NAME"
 }
 
@@ -116,7 +124,7 @@ try {
     exit 1
 }
 
-$preCheckResult = & $mysqlPath -u $DB_USER "--password=$DB_PASSWORD" -e "SELECT 1;" 2>&1
+$preCheckResult = & $mysqlPath -h $DB_HOST -P $DB_PORT -u $DB_USER -e "SELECT 1;" 2>&1
 if ($LASTEXITCODE -ne 0) {
     Write-Error "mysql 连接失败 ($DB_USER@$DB_HOST`:$DB_PORT)"
     Write-Info "错误详情: $preCheckResult"
@@ -130,13 +138,12 @@ Write-OK "mysql 连接正常"
 # ================================================================
 Write-Step "A" "Git 分支检查与创建"
 
-Write-Info "git fetch --prune..."
-
-git fetch --prune origin 2>$null
 $IsMain = ($Branch -eq "main" -or $Branch -eq "master")
 if (-not $IsMain) {
     try {
         Push-Location $env:ORCA_ROOT_PATH -ErrorAction Stop
+        Write-Info "git fetch --prune..."
+        git fetch --prune origin 2>$null
         $remoteExists = git ls-remote --heads origin $env:ORCA_WORKSPACE_NAME 2>$null
         if ($remoteExists) {
             Write-OK "远程分支已存在，无需创建"
@@ -168,7 +175,7 @@ Write-Info "目标库: $DB_NAME"
 
 # 建库
 $createSql = "CREATE DATABASE IF NOT EXISTS ``$DB_NAME`` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
-& $mysqlPath --default-character-set=utf8mb4 -u $DB_USER "--password=$DB_PASSWORD" -e $createSql 2>&1 | Out-Null
+& $mysqlPath -h $DB_HOST -P $DB_PORT -u $DB_USER --default-character-set=utf8mb4 -e $createSql 2>&1 | Out-Null
 if ($LASTEXITCODE -ne 0) {
     Write-Error "创建数据库失败！请检查 MySQL 连接与权限"
     exit 1
@@ -177,9 +184,15 @@ Write-OK "数据库就绪"
 
 # 检查是否空库，是则执行 Flyway
 $countSql = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '$DB_NAME';"
-$result = & $mysqlPath -u $DB_USER "--password=$DB_PASSWORD" -N -e $countSql 2>&1
+$result = & $mysqlPath -h $DB_HOST -P $DB_PORT -u $DB_USER -N -e $countSql 2>&1
 $tableCount = 0
-if ($LASTEXITCODE -eq 0 -and $result) { $tableCount = [int](($result -join '') -replace '\D', '') }
+if ($LASTEXITCODE -ne 0) {
+    # 查询失败不能当作空库处理，否则会误对已有数据的库执行全量迁移
+    Write-Error "表计数查询失败，无法判断是否空库，已中止"
+    Write-Info "错误详情: $result"
+    exit 1
+}
+if ($result) { $tableCount = [int](($result -join '') -replace '\D', '') }
 
 if ($tableCount -gt 0) {
     Write-Warn "已有 $tableCount 张表，跳过 Flyway 迁移"
@@ -193,7 +206,7 @@ if ($tableCount -gt 0) {
         foreach ($f in $files) {
             $idx++
             $sqlFile = $f.FullName
-            $proc = Start-Process -FilePath $mysqlPath -ArgumentList "--default-character-set=utf8mb4", "-u", $DB_USER, "--password=$DB_PASSWORD", $DB_NAME -RedirectStandardInput $sqlFile -NoNewWindow -Wait -PassThru
+            $proc = Start-Process -FilePath $mysqlPath -ArgumentList "-h", $DB_HOST, "-P", $DB_PORT, "-u", $DB_USER, "--default-character-set=utf8mb4", $DB_NAME -RedirectStandardInput $sqlFile -NoNewWindow -Wait -PassThru
             if ($proc.ExitCode -ne 0) {
                 Write-Warn "[$idx/$total] $($f.Name) — 导入失败 (exit=$($proc.ExitCode))"
             } else {
@@ -222,7 +235,8 @@ if (Test-Path $sourceFile) {
     $targetDir = Split-Path $targetFile -Parent
     if (-not (Test-Path $targetDir)) { New-Item -ItemType Directory -Path $targetDir -Force | Out-Null }
     Copy-Item $sourceFile $targetFile -Force
-    Add-Content -Path $targetFile -Value "`r`n# -- Orca 分支数据库 --`r`nDB_NAME: $DB_NAME`r`n" -Encoding UTF8
+    # 用 .NET 显式无 BOM 的 UTF8 追加：PS 5.1 的 -Encoding UTF8 会写入 BOM，违反项目 UTF-8 无 BOM 规范
+    [System.IO.File]::AppendAllText($targetFile, "`r`n# -- Orca 分支数据库 --`r`nDB_NAME: $DB_NAME`r`n", (New-Object System.Text.UTF8Encoding($false)))
     Write-OK "配置已复制 + 注入 DB_NAME=$DB_NAME"
 } else {
     Write-Warn "未找到源配置文件: $sourceFile"

@@ -8,6 +8,7 @@ import plus.ruoyi.system.core.domain.vo.SysDeptVo;
 import plus.ruoyi.system.core.service.ISysDeptService;
 import plus.ruoyi.common.mybatis.core.page.PageQuery;
 import plus.ruoyi.common.mybatis.core.page.PageResult;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional
 @DisplayName("部门管理服务测试")
+@Tag("dev")
 public class SysDeptServiceTest extends BaseServiceTest {
 
     @Autowired
@@ -98,7 +100,7 @@ public class SysDeptServiceTest extends BaseServiceTest {
     @DisplayName("测试list-按部门状态查询")
     public void testListByStatus() {
         SysDeptBo queryBo = new SysDeptBo();
-        queryBo.setStatus("0"); // 查询正常状态的部门
+        queryBo.setStatus("1"); // 查询正常状态的部门（项目规范：1=正常 0=停用）
 
         List<SysDeptVo> deptList = DataPermissionHelper.ignore(() -> deptService.list(queryBo));
 
@@ -107,7 +109,7 @@ public class SysDeptServiceTest extends BaseServiceTest {
 
         // 验证所有部门状态都是正常
         deptList.forEach(dept -> {
-            assertEquals("0", dept.getStatus(), "部门状态应该是正常");
+            assertEquals("1", dept.getStatus(), "部门状态应该是正常");
         });
     }
 

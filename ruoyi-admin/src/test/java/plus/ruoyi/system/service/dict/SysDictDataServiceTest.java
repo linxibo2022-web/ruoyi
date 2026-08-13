@@ -6,6 +6,7 @@ import plus.ruoyi.system.dict.domain.vo.SysDictDataVo;
 import plus.ruoyi.system.dict.service.ISysDictDataService;
 import plus.ruoyi.common.mybatis.core.page.PageQuery;
 import plus.ruoyi.common.mybatis.core.page.PageResult;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional
 @DisplayName("字典数据服务测试")
+@Tag("dev")
 public class SysDictDataServiceTest extends BaseServiceTest {
 
     @Autowired

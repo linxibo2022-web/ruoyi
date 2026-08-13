@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("dev")
 @DisplayName("部门管理接口集成测试")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Tag("integration")
 public class SysDeptIntegrationTest extends BaseControllerTest {
 
     @Autowired

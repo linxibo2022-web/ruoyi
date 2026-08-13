@@ -4,6 +4,7 @@ import plus.ruoyi.common.test.base.BaseServiceTest;
 import plus.ruoyi.system.core.domain.bo.SysMenuBo;
 import plus.ruoyi.system.core.domain.vo.SysMenuVo;
 import plus.ruoyi.system.core.service.ISysMenuService;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional
 @DisplayName("菜单管理服务测试")
+@Tag("dev")
 public class SysMenuServiceTest extends BaseServiceTest {
 
     @Autowired

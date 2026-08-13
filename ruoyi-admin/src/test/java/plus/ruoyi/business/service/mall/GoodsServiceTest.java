@@ -6,6 +6,7 @@ import plus.ruoyi.business.mall.domain.vo.GoodsVo;
 import plus.ruoyi.business.mall.service.IGoodsService;
 import plus.ruoyi.common.mybatis.core.page.PageQuery;
 import plus.ruoyi.common.mybatis.core.page.PageResult;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional
 @DisplayName("商品服务测试")
+@Tag("dev")
 public class GoodsServiceTest extends BaseServiceTest {
 
     @Autowired
