@@ -314,6 +314,15 @@ export {}
         mkdirSync(outputDir, { recursive: true })
       }
 
+      // 内容未变化时跳过写入：避免每次启动 dev server 都重写文件，
+      // 否则 LF/CRLF 行尾差异会让 git 报出"无实际内容的修改"
+      if (existsSync(outputFilePath) && readFileSync(outputFilePath, 'utf-8') === typeContent) {
+        if (showLog) {
+          console.log(`图标类型未变化，跳过生成: ${outputPath}`)
+        }
+        return
+      }
+
       writeFileSync(outputFilePath, typeContent, 'utf-8')
 
       if (showLog) {
