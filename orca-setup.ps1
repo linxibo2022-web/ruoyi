@@ -155,7 +155,14 @@ if (-not $IsMain) {
             Write-OK "远程分支已存在，无需创建"
         } else {
             $localExists = git branch --list $env:ORCA_WORKSPACE_NAME 2>$null
-            if (-not $localExists) { git branch $env:ORCA_WORKSPACE_NAME 2>$null }
+            if (-not $localExists) {
+                # 分支起点：优先 ORCA_BASE_BRANCH 环境变量（自主选择），
+                # 其次 origin/develop（与 orca 侧 worktreeBaseRef 默认一致），都不存在则回退 origin/main
+                $baseRef = "origin/develop"
+                if ($env:ORCA_BASE_BRANCH) { $baseRef = $env:ORCA_BASE_BRANCH }
+                if (-not (git ls-remote --heads origin ($baseRef -replace '^origin/','') 2>$null)) { $baseRef = "origin/main" }
+                git branch $env:ORCA_WORKSPACE_NAME $baseRef 2>$null
+            }
             git push -u origin $env:ORCA_WORKSPACE_NAME 2>&1 | Out-Null
             if ($LASTEXITCODE -eq 0) {
                 Write-OK "远程分支创建成功"
