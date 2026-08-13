@@ -1,8 +1,8 @@
 # 头脑风暴：CI 测试方案
 
 **创建时间**: 2026-08-13 01:29
-**最后更新**: 2026-08-13 01:29
-**状态**: P0 已实施，P1-P3 待定
+**最后更新**: 2026-08-13 02:25
+**状态**: P0 已实施；S1（测试边界重构，方案 C）已实施并本地验证；P1-P3 待定
 
 ---
 
@@ -72,14 +72,27 @@ PR #1（CI 简化为仅 PR/MR 触发）引入后，三个检查经历了 4 轮�
 **P3 按需**:
 5. E2E 冒烟扩模块（CRUD_PAGES 加配置对象）
 
+## S1 追加结论（评审后新增）
+
+**问题**: 方案评审发现 CI backend-test 实际覆盖与认知严重偏差（business 0 测试、admin 测试全不跑、无 tag 测试被 groups 过滤）。
+
+**选定方案 C（折中）**:
+1. CI 测试范围扩到 `-pl ruoyi-admin -am`，backend-test 补 redis service
+2. ServiceTest（test profile，需 MySQL+Redis）纳入 CI，补 `@Tag("dev")`
+3. integration 测试（dev profile，需完整环境）打 `@Tag("integration")` + surefire 排除，暂留本地/未来独立 job
+4. 若后续 integration CI 化：单独开 job 配 Redis，独立决策
+
+> 详见讨论记录「2026-08-13 S1 实施」。
+
 ## 风险与注意事项
 
 | 风险 | 应对策略 |
 |------|---------|
 | 两平台配置再次漂移 | 文件头注释"改一处同步另一处"，本次已发生验证码遗漏 |
-| Redisson 类名随库升级变化 | application-test.yml 为字符串配置，升级后跑一次 CI 即发现 |
 | JAR 名/端口随源码变更 | ci.yml env 块注释已指向 pom.xml / application.yml |
 | GitHub 强制 Node 24 | 观察 deprecation 警告，届时统一升 actions 版本 |
+| admin ServiceTest 含库数据假设（硬编码 ID 等） | 本地验证全绿不代表 CI 全新库全绿，首次 CI 运行需观察，失败按"测试数据假设问题"修测试而非排除 |
+| GitLab service 走 hostname（mysql/redis） | backend-test 已配 `DB_HOST`/`REDIS_HOST` 变量，新增中间件时同步检查 |
 
 ## 讨论记录
 
@@ -96,3 +109,23 @@ PR #1（CI 简化为仅 PR/MR 触发）引入后，三个检查经历了 4 轮�
 - 两平台文件头加"改一处同步另一处"提醒
 - P1 漂移提醒已完成；pnpm 锁版本用户决定暂缓（保持 version: latest）
 - P2/P3 未实施（编译产物复用、移动端检查等）
+
+### 2026-08-13 方案评审（design-review）
+对照实际落地代码逐维度审查，发现三大问题：
+- **S1 认知偏差**：CI backend-test 实际只跑依赖链上带 `@Tag("dev")` 的测试——business 模块 0 测试、ruoyi-admin 下 27 个 Service/Integration 测试全不在 `-pl` 范围、无 tag 的 100+ 工具类测试被 surefire `groups=dev` 过滤（僵尸化）
+- **S2 E2E 假绿**：TC-03 新增失败 `return` 不抛异常测试照样绿；多处软断言；删除/编辑依赖列表首行（首行是 admin 时必挂）
+- **M3/M4 健壮性**：验证码 UPDATE 无行数校验；GitLab 无中间件就绪等待
+
+### 2026-08-13 S1 实施（方案 C：折中——纳入 ServiceTest，integration 暂留本地）
+三方案对比：A 全量纳入（integration 从未见 CI 环境，dev profile 需 Redis 等完整环境，风险不可控）→ B 维持现状（业务零回归保障）→ **选 C** ✅
+
+实施内容：
+- CI backend-test 命令 `-pl ruoyi-modules/ruoyi-business -am` → `-pl ruoyi-admin -am`（覆盖 admin+全依赖链）
+- 两平台 backend-test 补 redis service（GitLab 加 `DB_HOST: mysql` / `REDIS_HOST: redis` 变量）
+- `application-test.yml`（common-test）：补测试数据源 + Redis 连接配置；**去掉 Redisson/lock4j exclude**（完整上下文含 CacheController 等 Bean 依赖 Redisson，由 CI redis service 提供）
+- surefire `excludedGroups` 加 `integration`（本地 `mvn test` 也不误跑需完整环境的集成测试）
+- 10 个 ServiceTest 补 `@Tag("dev")`；19 个 integration 补 `@Tag("integration")`（AuthIntegrationTest 原 dev tag 改 integration）
+- E2E 假绿重构（S2）：TC-03/05/07 硬断言；新增用户名用运行唯一值闭环搜索/编辑/删除；TC-02/04 接口 200 硬断言；select 选中首选项满足"角色"必填；验证码开启直接报错
+- 试跑暴露并修复 2 个测试 bug：`OrderServiceTest` 同毫秒订单号撞唯一索引（加 nanoTime 后缀）；`SysDeptServiceTest` 状态语义写反（项目规范 1=正常，测试查 `"0"`）
+
+验证：本地全量 `mvn test -pl ruoyi-admin -am` BUILD SUCCESS（admin 11 个 ServiceTest 77 方法全绿，integration 确认未执行）；CI 首次运行待观察

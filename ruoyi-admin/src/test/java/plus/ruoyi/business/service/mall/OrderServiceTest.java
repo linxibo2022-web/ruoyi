@@ -6,6 +6,7 @@ import plus.ruoyi.business.mall.domain.vo.OrderVo;
 import plus.ruoyi.business.mall.service.IOrderService;
 import plus.ruoyi.common.mybatis.core.page.PageQuery;
 import plus.ruoyi.common.mybatis.core.page.PageResult;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional
 @DisplayName("订单服务测试")
+@Tag("dev")
 public class OrderServiceTest extends BaseServiceTest {
 
     @Autowired
@@ -190,7 +192,8 @@ public class OrderServiceTest extends BaseServiceTest {
      */
     private OrderBo createTestOrder(String suffix) {
         OrderBo order = new OrderBo();
-        order.setOrderNo("ORDER" + System.currentTimeMillis());
+        // 订单号加 nanoTime 后缀，避免同一毫秒内连续创建两条订单撞唯一索引 uk_order_no
+        order.setOrderNo("ORDER" + System.currentTimeMillis() + "_" + System.nanoTime());
         order.setUserId(1L); // 默认用户ID
         order.setGoodsId(1L);
         order.setGoodsName("测试商品_" + suffix);

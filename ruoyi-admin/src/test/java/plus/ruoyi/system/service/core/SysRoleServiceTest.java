@@ -8,6 +8,7 @@ import plus.ruoyi.system.core.domain.vo.SysRoleVo;
 import plus.ruoyi.system.core.service.ISysRoleService;
 import plus.ruoyi.common.mybatis.core.page.PageQuery;
 import plus.ruoyi.common.mybatis.core.page.PageResult;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional
 @DisplayName("角色管理服务测试")
+@Tag("dev")
 public class SysRoleServiceTest extends BaseServiceTest {
 
     @Autowired

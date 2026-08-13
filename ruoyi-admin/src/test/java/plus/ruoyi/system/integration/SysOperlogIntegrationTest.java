@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev")
 @DisplayName("操作日志接口集成测试")
+@Tag("integration")
 public class SysOperlogIntegrationTest extends BaseControllerTest {
 
     @Autowired

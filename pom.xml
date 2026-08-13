@@ -457,8 +457,8 @@
                     <argLine>-Dfile.encoding=UTF-8 -XX:+EnableDynamicAgentLoading</argLine>
                     <!-- 执行@Tag注解标注的指定环境的测试方法 -->
                     <groups>${profiles.active}</groups>
-                    <!-- 排除标签 -->
-                    <excludedGroups>exclude</excludedGroups>
+                    <!-- 排除标签：exclude=临时跳过，integration=需要完整环境(Redis等)的集成测试，默认不随 mvn test 执行 -->
+                    <excludedGroups>exclude,integration</excludedGroups>
                 </configuration>
             </plugin>
             <!-- 统一版本号管理 -->

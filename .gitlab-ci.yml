@@ -19,9 +19,14 @@ backend-test:
   image: maven:3.9-eclipse-temurin-21
   services:
     - mysql:8.0
+    # 测试走 application-test.yml（test profile）：需要 Redis（完整上下文含 Redisson）
+    - redis:7-alpine
   variables:
     MYSQL_ROOT_PASSWORD: root
     MYSQL_DATABASE: erp_sys
+    # GitLab service 通过 hostname 访问（非 localhost），测试数据源需指向 mysql 主机
+    DB_HOST: mysql
+    REDIS_HOST: redis
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   before_script:
@@ -30,7 +35,8 @@ backend-test:
     # GitLab services 不做健康检查等待，需显式等待 MySQL 就绪（GitHub 由 health-cmd 保证）
     - for i in $(seq 1 30); do mysqladmin ping -h mysql -u root -proot > /dev/null 2>&1 && echo "MySQL 就绪" && break || sleep 2; done
     - mysqladmin ping -h mysql -u root -proot > /dev/null || { echo "❌ MySQL 60 秒内未就绪"; exit 1; }
-    - mvn -DskipTests=false test -pl ruoyi-modules/ruoyi-business -am
+    # -pl ruoyi-admin -am: 测试 admin 及其依赖链；surefire 只跑 @Tag("dev")，integration 已排除（同 GitHub）
+    - mvn -DskipTests=false test -pl ruoyi-admin -am
 
 # 前端 Vitest 单元测试
 vitest:

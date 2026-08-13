@@ -18,7 +18,6 @@ import plus.ruoyi.helper.TestLoginHelper;
 
 import java.time.Duration;
 
-import org.junit.jupiter.api.Tag;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author 抓蛙师
  */
 @Slf4j
-@Tag("dev")
+@Tag("integration")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev")
 @DisplayName("认证接口集成测试")

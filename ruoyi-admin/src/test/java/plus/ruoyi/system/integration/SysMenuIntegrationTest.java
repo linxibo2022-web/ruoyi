@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("dev")
 @DisplayName("菜单管理接口集成测试")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Tag("integration")
 public class SysMenuIntegrationTest extends BaseControllerTest {
 
     @Autowired

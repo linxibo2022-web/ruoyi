@@ -40,8 +40,9 @@ import org.springframework.test.context.ActiveProfiles;
  * }
  * </pre>
  * <p>
- * ⚠️ 本基类激活了 "test" profile，自动排除 Redisson/lock4j（见 application-test.yml）。
- * 需要 Redis/Redisson 的测试可覆盖：{@code @ActiveProfiles("dev")}
+ * ⚠️ 本基类激活 "test" profile（见 application-test.yml），其中配置了测试数据源与 Redis 连接，
+ * 依赖 MySQL/Redis 等中间件（CI backend-test 已配套启动 mysql/redis service）。
+ * 需要完整 dev 环境（Redis 等）的集成测试请使用 {@code @Tag("integration")} + {@code @ActiveProfiles("dev")}。
  * </p>
  *
  * @author 抓蛙师

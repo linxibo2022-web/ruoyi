@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev")
 @DisplayName("在线用户接口集成测试")
+@Tag("integration")
 public class SysUserOnlineIntegrationTest extends BaseControllerTest {
 
     @Autowired

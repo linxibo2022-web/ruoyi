@@ -7,8 +7,7 @@ on:
 
 jobs:
   # 后端单元测试
-  # 注意：不配 Redis service，因为 LangChain4jModuleTest 通过
-  # spring.autoconfigure.exclude 排除了 Redisson 自动配置（该测试用内存存储，不需要 Redis）
+  # 测试走 application-test.yml（test profile）：需要 MySQL（数据源）+ Redis（完整上下文含 Redisson）
   backend-test:
     runs-on: ubuntu-latest
     container: maven:3.9-eclipse-temurin-21
@@ -22,6 +21,11 @@ jobs:
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=5
     steps:
       - uses: actions/checkout@v4
 
@@ -33,8 +37,10 @@ jobs:
           restore-keys: maven-
 
       - name: Run backend tests
-        # -pl ruoyi-modules/ruoyi-business: 测试 business 模块及其所有依赖链
-        run: mvn -DskipTests=false test -pl ruoyi-modules/ruoyi-business -am
+        # -pl ruoyi-admin -am: 测试 admin 及其依赖链（business/system/common）。
+        # surefire groups=${profiles.active}=dev，只跑 @Tag("dev") 的测试；
+        # @Tag("integration") 的集成测试需 Redis 等完整环境，已在 excludedGroups 排除
+        run: mvn -DskipTests=false test -pl ruoyi-admin -am
 
   # 前端 Vitest 单元测试
   # 纯逻辑测试，不依赖后端/数据库/浏览器

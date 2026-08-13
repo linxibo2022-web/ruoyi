@@ -8,6 +8,7 @@ import plus.ruoyi.system.core.domain.vo.SysUserVo;
 import plus.ruoyi.system.core.service.ISysUserService;
 import plus.ruoyi.common.mybatis.core.page.PageQuery;
 import plus.ruoyi.common.mybatis.core.page.PageResult;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional // 关键!测试结束自动回滚,不会产生脏数据
 @DisplayName("用户服务测试")
+@Tag("dev")
 public class SysUserServiceTest extends BaseServiceTest {
 
     @Autowired

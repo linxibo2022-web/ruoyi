@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DisplayName("统计接口集成测试")
+@Tag("integration")
 public class StatisticsIntegrationTest extends BaseControllerTest {
 
     @Autowired

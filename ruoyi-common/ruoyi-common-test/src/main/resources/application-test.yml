@@ -1,10 +1,23 @@
 # 测试环境专用配置 — BaseSpringTest 通过 @ActiveProfiles("test") 自动激活
-# 排除测试环境不需要的自动配置，避免依赖外部 Redis 等中间件
+# 依赖外部中间件（MySQL/Redis），CI backend-test 已配套启动 mysql/redis service
 spring:
-  autoconfigure:
-    exclude:
-      # Redisson 客户端 — 测试环境无 Redis
-      - org.redisson.spring.starter.RedissonAutoConfigurationV2
-      # lock4j 分布式锁 — 依赖 RedissonClient
-      - com.baomidou.lock.spring.boot.autoconfigure.LockAutoConfiguration
-      - com.baomidou.lock.spring.boot.autoconfigure.RedissonLockAutoConfiguration
+  # 测试环境数据源（与 application-dev.yml 主库同款默认值，可用环境变量覆盖）
+  # 不配的话 test profile 下 dynamic-datasource 找不到 primary 数据源
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    dynamic:
+      primary: master
+      strict: true
+      datasource:
+        master:
+          driverClassName: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://${DB_HOST:127.0.0.1}:${DB_PORT:3306}/${DB_NAME:erp_sys}?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+          username: ${DB_USERNAME:root}
+          password: ${DB_PASSWORD:root}
+  data:
+    redis:
+      # Redis 地址（端口/库等其余项走框架默认值，与 dev 配置一致）
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      database: ${REDIS_DATABASE:0}
+      timeout: 10s
