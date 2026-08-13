@@ -120,6 +120,10 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq mysql-client
           mysql -h 127.0.0.1 -u root -proot erp_sys \
             -e "UPDATE sys_config SET config_value='false' WHERE config_key='system.security.captcha-enabled';"
+          # 校验关闭结果：0 行匹配或值异常立即失败，避免 E2E 登录超时后误导排查方向
+          captcha_value=$(mysql -h 127.0.0.1 -u root -proot -N erp_sys \
+            -e "SELECT config_value FROM sys_config WHERE config_key='system.security.captcha-enabled';")
+          [ "$captcha_value" = "false" ] || { echo "❌ 验证码关闭失败（当前值: ${captcha_value:-无此配置项}）"; exit 1; }
           echo "验证码已关闭"
 
       - uses: pnpm/action-setup@v4

@@ -325,7 +325,7 @@ justauth:
   type:
     wechat_open:
       client-id: ${WECHAT_OPEN_CLIENT_ID:wx35778b6**f5b49ec}
-      client-secret: ${WECHAT_OPEN_CLIENT_SECRET:192dad9e7b482ddd7c5a987706bf1cb8}
+      client-secret: ${WECHAT_OPEN_CLIENT_SECRET:}
       redirect-uri: ${justauth.address}/socialCallback?source=wechat_open
     wechat_mp:
       client-id: ${WECHAT_MP_CLIENT_ID:10**********6}
@@ -338,7 +338,7 @@ justauth:
       agent-id: ${WECHAT_ENTERPRISE_AGENT_ID:1000002}
     gitee:
       client-id: ${GITEE_CLIENT_ID:91436b794**90d09c72c7daf85b959cfd5f215d67eea73acbf61b6b590751a98}
-      client-secret: ${GITEE_CLIENT_SECRET:02c6fcfd70342980cd8dd2f2c06c1a350645d76c754d7a264c4e125f9ba915ac}
+      client-secret: ${GITEE_CLIENT_SECRET:}
       redirect-uri: ${justauth.address}/socialCallback?source=gitee
     qq:
       client-id: ${QQ_CLIENT_ID:10**********6}

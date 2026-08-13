@@ -24,7 +24,12 @@ backend-test:
     MYSQL_DATABASE: erp_sys
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  before_script:
+    - apt-get update && apt-get install -y default-mysql-client
   script:
+    # GitLab services 不做健康检查等待，需显式等待 MySQL 就绪（GitHub 由 health-cmd 保证）
+    - for i in $(seq 1 30); do mysqladmin ping -h mysql -u root -proot > /dev/null 2>&1 && echo "MySQL 就绪" && break || sleep 2; done
+    - mysqladmin ping -h mysql -u root -proot > /dev/null || { echo "❌ MySQL 60 秒内未就绪"; exit 1; }
     - mvn -DskipTests=false test -pl ruoyi-modules/ruoyi-business -am
 
 # 前端 Vitest 单元测试
@@ -64,6 +69,9 @@ e2e:
     - curl -s http://localhost:5504 > /dev/null || { echo "❌ 后端 120 秒内未就绪"; exit 1; }
     # 后端启动后 Flyway 已写入 sys_config 表，关闭验证码以便自动化登录（service 用 hostname 访问）
     - mysql -h mysql -u root -proot erp_sys -e "UPDATE sys_config SET config_value='false' WHERE config_key='system.security.captcha-enabled';"
+    # 校验关闭结果：0 行匹配或值异常立即失败，避免 E2E 登录超时后误导排查方向
+    - captcha_value=$(mysql -h mysql -u root -proot -N erp_sys -e "SELECT config_value FROM sys_config WHERE config_key='system.security.captcha-enabled';")
+    - '["$captcha_value" = "false" ] || { echo "❌ 验证码关闭失败（当前值: ${captcha_value:-无此配置项}）"; exit 1; }'
     - echo "验证码已关闭"
     - cd plus-ui && pnpm install --frozen-lockfile && npx playwright install --with-deps chromium
     - VITE_APP_PORT=5173 nohup pnpm dev > /tmp/frontend.log 2>&1 &

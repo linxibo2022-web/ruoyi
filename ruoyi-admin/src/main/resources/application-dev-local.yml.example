@@ -45,7 +45,7 @@ DB_PASSWORD: 你的MySQL密码
 # MAIL_PASSWORD: 你的邮箱授权码
 # MAIL_FROM: xxx@163.com
 
-# OAuth 第三方登录（按需配置）
+# OAuth 第三方登录（按需配置；团队公共 secret 已存于 orca-local-config，模板不写真实值）
 # GITEE_CLIENT_ID: 你的ClientId
 # GITEE_CLIENT_SECRET: 你的ClientSecret
 # WECHAT_OPEN_CLIENT_ID: 你的AppId
