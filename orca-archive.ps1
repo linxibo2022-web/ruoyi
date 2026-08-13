@@ -70,6 +70,10 @@ $DB_PREFIX   = if ($env:DB_PREFIX)   { $env:DB_PREFIX }   else { "erp_sys_" }
 $DB_PASSWORD = if ($env:DB_PASSWORD) { $env:DB_PASSWORD } else { "root" }
 $ProtectedBranches = @("main", "master")
 
+# 密码改用 MYSQL_PWD 环境变量传递，避免出现在进程命令行中（仅本进程及子进程可见）
+$env:MYSQL_PWD = $DB_PASSWORD
+# 所有 mysql 调用显式携带 -h/-P 参数（PS 5.1 不支持 splatting 混合参数，故不用参数数组）
+
 # ---- 步骤 1: 解析数据库名 ----
 Write-Step "1/6" "解析数据库名称"
 
@@ -99,7 +103,11 @@ $DB_NAME = $DB_PREFIX + $ProjectName + '_' + $Branch
 # 限制数据库名长度（MySQL 最大 64 字符）
 if ($DB_NAME.Length -gt 64) {
     $hash = [BitConverter]::ToString([System.Security.Cryptography.MD5]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($DB_NAME))).Replace('-','').Substring(0,8).ToLower()
-    $DB_NAME = ($DB_PREFIX + $ProjectName).Substring(0, 55 - $hash.Length) + '_' + $hash
+    # 前缀部分可能短于截断长度（如 erp_sys_develop），直接 Substring 会抛异常，先判断长度
+    $head = $DB_PREFIX + $ProjectName
+    $maxHead = 55 - $hash.Length
+    if ($head.Length -gt $maxHead) { $head = $head.Substring(0, $maxHead) }
+    $DB_NAME = $head + '_' + $hash
 }
 
 Write-Detail "DB_NAME" $DB_NAME
@@ -114,7 +122,7 @@ try {
     exit 1
 }
 
-$preCheckResult = & $mysqlPath -u $DB_USER "--password=$DB_PASSWORD" -e "SELECT 1;" 2>&1
+$preCheckResult = & $mysqlPath -h $DB_HOST -P $DB_PORT -u $DB_USER -e "SELECT 1;" 2>&1
 if ($LASTEXITCODE -ne 0) {
     Write-Error "mysql 连接失败 ($DB_USER@$DB_HOST`:$DB_PORT)"
     Write-Info "错误详情: $preCheckResult"
@@ -158,10 +166,10 @@ Write-Step "3/6" "删除数据库"
 Write-Info "目标: $DB_NAME"
 
 $checkSql = "SHOW DATABASES LIKE '$DB_NAME';"
-$dbCheck = & $mysqlPath -u $DB_USER "--password=$DB_PASSWORD" -e $checkSql 2>&1
+$dbCheck = & $mysqlPath -h $DB_HOST -P $DB_PORT -u $DB_USER -e $checkSql 2>&1
 if ($dbCheck -match $DB_NAME) {
     $dropSql = "DROP DATABASE IF EXISTS ``$DB_NAME``;"
-    & $mysqlPath -u $DB_USER "--password=$DB_PASSWORD" -e $dropSql 2>&1
+    & $mysqlPath -h $DB_HOST -P $DB_PORT -u $DB_USER -e $dropSql 2>&1
     if ($LASTEXITCODE -ne 0) {
         Write-Error "删除失败 (exit=$LASTEXITCODE)"
         exit 1

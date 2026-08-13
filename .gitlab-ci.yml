@@ -1,5 +1,5 @@
 # GitLab CI — 仅 MR 触发，push 不跑
-# 与 .github/workflows/ci.yml 保持同等逻辑
+# ⚠️ 与 .github/workflows/ci.yml 保持同等逻辑 — 修改本文件时必须同步检查另一份
 
 stages:
   - test
@@ -52,7 +52,7 @@ e2e:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   before_script:
-    - apt-get update && apt-get install -y curl gnupg
+    - apt-get update && apt-get install -y curl gnupg default-mysql-client
     - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
     - apt-get install -y nodejs
     - corepack enable && corepack prepare pnpm@latest --activate
@@ -61,9 +61,14 @@ e2e:
     - mvn package -DskipTests -pl ruoyi-admin -am -q
     - nohup java -jar ruoyi-admin/target/erp_sys.jar --spring.profiles.active=dev > /tmp/backend.log 2>&1 &
     - for i in $(seq 1 60); do curl -s http://localhost:5504 > /dev/null 2>&1 && echo "后端就绪" && break || sleep 2; done
+    - curl -s http://localhost:5504 > /dev/null || { echo "❌ 后端 120 秒内未就绪"; exit 1; }
+    # 后端启动后 Flyway 已写入 sys_config 表，关闭验证码以便自动化登录（service 用 hostname 访问）
+    - mysql -h mysql -u root -proot erp_sys -e "UPDATE sys_config SET config_value='false' WHERE config_key='system.security.captcha-enabled';"
+    - echo "验证码已关闭"
     - cd plus-ui && pnpm install --frozen-lockfile && npx playwright install --with-deps chromium
     - VITE_APP_PORT=5173 nohup pnpm dev > /tmp/frontend.log 2>&1 &
     - for i in $(seq 1 30); do curl -s http://localhost:5173 > /dev/null 2>&1 && echo "前端就绪" && break || sleep 2; done
+    - curl -s http://localhost:5173 > /dev/null || { echo "❌ 前端 60 秒内未就绪"; exit 1; }
     - PLAYWRIGHT_BASE_URL=http://localhost:5173 pnpm test:e2e
   artifacts:
     when: always
@@ -73,3 +78,4 @@ e2e:
     expire_in: 7 days
   after_script:
     - cat /tmp/backend.log 2>/dev/null || true
+    - cat /tmp/frontend.log 2>/dev/null || true
