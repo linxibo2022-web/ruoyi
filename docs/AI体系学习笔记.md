@@ -1,6 +1,6 @@
 # AI 体系学习笔记（Claude Code 治理体系）
 
-> **最后更新**：2026-08-14 07:38（UTC+8）
+> **最后更新**：2026-08-15 01:54（UTC+8）
 > **用途**：系统性学习本项目的「AI 行为治理体系」与「项目开发体系」的学习笔记与进度台账
 > **如何继续学习**：下次会话说「读 docs/AI体系学习笔记.md，继续学习」，AI 会从此文恢复上下文
 
@@ -36,7 +36,7 @@
 
 | 事项 | 状态 |
 |------|------|
-| 写一个自定义 hook 实战 | ⬜ 待进行 |
+| 写一个自定义 hook 实战（教程已收录于 2.3 附，实战待做） | ⬜ 待进行 |
 | add-agent 规范空白（扩展 add-skill 或新建技能） | ⬜ 可选讨论 |
 
 ---
@@ -142,6 +142,48 @@ Sa-Token 登录认证（⭐⭐⭐⭐⭐）→ 多租户（⭐⭐⭐⭐⭐）→ 
 | UserPromptSubmit | skill-forced-eval.cjs | 每轮注入「强制技能激活流程」文本；内置跳过逻辑（恢复会话防死循环、斜杠命令不评估）；把技能激活率从 25% 提到 90%+；技能清单**硬编码**在脚本里 |
 | PreToolUse (Bash\|Write) | pre-tool-use.cjs | 三级判决：block（9 条危险正则：>nul、rm -rf 危险路径、drop database、强推 main 等）/ warn（4 条：force push、npm publish 等，continue+systemMessage）/ pass（默认交权限系统）；设计哲学：宁漏勿误伤、block 时给逃生通道（"请手动在终端运行"） |
 | Stop | stop.cjs | 回复结束时清理 Windows 误建的 nul 文件 |
+
+#### 📌 附：手把手写一个 Hook（四步闭环教程）
+
+**第 1 步：写脚本（三段骨架）**——任何 hook 都是这个结构：
+1. **读输入**：`fs.readFileSync(0, 'utf8')` 从 stdin 读事件 JSON，`JSON.parse` 解析；**铁律 fail-open**：读不到/解析失败一律 `exit(0)` 放行，hook 可以"不干活"，绝不能"不让路"
+2. **判断逻辑**：你的业务规则。skill-forced-eval 的两条跳过规则就是范例——恢复会话跳过（防死循环）、斜杠命令跳过（防重复）
+3. **输出协议**（决定命运）：
+
+| stdout 输出 | Claude Code 的反应 |
+|-------------|-------------------|
+| 纯文本 | 文本注入模型上下文（UserPromptSubmit 用法） |
+| `{"decision":"block","reason":"..."}` | 🔒 阻止工具执行（PreToolUse 用法） |
+| `{"continue":true,"systemMessage":"..."}` | 放行 + 警告注入上下文 |
+
+**第 2 步：注册**（`.claude/settings.json` 的 hooks 字段）——四个字段：**事件名**（生命周期插槽）→ **matcher**（`""`=全触发，`"Bash|Write"`=只拦指定工具）→ **command**（用 `$CLAUDE_PROJECT_DIR` 保证路径可靠）→ **timeout**（毫秒，防卡死）
+
+**第 3 步：本地测试**（不必启动 Claude Code）：
+```bash
+echo '{"prompt":"帮我开发一个优惠券功能"}' | node .claude/hooks/skill-forced-eval.cjs   # 预期打印评估流程
+echo '{"prompt":"/crud"}' | node .claude/hooks/skill-forced-eval.cjs                      # 预期无输出（跳过）
+```
+
+**第 4 步：运行时闭环**（11 步链路）：
+```
+① 用户输入 → ② UserPromptSubmit 事件 → ③ settings.json 命中注册 → ④ stdin 传入事件 JSON
+→ ⑤ 脚本跳过逻辑判断 → ⑥ stdout 打印指令 → ⑦ Claude Code 包装成 <system-reminder> 注入
+→ ⑧ 模型执行评估并展示理由 → ⑨ 调用 Skill 工具加载 SKILL.md → ⑩ 干活（Bash/Write 再过 pre-tool-use 第二道门）
+→ ⑪ 回复结束（Stop hook）→ 下一轮回到 ①
+```
+三个闭环关键点：⑧→⑨ 是 hook 的"目的地"（hook 拉闸、Skill 干活）；⑩ 是第二层保险（一个管"该做什么"，一个管"不许做什么"）；⑥ 每轮确定性注入 = 模型无法偷懒跳过。
+
+**最小可运行模板**（时区提醒 hook）：
+```javascript
+// .claude/hooks/tz-reminder.cjs
+const fs = require('fs');
+let input = {};
+try { input = JSON.parse(fs.readFileSync(0, 'utf8')); } catch { process.exit(0); }
+const prompt = (input.prompt || '');
+if (!/时间|日期|任务|进度|计划/.test(prompt)) process.exit(0);
+console.log('⏰ 提醒：所有日期时间使用东八区，获取当前时间执行：TZ=Asia/Shanghai date \'+%Y-%m-%d %H:%M\'');
+process.exit(0);
+```
 
 ### 2.4 第 3 层：Skills
 
