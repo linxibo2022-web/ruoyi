@@ -161,6 +161,7 @@ TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M'
 | `collaborating-with-gemini` | Gemini 协作/多模型/前端原型/UI 设计/样式审查 |
 | `task-tracker` | 任务跟踪、进度管理、继续任务 |
 | `writing-plans` | 写计划/制定计划/实施计划/拆解任务/计划层/把方案落地/详细步骤/可执行计划/计划文档/开发计划 |
+| `plan-executor` | 执行实施计划/自动执行任务/任务编排/父 Agent/子 Agent/依赖调度/并行开发/验收闭环/计划执行 |
 | `test-development` | 测试/单元测试/@Test/JUnit5/Mockito/断言/测试用例/测试覆盖率 |
 | `e2e-test-pc` | 自动化测试/E2E/端到端测试/浏览器测试/回归测试/冒烟测试/业务验收/UI 测试/后台测试/PC 测试/plus-ui 测试/aicoder 浏览器/测试报告 |
 | `e2e-test-mobile` | 移动端测试/H5 测试/小程序网页版测试/plus-uniapp 测试/移动端自动化/移动端 E2E/移动端回归/wd-paging 测试/WD UI 测试/移动端冒烟/uniapp 测试 |

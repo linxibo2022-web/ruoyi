@@ -94,6 +94,7 @@ const instructions = `## 强制技能激活流程（必须执行）
 - git-workflow: Git/提交/commit/分支
 - task-tracker: 任务跟踪/记录进度/继续任务/恢复上下文/多步骤开发/进度管理/任务归档
 - writing-plans: 写计划/制定计划/实施计划/拆解任务/任务拆解/计划层/把方案落地/详细步骤/可执行计划/计划文档/writing-plans/开发计划
+- plan-executor: 执行实施计划/自动执行任务/任务编排/父Agent/子Agent/依赖调度/并行开发/验收闭环/计划执行
 - tech-decision: 技术选型/方案对比
 - brainstorming: 头脑风暴/创意/方案设计
 - design-review: 方案评审/设计评审/审查方案/检查方案/评审设计/把关/设计审查/检查漏洞/方案检查/架构评审/需求评审
