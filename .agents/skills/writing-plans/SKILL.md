@@ -19,7 +19,7 @@ description: |
 本技能是框架 SDLC 链路上的「计划层」，补齐 `brainstorm`（产出方案）与 `dev-loop`（执行）之间长期缺失的一环。
 
 ```
-brainstorm(方案)  →  【writing-plans(计划)】  →  dev-loop(执行)  →  update-status(聚合)
+brainstorm(方案)  →  【writing-plans(计划契约)】  →  plan-executor(父 Agent 编排)  →  update-status(聚合)
 ```
 
 它把"方案级文档"翻译成**可被人或 `/dev-loop` 直接执行的细颗粒计划**：每个任务带精确文件路径、2-5 分钟勾选步骤、验证命令、规范提交信息。**产物落 `docs/tasks/active/*.md`**（复用 task-tracker 台账），从而 `update-status` 无需任何改造即可聚合，`dev-loop` 直接消费。
@@ -117,8 +117,46 @@ brainstorm(方案)  →  【writing-plans(计划)】  →  dev-loop(执行)  →
   - 步骤：{2-5 分钟勾选粒度}
   - 验证：{mvn -pl xxx -am compile / pnpm -C plus-ui build / e2e 截图对照原型}
   - 提交：{feat/fix(scope): ...}
-  - 依赖：{前置任务编号}
+- 依赖：{前置任务编号}
 ```
+
+## 面向 plan-executor 的任务契约（强制）
+
+当计划将由 `plan-executor` 自动执行时，以上最小条目还必须补全下列字段。目标是让执行 Agent 依据明确事实推进，禁止自行猜测业务需求。
+
+```markdown
+- [ ] T-03. {任务标题}（类型：CRUD编排 / 非CRUD骨架 / UI转码 / 配置）
+  - 任务目标：{可验证的业务结果，不写泛泛的“完成开发”}
+  - 前置条件：{依赖任务完成状态、运行环境、必要数据}
+  - 依赖：{上游任务 ID；无则写“无”}
+  - 后继任务：{直接依赖本任务的任务 ID；无则写“无”}
+  - 执行模式：串行 / 并行组 P{n}
+  - 文件所有权：{本任务唯一可修改的精确路径或目录}
+  - 共享契约：{DTO、接口、表、路由等；无则写“无”}
+  - 允许改动：{文件、配置或数据的明确范围}
+  - 禁止改动：{不得触及的模块、公共契约或数据}
+  - 实施步骤：{2-5 分钟粒度的可执行步骤}
+  - 测试标准：{测试类、场景、输入、预期结果；无测试需说明原因}
+  - 验收标准：{机器可验证的断言，不得只写“功能正常”}
+  - 验证命令：{精确命令、预期退出码和关键输出}
+  - 审查清单：{本任务专属约束 + 必须通过的 check 项}
+  - 失败处理边界：{允许自动修复的范围、最大重试次数}
+  - 完成证据：{测试输出、检查结果、受影响文件清单}
+  - 提交：{feat/fix(scope): ...}
+```
+
+### 依赖与并行规则
+
+- 依赖必须构成有向无环图；计划生成时应检查循环依赖和缺失任务 ID。
+- 只有依赖全部完成、文件所有权不重叠、共享契约不冲突的任务才可放入同一并行组。
+- 建表、数据迁移、公共 DTO/API、字典/菜单、共享路由和最终集成验证默认串行。
+- 每个任务的验收标准必须由计划级架构契约或需求级成功标准推导；任务级标准可被父 Agent 按上位契约自动重基线，但不得降低上位成功标准。
+
+### 低 Token 计划原则
+
+- 每个任务只保留与自身相关的文件、命令、测试和契约，禁止复制整份需求或通用规范。
+- 标准 CRUD 继续只写 codegen 编排；非 CRUD 只写必要骨架，避免在计划中重复完整代码。
+- 默认不把 E2E 写为执行门禁；仅当需求明确要求 UI 自动化验收时，才单独声明其前置条件和成本。
 
 ---
 
@@ -173,7 +211,7 @@ brainstorm(方案)  →  【writing-plans(计划)】  →  dev-loop(执行)  →
 - 后端：`mvn -pl ruoyi-modules/ruoyi-{module} -am -DskipTests compile`（受影响模块）
 - 前端：`pnpm -C plus-ui build`（或 type-check）
 - 移动端：`pnpm -C plus-uniapp build:h5`
-- UI 任务额外过「e2e 截图保真闭环」（复用 `e2e-test-pc`/`e2e-test-mobile`）
+- 默认不跑 E2E，避免在常规任务中消耗浏览器与 Token；仅当任务契约明确要求 UI 自动化验收时，才调用 `e2e-test-pc` 或 `e2e-test-mobile`。
 
 ---
 
@@ -256,13 +294,14 @@ brainstorm(方案)  →  【writing-plans(计划)】  →  dev-loop(执行)  →
 |---------|------|
 | `brainstorm` | 上游：产"方案"；本技能读 `docs/brainstorm-*.md` 拆"计划" |
 | `task-tracker` | 容器：本技能复用其模板/落点；task-tracker=台账格式，writing-plans=细颗粒计划生产者 |
-| `/dev-loop` | 下游：计划落 `docs/tasks/active/`，dev-loop 逐条执行回写 |
+| `plan-executor` | 下游：按任务依赖图调度子 Agent，执行一个可运行批次并回写证据 |
+| `/dev-loop` | 兼容路径：按顺序逐条执行台账 |
 | `update-status` | 已扫描 `docs/tasks/active/`，零改造聚合三文档 |
 | `/dev` | CRUD 任务**编排调用 /dev**，本技能不重造 codegen |
 | `/add-todo` | add-todo=单条快速待办；writing-plans=成体系计划，并存不冲突 |
 | `html-to-code` | UI 任务引用，本技能不产 HTML |
 
-**链路**：`brainstorm` 定方案 → `writing-plans` 拆计划入 `docs/tasks/active/` → `/loop /dev-loop` 执行 → 里程碑 `/update-status` 聚合。
+**链路**：`brainstorm` 定方案 → `writing-plans` 产出带依赖图的计划契约 → `plan-executor` 执行可运行批次 → 里程碑 `/update-status` 聚合。`/dev-loop` 保留为兼容的串行执行路径。
 
 ---
 
