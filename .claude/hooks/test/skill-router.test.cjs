@@ -11,12 +11,20 @@ const hook = path.join(root, '.claude', 'hooks', 'skill-forced-eval.cjs');
 const fixtures = JSON.parse(fs.readFileSync(path.join(root, '.agent-governance', 'fixtures', 'router-fixtures.json'), 'utf8'));
 const { routeInput } = require(path.join(root, '.claude', 'hooks', 'skill-router.cjs'));
 
+function assertRoute(actual, expected, id) {
+  const { matches, ...base } = actual;
+  const { matches: expectedMatches, ...expectedBase } = expected;
+  assert.deepStrictEqual(base, expectedBase, `${id} 的路由 JSON 与公共 router 不一致`);
+  assert.ok(Array.isArray(matches), `${id} 缺少候选技能列表`);
+  if (expectedMatches) assert.deepStrictEqual(matches, expectedMatches, `${id} 的候选技能不一致`);
+}
+
 let maxOutputBytes = 0;
 
 for (const fixture of fixtures) {
   const expected = fixture.expected;
   const routed = routeInput({ prompt: fixture.prompt });
-  assert.deepStrictEqual(routed, expected, `${fixture.id} 的路由 JSON 与公共 router 不一致`);
+  assertRoute(routed, expected, fixture.id);
 
   const result = childProcess.spawnSync(process.execPath, [hook], {
     cwd: root,
@@ -37,11 +45,16 @@ for (const fixture of fixtures) {
     assert.ok(output.includes('跳过自动路由'), `${fixture.id} 未说明斜杠命令跳过`);
   } else if (expected.primary) {
     assert.ok(output.includes(`匹配技能：**【🟨 ${expected.primary}】**`), `${fixture.id} 缺少主技能`);
+    for (const skill of (expected.matches || []).slice(1)) {
+      assert.ok(output.includes(`\`${skill}\``), `${fixture.id} 缺少候选技能 ${skill}`);
+    }
     for (const skill of expected.helpers) {
       assert.ok(output.includes(`\`${skill}\``), `${fixture.id} 缺少辅助技能 ${skill}`);
-      assert.ok(output.includes(`.claude/skills/${skill}/SKILL.md`), `${fixture.id} 缺少固定辅助技能路径`);
     }
-    assert.ok(output.includes(`.claude/skills/${expected.primary}/SKILL.md`), `${fixture.id} 缺少固定主技能路径`);
+    assert.ok(output.includes('不要预读技能正文'), `${fixture.id} 缺少延迟读取说明`);
+    const skillPath = `.claude/skills/${expected.primary}/SKILL.md`;
+    const commandPath = `.claude/commands/${expected.primary}.md`;
+    assert.ok(output.includes(skillPath) || output.includes(commandPath), `${fixture.id} 缺少可读取技能或命令路径`);
   } else {
     assert.ok(output.includes('未匹配专用技能'), `${fixture.id} 未说明空路由`);
   }

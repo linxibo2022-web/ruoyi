@@ -30,6 +30,8 @@ for (const fixture of fixtures) {
   else {
     assert.ok(output.includes('匹配技能'), fixture.id);
     assert.ok(output.includes(`【🟨 ${route.primary}】`), fixture.id);
+    for (const skill of route.matches.slice(1)) assert.ok(output.includes(skill), `${fixture.id} 缺少候选技能 ${skill}`);
+    assert.ok(output.includes('不要预读技能正文'), `${fixture.id} 缺少延迟读取说明`);
   }
   assert.ok(!output.includes(fixture.prompt), `${fixture.id} 不得回显提示词`);
   maxBytes = Math.max(maxBytes, Buffer.byteLength(output, 'utf8'));

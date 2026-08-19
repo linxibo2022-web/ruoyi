@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-19T08:54:28.496Z",
+  "generatedAt": "2026-08-19T09:46:10.588Z",
   "fixtures": {
-    "total": 36,
-    "passed": 36,
+    "total": 44,
+    "passed": 44,
     "results": [
       {
         "id": "explicit",
         "routeMatch": true,
-        "codexOutputBytes": 142,
-        "claudeOutputBytes": 186
+        "codexOutputBytes": 170,
+        "claudeOutputBytes": 225
       },
       {
         "id": "explicit-shared-unlisted",
         "routeMatch": true,
-        "codexOutputBytes": 128,
-        "claudeOutputBytes": 172
+        "codexOutputBytes": 163,
+        "claudeOutputBytes": 211
       },
       {
         "id": "slash",
@@ -38,26 +38,26 @@
       {
         "id": "dependencies",
         "routeMatch": true,
-        "codexOutputBytes": 195,
-        "claudeOutputBytes": 300
+        "codexOutputBytes": 280,
+        "claudeOutputBytes": 323
       },
       {
         "id": "required-exception",
         "routeMatch": true,
-        "codexOutputBytes": 260,
-        "claudeOutputBytes": 469
+        "codexOutputBytes": 370,
+        "claudeOutputBytes": 467
       },
       {
         "id": "bug",
         "routeMatch": true,
-        "codexOutputBytes": 136,
-        "claudeOutputBytes": 177
+        "codexOutputBytes": 167,
+        "claudeOutputBytes": 216
       },
       {
         "id": "performance",
         "routeMatch": true,
-        "codexOutputBytes": 146,
-        "claudeOutputBytes": 187
+        "codexOutputBytes": 172,
+        "claudeOutputBytes": 226
       },
       {
         "id": "read-only",
@@ -68,37 +68,37 @@
       {
         "id": "platform-specific",
         "routeMatch": true,
-        "codexOutputBytes": 132,
-        "claudeOutputBytes": 173
+        "codexOutputBytes": 165,
+        "claudeOutputBytes": 212
       },
       {
         "id": "skill-check",
         "routeMatch": true,
-        "codexOutputBytes": 132,
-        "claudeOutputBytes": 173
+        "codexOutputBytes": 165,
+        "claudeOutputBytes": 212
       },
       {
         "id": "skill-check-general",
         "routeMatch": true,
-        "codexOutputBytes": 132,
-        "claudeOutputBytes": 173
+        "codexOutputBytes": 165,
+        "claudeOutputBytes": 212
       },
       {
         "id": "skill-check-english",
         "routeMatch": true,
-        "codexOutputBytes": 132,
-        "claudeOutputBytes": 173
+        "codexOutputBytes": 165,
+        "claudeOutputBytes": 212
       },
       {
         "id": "skill-check-all",
         "routeMatch": true,
-        "codexOutputBytes": 132,
-        "claudeOutputBytes": 173
+        "codexOutputBytes": 165,
+        "claudeOutputBytes": 212
       },
       {
         "id": "skill-check-repair",
         "routeMatch": true,
-        "codexOutputBytes": 174,
+        "codexOutputBytes": 207,
         "claudeOutputBytes": 239
       },
       {
@@ -116,110 +116,158 @@
       {
         "id": "navigator-document",
         "routeMatch": true,
-        "codexOutputBytes": 144,
-        "claudeOutputBytes": 185
+        "codexOutputBytes": 171,
+        "claudeOutputBytes": 224
       },
       {
         "id": "brainstorm",
         "routeMatch": true,
-        "codexOutputBytes": 130,
-        "claudeOutputBytes": 171
+        "codexOutputBytes": 164,
+        "claudeOutputBytes": 210
       },
       {
         "id": "tech-decision",
         "routeMatch": true,
-        "codexOutputBytes": 136,
-        "claudeOutputBytes": 177
+        "codexOutputBytes": 212,
+        "claudeOutputBytes": 263
       },
       {
         "id": "design-review",
         "routeMatch": true,
-        "codexOutputBytes": 136,
-        "claudeOutputBytes": 177
+        "codexOutputBytes": 167,
+        "claudeOutputBytes": 216
+      },
+      {
+        "id": "document-review",
+        "routeMatch": true,
+        "codexOutputBytes": 167,
+        "claudeOutputBytes": 216
       },
       {
         "id": "error-handler",
         "routeMatch": true,
-        "codexOutputBytes": 136,
-        "claudeOutputBytes": 177
+        "codexOutputBytes": 214,
+        "claudeOutputBytes": 265
       },
       {
         "id": "backend-annotations",
         "routeMatch": true,
-        "codexOutputBytes": 148,
-        "claudeOutputBytes": 189
+        "codexOutputBytes": 173,
+        "claudeOutputBytes": 228
       },
       {
         "id": "env-config",
         "routeMatch": true,
-        "codexOutputBytes": 130,
-        "claudeOutputBytes": 171
+        "codexOutputBytes": 164,
+        "claudeOutputBytes": 210
       },
       {
         "id": "oss",
         "routeMatch": true,
-        "codexOutputBytes": 148,
-        "claudeOutputBytes": 189
+        "codexOutputBytes": 173,
+        "claudeOutputBytes": 228
       },
       {
         "id": "log-audit",
         "routeMatch": true,
-        "codexOutputBytes": 128,
-        "claudeOutputBytes": 169
+        "codexOutputBytes": 163,
+        "claudeOutputBytes": 208
       },
       {
         "id": "notification",
         "routeMatch": true,
-        "codexOutputBytes": 148,
-        "claudeOutputBytes": 189
+        "codexOutputBytes": 173,
+        "claudeOutputBytes": 228
       },
       {
         "id": "realtime",
         "routeMatch": true,
-        "codexOutputBytes": 154,
-        "claudeOutputBytes": 195
+        "codexOutputBytes": 176,
+        "claudeOutputBytes": 234
       },
       {
         "id": "scheduled",
         "routeMatch": true,
-        "codexOutputBytes": 138,
-        "claudeOutputBytes": 179
+        "codexOutputBytes": 168,
+        "claudeOutputBytes": 218
       },
       {
         "id": "third-party",
         "routeMatch": true,
-        "codexOutputBytes": 140,
-        "claudeOutputBytes": 181
+        "codexOutputBytes": 169,
+        "claudeOutputBytes": 220
       },
       {
         "id": "payment",
         "routeMatch": true,
-        "codexOutputBytes": 148,
-        "claudeOutputBytes": 189
+        "codexOutputBytes": 173,
+        "claudeOutputBytes": 228
       },
       {
         "id": "wechat",
         "routeMatch": true,
-        "codexOutputBytes": 146,
-        "claudeOutputBytes": 187
+        "codexOutputBytes": 172,
+        "claudeOutputBytes": 226
       },
       {
         "id": "i18n",
         "routeMatch": true,
-        "codexOutputBytes": 142,
-        "claudeOutputBytes": 183
+        "codexOutputBytes": 170,
+        "claudeOutputBytes": 222
       },
       {
         "id": "git",
         "routeMatch": true,
-        "codexOutputBytes": 134,
-        "claudeOutputBytes": 175
+        "codexOutputBytes": 166,
+        "claudeOutputBytes": 214
       },
       {
         "id": "json",
         "routeMatch": true,
-        "codexOutputBytes": 146,
-        "claudeOutputBytes": 187
+        "codexOutputBytes": 172,
+        "claudeOutputBytes": 226
+      },
+      {
+        "id": "multiple-independent",
+        "routeMatch": true,
+        "codexOutputBytes": 210,
+        "claudeOutputBytes": 261
+      },
+      {
+        "id": "named-skill-call",
+        "routeMatch": true,
+        "codexOutputBytes": 167,
+        "claudeOutputBytes": 216
+      },
+      {
+        "id": "named-skill-location",
+        "routeMatch": true,
+        "codexOutputBytes": 171,
+        "claudeOutputBytes": 224
+      },
+      {
+        "id": "named-skill-definition",
+        "routeMatch": true,
+        "codexOutputBytes": 82,
+        "claudeOutputBytes": 93
+      },
+      {
+        "id": "named-command-call",
+        "routeMatch": true,
+        "codexOutputBytes": 159,
+        "claudeOutputBytes": 196
+      },
+      {
+        "id": "named-skill-substring",
+        "routeMatch": true,
+        "codexOutputBytes": 165,
+        "claudeOutputBytes": 212
+      },
+      {
+        "id": "named-skill-action-with-explanation",
+        "routeMatch": true,
+        "codexOutputBytes": 167,
+        "claudeOutputBytes": 216
       }
     ]
   },
@@ -234,8 +282,8 @@
     }
   },
   "hookBytes": {
-    "codexMax": 260,
-    "claudeMax": 469,
+    "codexMax": 370,
+    "claudeMax": 467,
     "baselineMax": 8685
   },
   "rootRuleBytes": {
@@ -250,8 +298,8 @@
       }
     },
     "current": {
-      "AGENTS.md": 4436,
-      "CLAUDE.md": 4496
+      "AGENTS.md": 4848,
+      "CLAUDE.md": 4908
     }
   },
   "rollback": "不需要回滚；所有回归门禁通过。"

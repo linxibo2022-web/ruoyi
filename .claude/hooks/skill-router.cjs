@@ -6,6 +6,7 @@
  * manifest 出现触发词漂移。本文件只负责将确定的路由渲染为固定路径。
  */
 
+const fs = require('fs');
 const path = require('path');
 const { selectRoute } = require('../../.agent-governance/lib/router.cjs');
 
@@ -13,29 +14,30 @@ const { selectRoute } = require('../../.agent-governance/lib/router.cjs');
  * 根据 Hook 输入选择路由。
  *
  * @param {{ prompt?: unknown }} input Hook 的标准输入对象
- * @returns {{ primary: string | null, helpers: string[], reason: string, bypass: boolean }} 路由结果
+ * @returns {{ primary: string | null, helpers: string[], matches: string[], reason: string, bypass: boolean }} 路由结果
  */
 function routeInput(input) {
   try {
-    return selectRoute(typeof input?.prompt === 'string' ? input.prompt : '');
+    return selectRoute(typeof input?.prompt === 'string' ? input.prompt : '', undefined, 'claude');
   } catch {
     // 公共路由异常时降级为空路由，不能阻断 Claude Code 的正常会话。
-    return { primary: null, helpers: [], reason: 'empty', bypass: false };
+    return { primary: null, helpers: [], matches: [], reason: 'empty', bypass: false };
   }
 }
 
 /**
  * 将路由转换为不含用户提示词的固定说明。
  *
- * @param {{ primary: string | null, helpers: string[], reason: string, bypass: boolean }} route 路由结果
+ * @param {{ primary: string | null, helpers: string[], matches: string[], reason: string, bypass: boolean }} route 路由结果
  * @returns {string} 可注入 Claude Code 上下文的说明
  */
 function renderRoute(route) {
   if (route.bypass) return '## ⚙️ 强制技能评估\n\n结果：跳过自动路由（斜杠命令）。';
   if (!route.primary) return '## ⚙️ 强制技能评估\n\n结果：未匹配专用技能，按项目通用规则执行。';
 
-  const skills = [route.primary, ...route.helpers];
-  const paths = skills.map(skill => path.posix.join('.claude/skills', skill, 'SKILL.md'));
+  const candidates = route.matches.length > 1
+    ? `\n候选技能：${route.matches.map(skill => `\`${skill}\``).join('、')}`
+    : '';
   const helperLines = route.helpers.length
     ? `\n辅助技能：${route.helpers.map(skill => `\`${skill}\``).join('、')}`
     : '';
@@ -43,7 +45,10 @@ function renderRoute(route) {
     ? '\n说明：manifest 标记的必需依赖可突破默认辅助技能上限。'
     : '';
 
-  return `## ⚙️ 强制技能评估\n\n### 匹配技能：**【🟨 ${route.primary}】**${helperLines}\n路由原因：\`${route.reason}\`${requiredNotice}\n开始实现前按顺序读取：\n${paths.map((file, index) => `${index + 1}. \`${file}\``).join('\n')}`;
+  const skillPath = path.posix.join('.claude/skills', route.primary, 'SKILL.md');
+  const commandPath = path.posix.join('.claude/commands', `${route.primary}.md`);
+  const target = fs.existsSync(path.join(__dirname, '..', 'skills', route.primary, 'SKILL.md')) ? skillPath : commandPath;
+  return `## ⚙️ 强制技能评估\n\n### 匹配技能：**【🟨 ${route.primary}】**${candidates}${helperLines}\n路由原因：\`${route.reason}\`${requiredNotice}\n不要预读技能正文；开始对应子任务前，再读取对应的 \`${target}\`。`;
 }
 
 module.exports = { renderRoute, routeInput };

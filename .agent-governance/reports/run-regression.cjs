@@ -8,6 +8,13 @@ const { selectRoute } = require('../lib/router.cjs');
 const root = path.resolve(__dirname, '..', '..');
 const fixtures = JSON.parse(fs.readFileSync(path.join(root, '.agent-governance/fixtures/router-fixtures.json'), 'utf8'));
 const baseline = JSON.parse(fs.readFileSync(path.join(root, '.agent-governance/baseline/baseline.json'), 'utf8'));
+function routeMatches(actual, expected) {
+  const { matches, ...base } = actual;
+  const { matches: expectedMatches, ...expectedBase } = expected;
+  return Array.isArray(matches)
+    && JSON.stringify(base) === JSON.stringify(expectedBase)
+    && (!expectedMatches || JSON.stringify(matches) === JSON.stringify(expectedMatches));
+}
 
 function invoke(file, prompt) {
   const result = spawnSync(process.execPath, [path.join(root, file)], {
@@ -21,7 +28,7 @@ function invoke(file, prompt) {
 
 const results = fixtures.map(item => {
   const route = selectRoute(item.prompt);
-  const match = JSON.stringify(route) === JSON.stringify(item.expected);
+  const match = routeMatches(route, item.expected);
   return {
     id: item.id,
     routeMatch: match,

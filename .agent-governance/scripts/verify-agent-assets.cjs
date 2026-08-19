@@ -6,6 +6,13 @@ const { loadManifest, selectRoute } = require('../lib/router.cjs');
 
 const root = path.resolve(__dirname, '..', '..');
 let failed = false;
+function routeMatches(actual, expected) {
+  const { matches, ...base } = actual;
+  const { matches: expectedMatches, ...expectedBase } = expected;
+  return Array.isArray(matches)
+    && JSON.stringify(base) === JSON.stringify(expectedBase)
+    && (!expectedMatches || JSON.stringify(matches) === JSON.stringify(expectedMatches));
+}
 function ok(message) { console.log(`[OK] ${message}`); }
 function fail(message) { failed = true; console.error(`[FAIL] ${message}`); }
 function hash(file) { return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex'); }
@@ -24,6 +31,23 @@ try {
   const generic = new Set(['开发', '优化', '方案']);
   const invalid = manifest.skills.flatMap(skill => (skill.includeAny || []).filter(item => generic.has(String(item).toLowerCase())).map(item => `${skill.name}:${item}`));
   if (invalid.length) fail(`manifest 含泛词触发：${invalid.join(', ')}`); else ok('manifest 未使用单独泛词触发');
+  const named = manifest.namedSkillRouting || {};
+  const declared = [...new Set(named.skills || [])].sort();
+  const actual = fs.readdirSync(path.join(root, '.agents', 'skills'), { withFileTypes: true })
+    .filter(entry => entry.isDirectory()).map(entry => entry.name).sort();
+  if (JSON.stringify(declared) === JSON.stringify(actual)) ok('manifest 技能名称路由覆盖全部 Codex 技能');
+  else fail(`manifest 技能名称路由不完整：缺少=${actual.filter(name => !declared.includes(name)).join(',') || '无'}；多余=${declared.filter(name => !actual.includes(name)).join(',') || '无'}`);
+  const codexFailures = declared.filter(name => selectRoute(`请使用 ${name} 处理任务`, manifest).primary !== name);
+  if (codexFailures.length) fail(`Codex 技能名称调用路由失败：${codexFailures.join(',')}`);
+  else ok(`Codex 技能名称调用路由通过（${declared.length} 个）`);
+  const claudeFailures = declared.filter(name => {
+    const available = fs.existsSync(path.join(root, '.claude', 'skills', name, 'SKILL.md'))
+      || fs.existsSync(path.join(root, '.claude', 'commands', `${name}.md`));
+    const routed = selectRoute(`请使用 ${name} 处理任务`, manifest, 'claude').primary === name;
+    return available !== routed;
+  });
+  if (claudeFailures.length) fail(`Claude 技能名称调用路由或端专属过滤失败：${claudeFailures.join(',')}`);
+  else ok(`Claude 技能名称调用与端专属过滤通过（${declared.length} 个）`);
 } catch (error) {
   fail(`无法读取 manifest：${error.message}`);
 }
@@ -32,7 +56,7 @@ try {
   const fixtures = JSON.parse(fs.readFileSync(path.join(root, '.agent-governance', 'fixtures', 'router-fixtures.json'), 'utf8'));
   for (const fixture of fixtures) {
     const actual = selectRoute(fixture.prompt, manifest);
-    if (JSON.stringify(actual) === JSON.stringify(fixture.expected)) ok(`路由样例 ${fixture.id}`);
+    if (routeMatches(actual, fixture.expected)) ok(`路由样例 ${fixture.id}`);
     else fail(`路由样例 ${fixture.id} 不匹配`);
   }
 } catch (error) {

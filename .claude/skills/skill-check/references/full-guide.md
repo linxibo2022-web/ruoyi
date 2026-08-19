@@ -3,7 +3,7 @@
 
 ## 目标与默认行为
 
-`skill-check` 用于检查 Claude Code 与 Codex 的技能包、Claude Command → Codex Skill 映射，以及端专属能力声明。它不改变路由规则，也不把“能通过校验”当作降低技能质量的理由。
+`skill-check` 用于检查 Claude Code 与 Codex 的技能包、Claude Command → Codex Skill 映射、端专属能力声明，以及全部技能名称的调用路由。它不改变路由规则，也不把“能通过校验”当作降低技能质量的理由。
 
 - `$skill-check`：检查全部技能，默认以 `.agents/skills/`（Codex）为基准。
 - `$skill-check <技能名>`：只检查用户列出的一个或多个技能。
@@ -29,6 +29,8 @@ node .claude/skills/skill-check/scripts/skill-check.cjs --base codex
 ```
 
 对普通共享技能递归比较完整文件树和 SHA-256 内容；对命令映射，比较 Claude Command 与去除 Codex YAML 头后的正文及其声明资料。映射和端专属能力唯一维护在 `.agent-governance/skill-sync-policy.json`，未声明的缺失、多余或内容差异均为失败。
+
+同时校验 `namedSkillRouting.skills` 与 Codex 技能目录完全一致，并逐一验证“调用意图 + 技能名”在 Codex 端可路由；Claude 端仅允许共享技能或已声明 Command 映射路由，端专属能力必须被过滤。
 
 ### 3. 差异处理
 

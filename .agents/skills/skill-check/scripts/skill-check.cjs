@@ -7,6 +7,8 @@ const root = path.resolve(__dirname, '..', '..', '..', '..');
 const claudeSkills = path.join(root, '.claude', 'skills');
 const codexSkills = path.join(root, '.agents', 'skills');
 const policyPath = path.join(root, '.agent-governance', 'skill-sync-policy.json');
+const manifestPath = path.join(root, '.agent-governance', 'skills-manifest.json');
+const { selectRoute } = require(path.join(root, '.agent-governance', 'lib', 'router.cjs'));
 const args = process.argv.slice(2);
 const valueAfter = flag => {
   const index = args.indexOf(flag);
@@ -66,6 +68,23 @@ function bodyWithoutYaml(file) {
 }
 function shouldCheck(name) { return !selected.size || selected.has(name); }
 function policy() { return JSON.parse(fs.readFileSync(policyPath, 'utf8')); }
+function validateNamedRoutes() {
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const names = [...new Set(manifest.namedSkillRouting?.skills || [])].sort();
+  const expected = fs.readdirSync(codexSkills, { withFileTypes: true }).filter(entry => entry.isDirectory()).map(entry => entry.name).sort();
+  if (JSON.stringify(names) !== JSON.stringify(expected)) {
+    fail(`技能名称路由清单不完整：缺少=${expected.filter(name => !names.includes(name)).join(',') || '无'}；多余=${names.filter(name => !expected.includes(name)).join(',') || '无'}`);
+    return;
+  }
+  const selectedNames = selected.size ? names.filter(name => selected.has(name)) : names;
+  for (const name of selectedNames) {
+    if (selectRoute(`请使用 ${name} 处理任务`, manifest).primary !== name) fail(`${name} Codex 名称调用路由失败`);
+    const available = fs.existsSync(path.join(claudeSkills, name, 'SKILL.md')) || fs.existsSync(path.join(root, '.claude', 'commands', `${name}.md`));
+    const claudeRouted = selectRoute(`请使用 ${name} 处理任务`, manifest, 'claude').primary === name;
+    if (available !== claudeRouted) fail(`${name} Claude 名称调用路由或端专属过滤失败`);
+  }
+  if (!failed) print('OK', `技能名称调用路由通过（${selectedNames.length} 个）`);
+}
 function comparePackages(name, source, target) {
   const sourceFiles = listFiles(source);
   const targetFiles = listFiles(target);
@@ -89,6 +108,7 @@ if (!['codex', 'claude'].includes(base)) {
 }
 
 const syncPolicy = policy();
+validateNamedRoutes();
 const mappings = new Map(syncPolicy.commandMappings.map(item => [item.name, item]));
 const codexExclusive = new Set(syncPolicy.codexExclusiveSkills || []);
 const claudeExclusive = new Set(syncPolicy.claudeExclusiveCommands || []);

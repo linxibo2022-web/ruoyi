@@ -21,6 +21,7 @@
   ,{ "id": "brainstorm", "prompt": "帮我做一次头脑风暴，探索会员增长方案", "expected": { "primary": "brainstorm", "helpers": [], "reason": "match", "bypass": false } }
   ,{ "id": "tech-decision", "prompt": "Redis 和 Caffeine 怎么选", "expected": { "primary": "tech-decision", "helpers": [], "reason": "match", "bypass": false } }
   ,{ "id": "design-review", "prompt": "请进行设计评审并检查设计漏洞", "expected": { "primary": "design-review", "helpers": [], "reason": "match", "bypass": false } }
+  ,{ "id": "document-review", "prompt": "请审核文档并指出风险", "expected": { "primary": "design-review", "helpers": [], "reason": "match", "bypass": false } }
   ,{ "id": "error-handler", "prompt": "设计全局异常处理和错误码规范", "expected": { "primary": "error-handler", "helpers": [], "reason": "match", "bypass": false } }
   ,{ "id": "backend-annotations", "prompt": "为接口增加限流注解", "expected": { "primary": "backend-annotations", "helpers": [], "reason": "match", "bypass": false } }
   ,{ "id": "env-config", "prompt": "配置 application-dev.yml 开发环境", "expected": { "primary": "env-config", "helpers": [], "reason": "match", "bypass": false } }
@@ -35,4 +36,11 @@
   ,{ "id": "i18n", "prompt": "给后台增加国际化多语言支持", "expected": { "primary": "i18n-development", "helpers": [], "reason": "match", "bypass": false } }
   ,{ "id": "git", "prompt": "创建 Git 分支并合并分支", "expected": { "primary": "git-workflow", "helpers": [], "reason": "match", "bypass": false } }
   ,{ "id": "json", "prompt": "处理 JSON 序列化时的大数精度", "expected": { "primary": "json-serialization", "helpers": [], "reason": "match", "bypass": false } }
+  ,{ "id": "multiple-independent", "prompt": "接口报错需要排查异常原因；随后为接口增加操作日志", "expected": { "primary": "bug-detective", "helpers": [], "matches": ["bug-detective", "log-audit"], "reason": "match", "bypass": false } }
+  ,{ "id": "named-skill-call", "prompt": "请使用 design-review 技能审核文档 A", "expected": { "primary": "design-review", "helpers": [], "matches": ["design-review"], "reason": "match", "bypass": false } }
+  ,{ "id": "named-skill-location", "prompt": "design-review 技能放在哪里", "expected": { "primary": "project-navigator", "helpers": [], "matches": ["project-navigator"], "reason": "match", "bypass": false } }
+  ,{ "id": "named-skill-definition", "prompt": "design-review 是什么", "expected": { "primary": null, "helpers": [], "matches": [], "reason": "empty", "bypass": false } }
+  ,{ "id": "named-command-call", "prompt": "请使用 check 技能检查代码", "expected": { "primary": "check", "helpers": [], "matches": ["check"], "reason": "match", "bypass": false } }
+  ,{ "id": "named-skill-substring", "prompt": "请用 skill-check 检查 add-skill", "expected": { "primary": "skill-check", "helpers": [], "matches": ["skill-check"], "reason": "match", "bypass": false } }
+  ,{ "id": "named-skill-action-with-explanation", "prompt": "请使用 design-review 来说明审核结论", "expected": { "primary": "design-review", "helpers": [], "matches": ["design-review"], "reason": "match", "bypass": false } }
 ]

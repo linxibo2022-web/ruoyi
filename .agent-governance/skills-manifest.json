@@ -1,6 +1,12 @@
 {
   "schemaVersion": 1,
   "maxSkillsPerTask": 3,
+  "namedSkillRouting": {
+    "skills": ["add-skill", "add-test", "add-todo", "ai-langchain4j", "api-development", "app-adapter", "architecture-design", "autonomous-dev", "backend-annotations", "brainstorm", "bug-detective", "check", "cmd-framework-sync", "code-patterns", "collaborating-with-codex", "collaborating-with-gemini", "crud", "crud-development", "data-permission", "database-ops", "delivery-sync", "deploy", "deployment-guide", "design-review", "dev", "dev-startup", "e2e-test-mobile", "e2e-test-pc", "env-config", "error-handler", "exp", "exp-sediment", "file-oss-management", "framework-sync", "git-workflow", "html-to-code", "i18n-development", "icon-management", "init-docs", "iot-mqtt", "json-serialization", "log-audit", "media-processing", "message-queue", "module-strip", "multi-tenant", "next", "notification-system", "payment-integration", "performance-doctor", "plan-executor", "progress", "project-init", "project-migration", "project-navigator", "realtime-communication", "redis-cache", "scheduled-jobs", "security-guard", "skill-check", "social-login", "start", "store-mobile", "store-pc", "strip-modules", "sync", "sync-delivery", "task-tracker", "tech-decision", "test-development", "third-party-api", "ui-design-mobile", "ui-mobile", "ui-pc", "uniapp-platform", "update-status", "utils-toolkit", "wechat-integration", "writing-plans"],
+    "referenceIntentAny": ["在哪里", "在哪", "路径", "目录", "文件位置", "文档位置", "是什么", "解释", "介绍", "说明"],
+    "callPrefixAny": ["使用", "用", "调用", "执行", "采用", "运用", "利用", "让"],
+    "callSuffixAny": ["来", "用于", "处理", "完成", "执行", "检查", "创建", "实现", "审核"]
+  },
   "skills": [
     {
       "name": "crud-development",
@@ -36,7 +42,7 @@
     { "name": "writing-plans", "priority": 78, "includeAny": ["制定计划", "实施计划", "可执行计划"], "excludeAny": [], "dependencies": [] },
     { "name": "brainstorm", "priority": 78, "includeAny": ["头脑风暴", "方案探索", "功能规划", "一起想想", "发散思路"], "excludeAny": ["文件在哪", "文档在哪", "文件位置", "目录位置", "哪个文件", "在哪里", "只回答", "解释"], "dependencies": [] },
     { "name": "tech-decision", "priority": 89, "includeAny": ["技术选型", "方案对比", "哪个更好", "怎么选择", "怎么选"], "excludeAny": ["文件在哪", "文档在哪", "只回答", "解释"], "dependencies": [] },
-    { "name": "design-review", "priority": 88, "includeAny": ["设计评审", "评审方案", "检查设计漏洞", "方案把关"], "excludeAny": ["文件在哪", "文档在哪", "只回答", "解释"], "dependencies": [] },
+    { "name": "design-review", "priority": 88, "includeAny": ["设计评审", "评审方案", "检查设计漏洞", "方案把关", "审核文档"], "excludeAny": ["文件在哪", "文档在哪", "只回答", "解释"], "dependencies": [] },
     { "name": "error-handler", "priority": 89, "includeAny": ["全局异常处理", "异常处理机制", "错误码设计", "错误码规范"], "excludeAny": ["文件在哪", "文档在哪"], "dependencies": [] },
     { "name": "backend-annotations", "priority": 84, "includeAny": ["限流注解", "重复提交", "敏感数据脱敏", "操作日志注解"], "excludeAny": ["文件在哪", "文档在哪"], "dependencies": [] },
     { "name": "env-config", "priority": 84, "includeAny": ["环境配置", "application-dev.yml", "application-prod.yml", "切换 profile", "环境变量配置"], "excludeAny": ["文件在哪", "文档在哪"], "dependencies": [] },

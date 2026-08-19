@@ -28,8 +28,9 @@
 ## 技能、路由与同步
 
 - Codex 技能目录为 `.agents/skills/`；Claude Code 主技能目录为 `.claude/skills/`。新增或修改技能由 `add-skill` 从 Claude 主目录同步到 Codex 镜像。
-- 开始实质实现前才读取主技能正文；只读解释、状态询问和简单定位不因泛词加载大型开发技能。最多加载一个主技能与两个非必需辅助技能。
+- Hook 只展示本轮命中的技能候选，不读取技能正文；进入对应子任务前才按需读取该技能正文。相同领域的候选按优先级选择一个；独立领域的候选可按任务顺序依次使用。只读解释、状态询问和简单定位不因泛词加载大型开发技能。单个子任务最多加载一个主技能与两个非必需辅助技能。
 - `.agent-governance/skills-manifest.json` 是双端技能路由的唯一触发词来源；Hook 只输出固定技能名、固定路径和固定原因，不得回显用户提示词或技能全文。manifest 解析失败时降级为空路由，不阻断独立安全 Hook。
+- 所有 Codex 技能名称必须登记在 manifest 的 `namedSkillRouting.skills`。仅当名称与调用意图共同出现时才路由；名称与定位、解释等引用意图共同出现时不得加载该技能。
 - 共同硬规则由本文件生成到 `AGENTS.md` 与 `CLAUDE.md`，不得以外部链接替代正文。变更治理资源后运行 `node .agent-governance/scripts/verify-agent-assets.cjs`。
 
 ## 并发工作区保护

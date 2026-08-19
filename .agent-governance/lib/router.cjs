@@ -7,7 +7,7 @@ const claudeSkillsRoot = path.join(root, '.claude', 'skills');
 const codexSkillsRoot = path.join(root, '.agents', 'skills');
 
 function emptyRoute(bypass = false) {
-  return { primary: null, helpers: [], reason: 'empty', bypass };
+  return { primary: null, helpers: [], matches: [], reason: 'empty', bypass };
 }
 
 function loadManifest() {
@@ -28,6 +28,28 @@ function containsAny(text, values) {
   return values.some(value => text.includes(String(value).toLowerCase()));
 }
 
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function isNamedReference(text, wholeName, intents) {
+  const reference = (intents || []).map(intent => escapeRegExp(intent)).join('|');
+  if (!reference) return false;
+  return new RegExp(`(?:${reference})\\s*(?:技能\\s*)?${wholeName}|${wholeName}(?:技能)?\\s*(?:放)?\\s*(?:${reference})`, 'i').test(text);
+}
+
+function namedSkillMatches(text, manifest) {
+  const config = manifest.namedSkillRouting || {};
+  return (config.skills || []).filter(name => {
+    const escaped = escapeRegExp(name);
+    const before = (config.callPrefixAny || []).map(intent => escapeRegExp(intent)).join('|');
+    const after = (config.callSuffixAny || []).map(intent => escapeRegExp(intent)).join('|');
+    const wholeName = `(?<![a-z0-9-])${escaped}(?![a-z0-9-])`;
+    if (isNamedReference(text, wholeName, config.referenceIntentAny)) return false;
+    return new RegExp(`(?:${before})\\s*(?:技能\\s*)?${wholeName}|${wholeName}(?:技能)?\\s*(?:${after})`, 'i').test(text);
+  });
+}
+
 /**
  * 显式 `$skill-name` 是用户直接选择，不依赖自然语言触发词；仅允许两端均存在的共享技能，
  * 避免 Claude Hook 输出不存在的路径或将 Codex 专属能力误路由到 Claude。
@@ -37,7 +59,12 @@ function isSharedSkill(name) {
     && fs.existsSync(path.join(codexSkillsRoot, name, 'SKILL.md'));
 }
 
-function selectRoute(prompt, suppliedManifest) {
+function isClaudeAvailable(name) {
+  return fs.existsSync(path.join(claudeSkillsRoot, name, 'SKILL.md'))
+    || fs.existsSync(path.join(root, '.claude', 'commands', `${name}.md`));
+}
+
+function selectRoute(prompt, suppliedManifest, runtime = 'codex') {
   let manifest;
   try {
     manifest = suppliedManifest || loadManifest();
@@ -51,17 +78,24 @@ function selectRoute(prompt, suppliedManifest) {
     const name = explicit[1].toLowerCase();
     const listed = manifest.skills.some(item => item.name === name);
     return listed || isSharedSkill(name)
-      ? { primary: name, helpers: [], reason: 'explicit', bypass: false }
+      ? { primary: name, helpers: [], matches: [name], reason: 'explicit', bypass: false }
       : emptyRoute();
   }
   const text = normalizePrompt(raw);
   if (!text) return emptyRoute();
-  const matches = manifest.skills
+  const keywordMatches = manifest.skills
     .map((skill, index) => ({ skill, index }))
     .filter(({ skill }) => containsAny(text, skill.includeAny || []) && !containsAny(text, skill.excludeAny || []))
     .sort((left, right) => right.skill.priority - left.skill.priority || left.index - right.index);
+  const namedMatches = namedSkillMatches(text, manifest)
+    .filter(name => runtime !== 'claude' || isClaudeAvailable(name))
+    .map((name, index) => ({ skill: { name, priority: 1000 - index, dependencies: [] }, index: -1 - index }));
+  const matches = [...namedMatches, ...keywordMatches]
+    .filter((item, index, all) => all.findIndex(candidate => candidate.skill.name === item.skill.name) === index)
+    .sort((left, right) => right.skill.priority - left.skill.priority || left.index - right.index);
   if (!matches.length) return emptyRoute();
   const primary = matches[0].skill;
+  const matchedNames = matches.map(({ skill }) => skill.name);
   const helpers = [];
   for (const dependency of primary.dependencies || []) {
     if (!containsAny(text, dependency.whenAny || [])) continue;
@@ -77,6 +111,7 @@ function selectRoute(prompt, suppliedManifest) {
   return {
     primary: primary.name,
     helpers: selected.map(item => item.name),
+    matches: matchedNames,
     reason: required.length > cap ? 'required-dependency' : 'match',
     bypass: false
   };

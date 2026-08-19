@@ -1,115 +1,24 @@
-# 部署向导
+# deploy
 
-你是一个生产环境部署助手。请引导用户完成项目部署，按以下流程交互式进行。
+## 执行边界
 
-## 第一步：选择部署模式
+- 本入口只保留触发说明、最小执行原则与资料索引；开始实质实施前，先识别任务涉及的专题，再按需阅读对应完整资料。
+- 项目根规则中的中文、编码、安全、架构及并发保护要求始终优先；不得因资料拆分降低既有约束。
+- 不需要完整资料的只读解释、状态查询或简单定位，不得默认加载全文。
 
-询问用户：
+## 最小步骤
 
-> 请选择部署模式：
-> 1. **一键自动化部署**（推荐）- 一条命令完成全部部署，无需手动 SSH
-> 2. **JAR 部署** - 直接运行 JAR 包（单机、轻量运维）
-> 3. **Docker 手动部署** - 手动容器化部署（使用 1Panel 管理）
+1. 根据当前任务确定所需专题。
+2. 按需读取 `references/full-guide.md` 中相关章节，并遵守其中原有硬约束。
+3. 仅在任务范围内实施并执行受影响范围的验证。
 
-### 一键自动化部署模式
+## 资料索引
 
-如果用户选择自动化部署：
-
-1. 检查前提条件：
-   - Docker Desktop 是否已安装并启动
-   - Maven 是否可用
-   - paramiko 是否已安装（`pip install paramiko`）
-
-2. 引导用户创建配置：
-   ```bash
-   python deploy.py --init
-   ```
-
-3. 提醒用户修改服务器上的 docker-compose.yml 中的数据库密码等敏感配置
-
-4. 执行部署：
-   ```bash
-   python deploy.py all       # 后端 + 前端
-   python deploy.py backend   # 仅后端
-   python deploy.py frontend  # 仅前端 PC
-   python deploy.py h5        # 仅 H5（可选）
-   python deploy.py full      # 后端 + 前端 + H5
-   ```
-
-5. 详见 `deploy.py` 脚本和 `.deploy-config.example.json` 配置示例
-
-## 第二步：安全密钥检查
-
-无论哪种模式，先检查安全密钥。读取以下文件确认密钥状态：
-
-1. `ruoyi-admin/src/main/resources/application.yml` - 检查 `jwt-secret-key` 是否为默认值 `uDkkASPQVN5iR4eN`
-2. `plus-ui/env/.env` - 检查 RSA 密钥是否为框架默认值
-3. `plus-uniapp/env/.env` - 检查 RSA 密钥（如果有移动端）
-4. `plus-app/env/.env` - 检查 RSA 密钥（如果有 APP 端）
-
-对每个使用默认值的密钥，提醒用户：
-- 是否需要现在更换？
-- 如果用户同意，生成新密钥并同步到所有相关文件
-
-## 第三步：功能开关确认
-
-逐项询问用户以下生产环境开关：
-
-| 功能 | 环境变量 | 默认 | 说明 |
-|------|---------|------|------|
-| SpringDoc API 文档 | `SPRINGDOC_ENABLED` | `false` | 生产必须关闭 |
-| SnailJob 定时任务 | `SNAIL_JOB_ENABLED` | `false` | 是否需要分布式定时任务？ |
-| 监控中心 | `MONITOR_ENABLED` | `false` | 建议开启 |
-| RocketMQ | `ROCKETMQ_ENABLED` | `false` | 是否需要消息队列？ |
-| MQTT | `MQTT_ENABLED` | `false` | 是否有 IoT 设备？ |
-| AI 功能 | `LANGCHAIN4J_ENABLED` | `false` | 是否需要 AI 对话？ |
-| 开放平台 | `OPEN_API_ENABLED` | `false` | 是否需要 OpenAPI？ |
-
-## 第四步：根据模式执行
-
-### JAR 模式
-
-1. 检查 `application-prod.yml` 配置是否完整
-2. 提示用户必须配置的环境变量（DB、Redis 等）
-3. 执行 `mvn clean package -DskipTests` 构建
-4. 提供 `ry.sh` 使用说明
-5. 提供 Systemd 服务配置模板
-
-### Docker 模式
-
-1. 执行 `mvn clean package -DskipTests` 构建
-2. 执行 `docker build -t ryplus_uni:版本 .`（在 `ruoyi-admin/` 目录）
-3. 复制 `Complete-compose.yml` 为 `Complete-compose-local.yml`
-4. 根据用户的密钥和开关选择，修改 `-local.yml` 文件
-5. 引导用户将 `-local.yml` 的内容复制到 1Panel 容器编排中部署
-
-## 第五步：前端构建
-
-询问用户需要构建哪些前端：
-
-- [ ] **PC 端**（plus-ui）→ `pnpm build` → 部署到 Nginx
-- [ ] **H5 端**（plus-uniapp）→ `pnpm build:h5` → 部署到 Nginx
-- [ ] **微信小程序**（plus-uniapp）→ `pnpm build:mp-weixin` → 微信开发者工具上传
-- [ ] **APP**（plus-uniapp 或 plus-app）→ HBuilderX 打包
-
-对每个选中的目标：
-1. 检查 `.env.production` 配置
-2. 确认 `VITE_APP_BASE_API` 已修改为生产域名
-3. 执行构建命令
-4. 提供部署指导
-
-## 第六步：验证
-
-部署完成后，引导用户验证：
-
-1. 后端 API 可访问
-2. 前端页面可访问
-3. 登录功能正常
-4. 文件上传功能正常（如果用了 OSS）
-
-## 注意事项
-
-- 激活 `deployment-guide` 技能获取完整参考
-- 所有密钥生成使用 `openssl rand` 命令
-- `-local.yml` 文件已在 `.gitignore` 中，不会被提交
-- 使用中文与用户交互
+- `references/full-guide.md`：原入口的完整规范、模板、案例和边界。主要专题：
+- 第一步：选择部署模式
+- 第二步：安全密钥检查
+- 第三步：功能开关确认
+- 第四步：根据模式执行
+- 第五步：前端构建
+- 第六步：验证
+- 注意事项
