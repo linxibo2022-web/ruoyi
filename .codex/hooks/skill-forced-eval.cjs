@@ -30,4 +30,4 @@ if (route.bypass || !route.primary) process.exit(0);
 
 const helpers = route.helpers.length ? `；满足依赖条件时加载：${route.helpers.join('、')}` : '';
 const required = route.reason === 'required-dependency' ? '；必需依赖按 manifest 例外保留' : '';
-process.stdout.write(`本轮主技能：${route.primary}。开始实质实现前读取 .agents/skills/${route.primary}/SKILL.md${helpers}${required}。`);
+process.stdout.write(`技能评估结果：主技能为 ${route.primary}。开始实质实现前读取 .agents/skills/${route.primary}/SKILL.md${helpers}${required}。`);

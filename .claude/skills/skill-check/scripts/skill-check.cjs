@@ -15,6 +15,7 @@ const valueAfter = flag => {
 const base = valueAfter('--base') || 'codex';
 const selected = new Set((valueAfter('--skills') || '').split(',').map(item => item.trim()).filter(Boolean));
 const fixDifferences = args.includes('--fix-differences');
+const MAX_ENTRY_LINES = 200;
 let failed = false;
 
 function print(level, message) { console.log(`[${level}] ${message}`); }
@@ -30,6 +31,7 @@ function listFiles(directory) {
   }).sort();
 }
 function text(file) { return fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, ''); }
+function lineCount(content) { return content.split(/\r\n|\r|\n/).length; }
 function frontMatter(content) {
   const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/);
   return match ? { raw: match[0], body: content.slice(match[0].length), fields: match[1] } : null;
@@ -43,6 +45,10 @@ function validateSkill(directory, name, side) {
   if (!header) return { ok: false, issue: `${side} SKILL.md 缺少 YAML 头` };
   const nameMatch = header.fields.match(/^name:\s*([^\r\n]+)\s*$/m);
   if (!nameMatch || nameMatch[1].trim() !== name) return { ok: false, issue: `${side} YAML name 与目录名不一致` };
+  const fullGuide = path.join(directory, 'references', 'full-guide.md');
+  if (!fs.existsSync(fullGuide)) return { ok: false, issue: `${side} 缺少 references/full-guide.md` };
+  if (lineCount(text(entry)) > MAX_ENTRY_LINES) return { ok: false, issue: `${side} SKILL.md 超过 ${MAX_ENTRY_LINES} 行` };
+  if (!header.body.includes('references/full-guide.md')) return { ok: false, issue: `${side} SKILL.md 未索引 references/full-guide.md` };
   for (const file of listFiles(directory)) {
     if (hasBom(readBytes(path.join(directory, file)))) return { ok: false, issue: `${side} ${file} 含 UTF-8 BOM` };
   }

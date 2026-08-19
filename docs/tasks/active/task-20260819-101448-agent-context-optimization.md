@@ -397,7 +397,7 @@ Claude 的 `PreToolUse` 与 `Stop` Hook 继续承担安全拦截、范围检查�
   - 完成证据：2026-08-19 运行 Codex 与 Claude Hook 测试、`verify-agent-assets.cjs` 及 `.agent-governance/reports/run-regression.cjs` 均成功；12/12 匿名路由样例通过，覆盖 CRUD、建表、页面、报错、只读、性能、显式技能、斜杠命令、恢复会话、无命中、端专属技能和注入防护；Codex/Claude 最大普通输出为 226 B/435 B，基线为 8685 B；根规则从 73834 B/23335 B 降至 4436 B/4496 B；报告位于 `.agent-governance/reports/regression-report.json`，回滚结论为不需要回滚。
   - 提交：`test(agent-governance): 验证上下文注入优化回归`。
 
-- [ ] T-08. 全量拆分并同步其余共享技能（类型：技能改造）
+- [x] T-08. 全量拆分并同步其余共享技能（类型：技能改造）
   - 任务目标：在已完成五个试点的基础上，改造其余全部 Claude 共享技能为“短入口 + 按需 `references/`”，并由 `add-skill` 将每个完整技能包同步到 Codex 镜像。
   - 前置条件：T-06、T-07 已完成；`add-skill` 已具备同步后全量递归校验与受限自修复规则。
   - 依赖：T-06、T-07；后继任务：T-09。
@@ -412,10 +412,10 @@ Claude 的 `PreToolUse` 与 `Stop` Hook 继续承担安全拦截、范围检查�
   - 验证命令：`node .agent-governance/scripts/verify-agent-assets.cjs`，预期退出码 0，并逐个输出所有共享技能的完整技能包校验 `[OK]`。
   - 审查清单：每次改造均实际使用 `add-skill`；先改 Claude 源再同步 Codex；所有文件 UTF-8 无 BOM；同步失败的修复仅限镜像与校验能力；不将用户原文写入 fixture 或报告。
   - 失败处理边界：每个失败指纹最多重试 2 次；优先修复镜像，再在不降低质量断言的前提下升级校验器；同一失败仍存在则记录差异、尝试与恢复条件并停止该技能，不影响无依赖技能继续改造。
-  - 完成证据：待执行。需记录技能总数、已改造数、每个技能的入口行数、完整技能包校验输出及所有失败指纹处理结果。
+  - 完成证据：2026-08-19 已通过 `.claude/skills/add-skill/scripts/split-shared-skill-entries.cjs` 从 Claude 源无损归档并同步；54 个原先超过 200 行的入口及另外 4 个未分层入口均改为短入口 + `references/full-guide.md`，62/62 个共享技能入口均不超过 200 行且均有按需资料。`verify-agent-assets.cjs` 对 62 个共享技能逐项输出完整技能包哈希一致 `[OK]`，`dev` 命令映射正文一致，所有技能文件 UTF-8 BOM 检查为 0。首次运行失败指纹为“迁移脚本仓库根路径上溯错误，ENOENT: D:\\ruoyi_project\\.claude\\skills”，未写入任何技能正文；在允许范围内修正精确路径后第 2 次运行成功，无遗留临时产物。
   - 提交：`refactor(skills): 全量拆分并同步共享技能`。
 
-- [ ] T-09. 全量技能回归与治理验收（类型：验证）
+- [x] T-09. 全量技能回归与治理验收（类型：验证）
   - 任务目标：在 T-08 后验证双端 Hook、根规则、全量共享技能镜像和 `add-skill` 受限自修复门禁共同有效。
   - 前置条件：T-08 全部成功，或所有被阻塞技能已有用户明确裁决。
   - 依赖：T-08；后继任务：无。
@@ -430,7 +430,7 @@ Claude 的 `PreToolUse` 与 `Stop` Hook 继续承担安全拦截、范围检查�
   - 验证命令：`node .codex/hooks/test/skill-router.test.cjs`、`node .claude/hooks/test/skill-router.test.cjs`、`node .agent-governance/scripts/verify-agent-assets.cjs`、`node .agent-governance/reports/run-regression.cjs`，预期均退出 0。
   - 审查清单：报告不含原始用户提示词；UTF-8 无 BOM；无跳过技能的隐藏白名单；失败场景的恢复过程不改源技能规则。
   - 失败处理边界：只修复验证材料或退回直接责任任务，最多重试 2 次；超过上限记录失败指纹、影响范围和用户需要决定的最小事项。
-  - 完成证据：待执行。需保存全量验证输出、差异防护断言和回归报告位置。
+  - 完成证据：2026-08-19 运行 `node .codex/hooks/test/skill-router.test.cjs`（14/14 通过，最大普通输出 226 B）、`node .claude/hooks/test/skill-router.test.cjs`（14/14 通过，最大普通输出 435 B）、`node .agent-governance/scripts/verify-agent-assets.cjs`（根规则、62 个共享技能递归哈希及 dev 映射均通过）和 `node .agent-governance/reports/run-regression.cjs`（14/14 匿名样例通过、结论无需回滚）均退出 0；回归报告为 `.agent-governance/reports/regression-report.json`。已对 `.agents/skills/api-development/SKILL.md` 执行可恢复的镜像差异探针：校验器非 0 退出并精确定位 `api-development` 内容不同，随后恢复原字节并重跑全量校验通过；未降低任何断言或修改源技能规则。
   - 提交：`test(agent-governance): 验收全量技能同步治理`。
 
 ## 验收指标

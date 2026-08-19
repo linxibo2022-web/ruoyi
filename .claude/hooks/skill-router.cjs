@@ -42,7 +42,7 @@ function renderRoute(route) {
     ? '\n说明：manifest 标记的必需依赖可突破默认辅助技能上限。'
     : '';
 
-  return `## 技能路由\n主技能：\`${route.primary}\`${helperLines}\n路由原因：\`${route.reason}\`${requiredNotice}\n开始实现前按顺序读取：\n${paths.map((file, index) => `${index + 1}. \`${file}\``).join('\n')}`;
+  return `## 技能评估结果\n主技能：\`${route.primary}\`${helperLines}\n路由原因：\`${route.reason}\`${requiredNotice}\n开始实现前按顺序读取：\n${paths.map((file, index) => `${index + 1}. \`${file}\``).join('\n')}`;
 }
 
 module.exports = { renderRoute, routeInput };

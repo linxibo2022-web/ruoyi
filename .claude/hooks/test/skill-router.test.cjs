@@ -33,6 +33,7 @@ for (const fixture of fixtures) {
   assert.ok(!output.includes(fixture.prompt), `${fixture.id} 的输出回显了用户输入`);
 
   if (expected.primary) {
+    assert.ok(output.startsWith('## 技能评估结果\n'), `${fixture.id} 缺少技能评估标识`);
     assert.ok(output.includes(`主技能：\`${expected.primary}\``), `${fixture.id} 缺少主技能`);
     for (const skill of expected.helpers) {
       assert.ok(output.includes(`\`${skill}\``), `${fixture.id} 缺少辅助技能 ${skill}`);

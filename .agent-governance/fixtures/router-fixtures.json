@@ -1,5 +1,6 @@
 [
   { "id": "explicit", "prompt": "$crud-development 请处理模块", "expected": { "primary": "crud-development", "helpers": [], "reason": "explicit", "bypass": false } },
+  { "id": "explicit-shared-unlisted", "prompt": "$add-skill 校验镜像", "expected": { "primary": "add-skill", "helpers": [], "reason": "explicit", "bypass": false } },
   { "id": "slash", "prompt": "/dev", "expected": { "primary": null, "helpers": [], "reason": "empty", "bypass": true } },
   { "id": "no-match", "prompt": "今天上海天气如何", "expected": { "primary": null, "helpers": [], "reason": "empty", "bypass": false } },
   { "id": "excluded", "prompt": "只回答：解释 CRUD 的含义", "expected": { "primary": null, "helpers": [], "reason": "empty", "bypass": false } },

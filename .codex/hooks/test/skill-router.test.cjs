@@ -25,7 +25,10 @@ for (const fixture of fixtures) {
   const output = invoke('.codex/hooks/skill-forced-eval.cjs', { prompt: fixture.prompt });
   const route = selectRoute(fixture.prompt);
   if (!route.primary || route.bypass) assert.strictEqual(output, '', fixture.id);
-  else assert.ok(output.includes(route.primary), fixture.id);
+  else {
+    assert.ok(output.includes('技能评估结果：'), fixture.id);
+    assert.ok(output.includes(route.primary), fixture.id);
+  }
   assert.ok(!output.includes(fixture.prompt), `${fixture.id} 不得回显提示词`);
   maxBytes = Math.max(maxBytes, Buffer.byteLength(output, 'utf8'));
 }

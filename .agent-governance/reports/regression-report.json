@@ -1,15 +1,21 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-19T07:02:40.634Z",
+  "generatedAt": "2026-08-19T07:54:56.328Z",
   "fixtures": {
-    "total": 14,
-    "passed": 14,
+    "total": 15,
+    "passed": 15,
     "results": [
       {
         "id": "explicit",
         "routeMatch": true,
-        "codexOutputBytes": 108,
-        "claudeOutputBytes": 152
+        "codexOutputBytes": 124,
+        "claudeOutputBytes": 158
+      },
+      {
+        "id": "explicit-shared-unlisted",
+        "routeMatch": true,
+        "codexOutputBytes": 110,
+        "claudeOutputBytes": 144
       },
       {
         "id": "slash",
@@ -32,26 +38,26 @@
       {
         "id": "dependencies",
         "routeMatch": true,
-        "codexOutputBytes": 161,
-        "claudeOutputBytes": 266
+        "codexOutputBytes": 177,
+        "claudeOutputBytes": 272
       },
       {
         "id": "required-exception",
         "routeMatch": true,
-        "codexOutputBytes": 226,
-        "claudeOutputBytes": 435
+        "codexOutputBytes": 242,
+        "claudeOutputBytes": 441
       },
       {
         "id": "bug",
         "routeMatch": true,
-        "codexOutputBytes": 102,
-        "claudeOutputBytes": 143
+        "codexOutputBytes": 118,
+        "claudeOutputBytes": 149
       },
       {
         "id": "performance",
         "routeMatch": true,
-        "codexOutputBytes": 112,
-        "claudeOutputBytes": 153
+        "codexOutputBytes": 128,
+        "claudeOutputBytes": 159
       },
       {
         "id": "read-only",
@@ -62,20 +68,20 @@
       {
         "id": "platform-specific",
         "routeMatch": true,
-        "codexOutputBytes": 98,
-        "claudeOutputBytes": 139
+        "codexOutputBytes": 114,
+        "claudeOutputBytes": 145
       },
       {
         "id": "skill-check",
         "routeMatch": true,
-        "codexOutputBytes": 98,
-        "claudeOutputBytes": 139
+        "codexOutputBytes": 114,
+        "claudeOutputBytes": 145
       },
       {
         "id": "skill-check-repair",
         "routeMatch": true,
-        "codexOutputBytes": 140,
-        "claudeOutputBytes": 205
+        "codexOutputBytes": 156,
+        "claudeOutputBytes": 211
       },
       {
         "id": "injection",
@@ -102,8 +108,8 @@
     }
   },
   "hookBytes": {
-    "codexMax": 226,
-    "claudeMax": 435,
+    "codexMax": 242,
+    "claudeMax": 441,
     "baselineMax": 8685
   },
   "rootRuleBytes": {
