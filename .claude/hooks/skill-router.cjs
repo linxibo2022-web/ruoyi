@@ -31,7 +31,8 @@ function routeInput(input) {
  * @returns {string} 可注入 Claude Code 上下文的说明
  */
 function renderRoute(route) {
-  if (route.bypass || !route.primary) return '';
+  if (route.bypass) return '## ⚙️ 强制技能评估\n\n结果：跳过自动路由（斜杠命令）。';
+  if (!route.primary) return '## ⚙️ 强制技能评估\n\n结果：未匹配专用技能，按项目通用规则执行。';
 
   const skills = [route.primary, ...route.helpers];
   const paths = skills.map(skill => path.posix.join('.claude/skills', skill, 'SKILL.md'));
@@ -42,7 +43,7 @@ function renderRoute(route) {
     ? '\n说明：manifest 标记的必需依赖可突破默认辅助技能上限。'
     : '';
 
-  return `## 技能评估结果\n主技能：\`${route.primary}\`${helperLines}\n路由原因：\`${route.reason}\`${requiredNotice}\n开始实现前按顺序读取：\n${paths.map((file, index) => `${index + 1}. \`${file}\``).join('\n')}`;
+  return `## ⚙️ 强制技能评估\n\n### 匹配技能：**【🟨 ${route.primary}】**${helperLines}\n路由原因：\`${route.reason}\`${requiredNotice}\n开始实现前按顺序读取：\n${paths.map((file, index) => `${index + 1}. \`${file}\``).join('\n')}`;
 }
 
 module.exports = { renderRoute, routeInput };

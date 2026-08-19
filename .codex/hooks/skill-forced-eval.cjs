@@ -26,8 +26,16 @@ try {
 } catch {
   process.exit(0);
 }
-if (route.bypass || !route.primary) process.exit(0);
+const header = '⚙️ 强制技能评估';
+if (route.bypass) {
+  process.stdout.write(`${header}：跳过自动路由（斜杠命令）。`);
+  process.exit(0);
+}
+if (!route.primary) {
+  process.stdout.write(`${header}：未匹配专用技能，按项目通用规则执行。`);
+  process.exit(0);
+}
 
 const helpers = route.helpers.length ? `；满足依赖条件时加载：${route.helpers.join('、')}` : '';
 const required = route.reason === 'required-dependency' ? '；必需依赖按 manifest 例外保留' : '';
-process.stdout.write(`技能评估结果：主技能为 ${route.primary}。开始实质实现前读取 .agents/skills/${route.primary}/SKILL.md${helpers}${required}。`);
+process.stdout.write(`${header}：匹配技能 【🟨 ${route.primary}】。开始实质实现前读取 .agents/skills/${route.primary}/SKILL.md${helpers}${required}。`);

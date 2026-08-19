@@ -24,10 +24,12 @@ let maxBytes = 0;
 for (const fixture of fixtures) {
   const output = invoke('.codex/hooks/skill-forced-eval.cjs', { prompt: fixture.prompt });
   const route = selectRoute(fixture.prompt);
-  if (!route.primary || route.bypass) assert.strictEqual(output, '', fixture.id);
+  assert.ok(output.startsWith('⚙️ 强制技能评估：'), fixture.id);
+  if (route.bypass) assert.ok(output.includes('跳过自动路由'), fixture.id);
+  else if (!route.primary) assert.ok(output.includes('未匹配专用技能'), fixture.id);
   else {
-    assert.ok(output.includes('技能评估结果：'), fixture.id);
-    assert.ok(output.includes(route.primary), fixture.id);
+    assert.ok(output.includes('匹配技能'), fixture.id);
+    assert.ok(output.includes(`【🟨 ${route.primary}】`), fixture.id);
   }
   assert.ok(!output.includes(fixture.prompt), `${fixture.id} 不得回显提示词`);
   maxBytes = Math.max(maxBytes, Buffer.byteLength(output, 'utf8'));

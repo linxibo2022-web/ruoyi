@@ -18,5 +18,9 @@ try {
   process.exit(0);
 }
 
+const prompt = typeof input.prompt === 'string' ? input.prompt : '';
+const recovery = /continued from a previous conversation|ran out of context|conversation compacted|session is being continued/i;
+if (recovery.test(prompt)) process.exit(0);
+
 const output = renderRoute(routeInput(input));
 if (output) process.stdout.write(output);

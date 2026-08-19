@@ -30,9 +30,26 @@
     { "name": "e2e-test-pc", "priority": 82, "includeAny": ["pc测试", "后台测试", "浏览器测试"], "excludeAny": [], "dependencies": [] },
     { "name": "e2e-test-mobile", "priority": 82, "includeAny": ["移动端测试", "小程序测试", "wd-paging测试"], "excludeAny": [], "dependencies": [] },
     { "name": "architecture-design", "priority": 79, "includeAny": ["模块划分", "架构设计", "代码重构"], "excludeAny": ["只回答", "解释"], "dependencies": [] },
-    { "name": "project-navigator", "priority": 75, "includeAny": ["项目结构", "文件在哪", "定位代码"], "excludeAny": [], "dependencies": [] },
+    { "name": "project-navigator", "priority": 96, "includeAny": ["项目结构", "文件在哪", "文档在哪", "文件位置", "目录位置", "定位代码", "哪个文件", "在哪里"], "excludeAny": [], "dependencies": [] },
     { "name": "plan-executor", "priority": 95, "includeAny": ["执行实施计划", "计划执行", "任务编排"], "excludeAny": [], "dependencies": [] },
     { "name": "skill-check", "priority": 92, "includeAny": ["skill-check", "检查技能同步", "校验技能镜像", "技能双端同步", "检查技能差异", "修复技能同步"], "excludeAny": ["只回答", "解释"], "dependencies": [{ "whenAny": ["修复", "直接修复", "差异直接修复"], "skills": ["add-skill"], "required": true }] },
-    { "name": "writing-plans", "priority": 78, "includeAny": ["制定计划", "实施计划", "可执行计划"], "excludeAny": [], "dependencies": [] }
+    { "name": "writing-plans", "priority": 78, "includeAny": ["制定计划", "实施计划", "可执行计划"], "excludeAny": [], "dependencies": [] },
+    { "name": "brainstorm", "priority": 78, "includeAny": ["头脑风暴", "方案探索", "功能规划", "一起想想", "发散思路"], "excludeAny": ["文件在哪", "文档在哪", "文件位置", "目录位置", "哪个文件", "在哪里", "只回答", "解释"], "dependencies": [] },
+    { "name": "tech-decision", "priority": 89, "includeAny": ["技术选型", "方案对比", "哪个更好", "怎么选择", "怎么选"], "excludeAny": ["文件在哪", "文档在哪", "只回答", "解释"], "dependencies": [] },
+    { "name": "design-review", "priority": 88, "includeAny": ["设计评审", "评审方案", "检查设计漏洞", "方案把关"], "excludeAny": ["文件在哪", "文档在哪", "只回答", "解释"], "dependencies": [] },
+    { "name": "error-handler", "priority": 89, "includeAny": ["全局异常处理", "异常处理机制", "错误码设计", "错误码规范"], "excludeAny": ["文件在哪", "文档在哪"], "dependencies": [] },
+    { "name": "backend-annotations", "priority": 84, "includeAny": ["限流注解", "重复提交", "敏感数据脱敏", "操作日志注解"], "excludeAny": ["文件在哪", "文档在哪"], "dependencies": [] },
+    { "name": "env-config", "priority": 84, "includeAny": ["环境配置", "application-dev.yml", "application-prod.yml", "切换 profile", "环境变量配置"], "excludeAny": ["文件在哪", "文档在哪"], "dependencies": [] },
+    { "name": "file-oss-management", "priority": 84, "includeAny": ["文件上传", "对象存储", "minio", "阿里云 oss", "腾讯云 cos"], "excludeAny": ["文件在哪", "文档在哪"], "dependencies": [] },
+    { "name": "log-audit", "priority": 84, "includeAny": ["操作日志", "审计日志", "日志审计", "@log 注解"], "excludeAny": ["文件在哪", "文档在哪"], "dependencies": [] },
+    { "name": "notification-system", "priority": 84, "includeAny": ["短信验证码", "邮件通知", "消息推送", "通知消息"], "excludeAny": ["文件在哪", "文档在哪"], "dependencies": [] },
+    { "name": "realtime-communication", "priority": 84, "includeAny": ["websocket", "sse 推送", "实时通信", "实时推送"], "excludeAny": ["文件在哪", "文档在哪"], "dependencies": [] },
+    { "name": "scheduled-jobs", "priority": 84, "includeAny": ["定时任务", "@scheduled", "snailjob", "延迟队列"], "excludeAny": ["文件在哪", "文档在哪"], "dependencies": [] },
+    { "name": "third-party-api", "priority": 89, "includeAny": ["第三方接口", "forest 客户端", "高德地图 api", "火山引擎 tts"], "excludeAny": ["文件在哪", "文档在哪"], "dependencies": [] },
+    { "name": "payment-integration", "priority": 90, "includeAny": ["微信支付", "支付宝支付", "支付回调", "支付渠道"], "excludeAny": ["文件在哪", "文档在哪"], "dependencies": [] },
+    { "name": "wechat-integration", "priority": 85, "includeAny": ["微信小程序登录", "公众号分享", "微信订阅消息", "微信手机号"], "excludeAny": ["文件在哪", "文档在哪"], "dependencies": [] },
+    { "name": "i18n-development", "priority": 84, "includeAny": ["国际化", "多语言", "vue i18n", "messagesource"], "excludeAny": ["文件在哪", "文档在哪"], "dependencies": [] },
+    { "name": "git-workflow", "priority": 84, "includeAny": ["git 提交", "git 分支", "合并分支", "解决冲突"], "excludeAny": ["文件在哪", "文档在哪"], "dependencies": [] },
+    { "name": "json-serialization", "priority": 84, "includeAny": ["json 序列化", "json 反序列化", "大数精度", "日期序列化"], "excludeAny": ["文件在哪", "文档在哪"], "dependencies": [] }
   ]
 }

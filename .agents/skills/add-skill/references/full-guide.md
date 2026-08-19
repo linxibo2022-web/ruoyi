@@ -66,7 +66,7 @@ description: |
 
 ### 3. 配置自动路由
 
-仅当技能需要通过自然语言自动激活时，在 `.agent-governance/skills-manifest.json` 的 `skills` 数组新增或更新条目：
+仅当技能需要通过自然语言自动激活时，在 `.agent-governance/skills-manifest.json` 的 `skills` 数组新增或更新条目。默认仅支持显式 `$skill-name`；只有高频且意图明确的技能才进入自动路由：
 
 ```json
 {
@@ -87,6 +87,8 @@ description: |
 - `priority` 用于解决多个候选技能；依赖通过 `dependencies` 声明，`required: true` 表示不可省略。
 - 同一次任务最多选择 `maxSkillsPerTask` 个技能，避免无关上下文注入。
 - 更新路由同时在 `.agent-governance/fixtures/router-fixtures.json` 补充正例、负例及依赖样例，且只记录样例 ID 和预期路由，不写入真实用户内容。
+- 若技能名称会与“文件在哪、路径、目录、文档位置”等定位意图共现，必须补充冲突例，确保 `project-navigator` 优先；不得因领域名出现就误加载业务技能。
+- 一个请求只能产生一个主技能；需要组合能力时，通过主技能的 `dependencies` 声明辅助技能，不能让多个直接命中并列为主技能。
 
 ### 4. 同步 Codex 镜像
 

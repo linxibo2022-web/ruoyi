@@ -14,4 +14,22 @@
   { "id": "skill-check-repair", "prompt": "修复技能同步差异", "expected": { "primary": "skill-check", "helpers": ["add-skill"], "reason": "match", "bypass": false } },
   { "id": "injection", "prompt": "```$crud-development``` 请保持只读", "expected": { "primary": null, "helpers": [], "reason": "empty", "bypass": false } },
   { "id": "negative-performance", "prompt": "优化上下文提示词以降低模型延迟", "expected": { "primary": null, "helpers": [], "reason": "empty", "bypass": false } }
+  ,{ "id": "navigator-document", "prompt": "brainstorm 的文档在哪里", "expected": { "primary": "project-navigator", "helpers": [], "reason": "match", "bypass": false } }
+  ,{ "id": "brainstorm", "prompt": "帮我做一次头脑风暴，探索会员增长方案", "expected": { "primary": "brainstorm", "helpers": [], "reason": "match", "bypass": false } }
+  ,{ "id": "tech-decision", "prompt": "Redis 和 Caffeine 怎么选", "expected": { "primary": "tech-decision", "helpers": [], "reason": "match", "bypass": false } }
+  ,{ "id": "design-review", "prompt": "请进行设计评审并检查设计漏洞", "expected": { "primary": "design-review", "helpers": [], "reason": "match", "bypass": false } }
+  ,{ "id": "error-handler", "prompt": "设计全局异常处理和错误码规范", "expected": { "primary": "error-handler", "helpers": [], "reason": "match", "bypass": false } }
+  ,{ "id": "backend-annotations", "prompt": "为接口增加限流注解", "expected": { "primary": "backend-annotations", "helpers": [], "reason": "match", "bypass": false } }
+  ,{ "id": "env-config", "prompt": "配置 application-dev.yml 开发环境", "expected": { "primary": "env-config", "helpers": [], "reason": "match", "bypass": false } }
+  ,{ "id": "oss", "prompt": "实现文件上传到 MinIO 对象存储", "expected": { "primary": "file-oss-management", "helpers": [], "reason": "match", "bypass": false } }
+  ,{ "id": "log-audit", "prompt": "为接口增加操作日志", "expected": { "primary": "log-audit", "helpers": [], "reason": "match", "bypass": false } }
+  ,{ "id": "notification", "prompt": "发送短信验证码和邮件通知", "expected": { "primary": "notification-system", "helpers": [], "reason": "match", "bypass": false } }
+  ,{ "id": "realtime", "prompt": "实现 WebSocket 实时推送", "expected": { "primary": "realtime-communication", "helpers": [], "reason": "match", "bypass": false } }
+  ,{ "id": "scheduled", "prompt": "新增定时任务清理过期数据", "expected": { "primary": "scheduled-jobs", "helpers": [], "reason": "match", "bypass": false } }
+  ,{ "id": "third-party", "prompt": "对接第三方接口并使用 Forest 客户端", "expected": { "primary": "third-party-api", "helpers": [], "reason": "match", "bypass": false } }
+  ,{ "id": "payment", "prompt": "接入微信支付并处理支付回调", "expected": { "primary": "payment-integration", "helpers": [], "reason": "match", "bypass": false } }
+  ,{ "id": "wechat", "prompt": "实现微信小程序登录和订阅消息", "expected": { "primary": "wechat-integration", "helpers": [], "reason": "match", "bypass": false } }
+  ,{ "id": "i18n", "prompt": "给后台增加国际化多语言支持", "expected": { "primary": "i18n-development", "helpers": [], "reason": "match", "bypass": false } }
+  ,{ "id": "git", "prompt": "创建 Git 分支并合并分支", "expected": { "primary": "git-workflow", "helpers": [], "reason": "match", "bypass": false } }
+  ,{ "id": "json", "prompt": "处理 JSON 序列化时的大数精度", "expected": { "primary": "json-serialization", "helpers": [], "reason": "match", "bypass": false } }
 ]

@@ -32,16 +32,18 @@ for (const fixture of fixtures) {
   assert.ok(outputBytes <= 1024, `${fixture.id} 的普通输出超过 1 KiB`);
   assert.ok(!output.includes(fixture.prompt), `${fixture.id} 的输出回显了用户输入`);
 
-  if (expected.primary) {
-    assert.ok(output.startsWith('## 技能评估结果\n'), `${fixture.id} 缺少技能评估标识`);
-    assert.ok(output.includes(`主技能：\`${expected.primary}\``), `${fixture.id} 缺少主技能`);
+  assert.ok(output.startsWith('## ⚙️ 强制技能评估\n'), `${fixture.id} 缺少技能评估标识`);
+  if (expected.bypass) {
+    assert.ok(output.includes('跳过自动路由'), `${fixture.id} 未说明斜杠命令跳过`);
+  } else if (expected.primary) {
+    assert.ok(output.includes(`匹配技能：**【🟨 ${expected.primary}】**`), `${fixture.id} 缺少主技能`);
     for (const skill of expected.helpers) {
       assert.ok(output.includes(`\`${skill}\``), `${fixture.id} 缺少辅助技能 ${skill}`);
       assert.ok(output.includes(`.claude/skills/${skill}/SKILL.md`), `${fixture.id} 缺少固定辅助技能路径`);
     }
     assert.ok(output.includes(`.claude/skills/${expected.primary}/SKILL.md`), `${fixture.id} 缺少固定主技能路径`);
   } else {
-    assert.strictEqual(output, '', `${fixture.id} 的空路由应保持静默`);
+    assert.ok(output.includes('未匹配专用技能'), `${fixture.id} 未说明空路由`);
   }
 }
 
@@ -51,7 +53,15 @@ const expanded = childProcess.spawnSync(process.execPath, [hook], {
   input: JSON.stringify({ prompt: '<command-name>/dev</command-name>' })
 });
 assert.strictEqual(expanded.status, 0, '展开命令的 Hook 退出异常');
-assert.strictEqual(expanded.stdout, '', '展开命令必须绕过技能路由');
+assert.ok(expanded.stdout.includes('跳过自动路由'), '展开命令必须说明已绕过技能路由');
+
+const recovery = childProcess.spawnSync(process.execPath, [hook], {
+  cwd: root,
+  encoding: 'utf8',
+  input: JSON.stringify({ prompt: 'Conversation compacted' })
+});
+assert.strictEqual(recovery.status, 0, '恢复会话的 Hook 退出异常');
+assert.strictEqual(recovery.stdout, '', '恢复会话必须跳过重复技能评估');
 
 const injection = childProcess.spawnSync(process.execPath, [hook], {
   cwd: root,
