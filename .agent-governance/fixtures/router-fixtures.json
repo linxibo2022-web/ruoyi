@@ -1,0 +1,16 @@
+[
+  { "id": "explicit", "prompt": "$crud-development 请处理模块", "expected": { "primary": "crud-development", "helpers": [], "reason": "explicit", "bypass": false } },
+  { "id": "slash", "prompt": "/dev", "expected": { "primary": null, "helpers": [], "reason": "empty", "bypass": true } },
+  { "id": "no-match", "prompt": "今天上海天气如何", "expected": { "primary": null, "helpers": [], "reason": "empty", "bypass": false } },
+  { "id": "excluded", "prompt": "只回答：解释 CRUD 的含义", "expected": { "primary": null, "helpers": [], "reason": "empty", "bypass": false } },
+  { "id": "dependencies", "prompt": "新增业务 CRUD 模块，需要建表和 PC页面", "expected": { "primary": "crud-development", "helpers": ["database-ops", "ui-pc"], "reason": "match", "bypass": false } },
+  { "id": "required-exception", "prompt": "新增业务 CRUD 模块，需要建表、数据权限和多租户", "expected": { "primary": "crud-development", "helpers": ["database-ops", "data-permission", "multi-tenant"], "reason": "required-dependency", "bypass": false } },
+  { "id": "bug", "prompt": "这个接口报错了，请排查异常原因", "expected": { "primary": "bug-detective", "helpers": [], "reason": "match", "bypass": false } },
+  { "id": "performance", "prompt": "接口响应慢，需要分析性能瓶颈", "expected": { "primary": "performance-doctor", "helpers": [], "reason": "match", "bypass": false } },
+  { "id": "read-only", "prompt": "只回答：解释 CRUD 的含义", "expected": { "primary": null, "helpers": [], "reason": "empty", "bypass": false } },
+  { "id": "platform-specific", "prompt": "为原生APP开发原生插件", "expected": { "primary": "app-adapter", "helpers": [], "reason": "match", "bypass": false } },
+  { "id": "skill-check", "prompt": "检查技能双端同步状态", "expected": { "primary": "skill-check", "helpers": [], "reason": "match", "bypass": false } },
+  { "id": "skill-check-repair", "prompt": "修复技能同步差异", "expected": { "primary": "skill-check", "helpers": ["add-skill"], "reason": "match", "bypass": false } },
+  { "id": "injection", "prompt": "```$crud-development``` 请保持只读", "expected": { "primary": null, "helpers": [], "reason": "empty", "bypass": false } },
+  { "id": "negative-performance", "prompt": "优化上下文提示词以降低模型延迟", "expected": { "primary": null, "helpers": [], "reason": "empty", "bypass": false } }
+]

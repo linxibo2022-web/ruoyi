@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "maxSkillsPerTask": 3,
+  "skills": [
+    {
+      "name": "crud-development",
+      "priority": 90,
+      "includeAny": ["crud", "业务模块", "entity", " service", " dao"],
+      "excludeAny": ["只回答", "解释", "定位文件"],
+      "dependencies": [
+        { "whenAny": ["建表", "数据表", "ddl"], "skills": ["database-ops"], "required": true },
+        { "whenAny": ["pc页面", "前端页面"], "skills": ["ui-pc"] },
+        { "whenAny": ["移动端页面", "小程序页面"], "skills": ["ui-mobile"] },
+        { "whenAny": ["数据权限"], "skills": ["data-permission"], "required": true },
+        { "whenAny": ["租户隔离", "多租户"], "skills": ["multi-tenant"], "required": true }
+      ]
+    },
+    { "name": "database-ops", "priority": 88, "includeAny": ["数据库", "建表", "sql", "ddl", "字典", "菜单配置"], "excludeAny": [], "dependencies": [] },
+    { "name": "api-development", "priority": 84, "includeAny": ["restful", "接口设计", "api接口"], "excludeAny": ["只回答", "解释"], "dependencies": [] },
+    { "name": "ui-pc", "priority": 80, "includeAny": ["pc页面", "前端页面", "aform", "amodal"], "excludeAny": ["只回答", "解释"], "dependencies": [] },
+    { "name": "ui-mobile", "priority": 80, "includeAny": ["移动端页面", "小程序页面", "wd-组件", "wd ui"], "excludeAny": ["只回答", "解释"], "dependencies": [] },
+    { "name": "app-adapter", "priority": 83, "includeAny": ["原生app", "原生插件", "harmony", "hbuilderx", "app打包"], "excludeAny": [], "dependencies": [] },
+    { "name": "bug-detective", "priority": 85, "includeAny": ["报错", "异常", "不工作", "bug"], "excludeAny": [], "dependencies": [] },
+    { "name": "performance-doctor", "priority": 85, "includeAny": ["慢查询", "响应慢", "性能瓶颈", "渲染卡顿"], "excludeAny": ["上下文", "提示词", "模型延迟"], "dependencies": [] },
+    { "name": "security-guard", "priority": 86, "includeAny": ["认证授权", "sa-token", "安全漏洞", "数据加密"], "excludeAny": [], "dependencies": [] },
+    { "name": "data-permission", "priority": 86, "includeAny": ["数据权限", "行级权限", "数据隔离"], "excludeAny": [], "dependencies": [] },
+    { "name": "multi-tenant", "priority": 86, "includeAny": ["多租户", "tenant_id", "租户隔离"], "excludeAny": [], "dependencies": [] },
+    { "name": "redis-cache", "priority": 82, "includeAny": ["redis", "缓存穿透", "分布式锁"], "excludeAny": [], "dependencies": [] },
+    { "name": "test-development", "priority": 82, "includeAny": ["单元测试", "junit", "mockito", "测试覆盖率"], "excludeAny": [], "dependencies": [] },
+    { "name": "e2e-test-pc", "priority": 82, "includeAny": ["pc测试", "后台测试", "浏览器测试"], "excludeAny": [], "dependencies": [] },
+    { "name": "e2e-test-mobile", "priority": 82, "includeAny": ["移动端测试", "小程序测试", "wd-paging测试"], "excludeAny": [], "dependencies": [] },
+    { "name": "architecture-design", "priority": 79, "includeAny": ["模块划分", "架构设计", "代码重构"], "excludeAny": ["只回答", "解释"], "dependencies": [] },
+    { "name": "project-navigator", "priority": 75, "includeAny": ["项目结构", "文件在哪", "定位代码"], "excludeAny": [], "dependencies": [] },
+    { "name": "plan-executor", "priority": 95, "includeAny": ["执行实施计划", "计划执行", "任务编排"], "excludeAny": [], "dependencies": [] },
+    { "name": "skill-check", "priority": 92, "includeAny": ["skill-check", "检查技能同步", "校验技能镜像", "技能双端同步", "检查技能差异", "修复技能同步"], "excludeAny": ["只回答", "解释"], "dependencies": [{ "whenAny": ["修复", "直接修复", "差异直接修复"], "skills": ["add-skill"], "required": true }] },
+    { "name": "writing-plans", "priority": 78, "includeAny": ["制定计划", "实施计划", "可执行计划"], "excludeAny": [], "dependencies": [] }
+  ]
+}

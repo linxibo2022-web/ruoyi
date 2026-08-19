@@ -1,0 +1,41 @@
+{
+  "name": "媒体处理",
+  "description": "ruoyi-common-media 模块（图片缩放/水印/二维码/海报/Excel 导入导出）",
+  "delete_dirs": [
+    "ruoyi-common/ruoyi-common-media"
+  ],
+  "delete_files": [],
+  "remove_pom_lines": [
+    {
+      "file": "ruoyi-common/pom.xml",
+      "patterns": [
+        "<module>ruoyi-common-media</module>"
+      ]
+    },
+    {
+      "file": "ruoyi-modules/ruoyi-business/pom.xml",
+      "patterns": [
+        "<artifactId>ruoyi-common-media</artifactId>"
+      ]
+    },
+    {
+      "file": "ruoyi-modules/ruoyi-mall/pom.xml",
+      "patterns": [
+        "<artifactId>ruoyi-common-media</artifactId>"
+      ]
+    },
+    {
+      "file": "ruoyi-common/ruoyi-common-pay/ruoyi-common-pay-core/pom.xml",
+      "patterns": [
+        "<artifactId>ruoyi-common-media</artifactId>"
+      ]
+    }
+  ],
+  "manual_actions": [
+    "⚠️ 实测发现：单独裁 media 会编译失败！ruoyi-common-pay-core 的 QrCodeUtils.java 直接 import plus.ruoyi.common.media.builder",
+    "⚠️ 必须组合裁剪：/strip-modules pay media（pay 必须先裁，但 pay 又依赖 mall）",
+    "完整组合（推荐）：/strip-modules mall pay media（依赖链：mall → pay → media）",
+    "若业务代码引用了 ImageBuilder/QrCodeUtils 等，需手动删除对应代码"
+  ],
+  "depends_on": ["pay"]
+}

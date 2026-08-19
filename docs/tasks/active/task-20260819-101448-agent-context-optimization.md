@@ -9,7 +9,7 @@
 - **范围**：仅调整 Agent 治理文件、技能文档与 Hook；不改业务代码、数据库、前后端运行逻辑。
 - **端支持**：Codex、Claude Code。
 - **非目标**：本阶段不删除业务技能，不改变现有编码规范，不调整模型、推理等级或第三方插件。
-- **全局成功标准**：双端根规则直接包含同一版本的硬规则；双端路由使用同一 manifest 并对同一输入输出相同路由；普通 Hook 输出满足本计划字节上限；本次改动的技能与 references 双端哈希一致；路由和安全回归样例全部通过。
+- **全局成功标准**：双端根规则直接包含同一版本的硬规则；双端路由使用同一 manifest 并对同一输入输出相同路由；普通 Hook 输出满足本计划字节上限；全部 Claude 共享技能完成短入口与按需资料改造，并与 Codex 镜像的完整技能包递归哈希一致；路由和安全回归样例全部通过。
 - **自动裁决策略**：保持向后兼容、数据安全优先、最小权限、最小改动；manifest 或 Hook 解析失败时降级为空路由，不阻断独立安全 Hook。
 - **最大并发数**：2；只有文件所有权和共享契约完全不重叠的任务才可并行。
 - **默认最大重试次数**：2；仅允许在任务的“允许改动”范围内修复。
@@ -46,7 +46,7 @@ AGENTS.md                           # 直接包含共同硬规则的 Codex 入�
 CLAUDE.md                           # 直接包含共同硬规则的 Claude Code 入口
 ```
 
-原则：共同硬规则与路由逻辑只维护一次，但共同硬规则必须被直接生成到两个根规则文件；新增或修改技能继续由 `add-skill` 从 `.claude/skills/` 同步到 `.agents/skills/`。Hook 实现可以不同，但不得各自维护一份完整触发词表。
+原则：共同硬规则与路由逻辑只维护一次，但共同硬规则必须被直接生成到两个根规则文件；全部技能改造均由 `add-skill` 从 `.claude/skills/` 同步到 `.agents/skills/`，同步后必须校验完整技能包。Hook 实现可以不同，但不得各自维护一份完整触发词表。
 
 ## 设计一：根规则文件瘦身
 
@@ -267,11 +267,11 @@ Claude 的 `PreToolUse` 与 `Stop` Hook 继续承担安全拦截、范围检查�
 [FAIL] ui-pc/references 在 .claude/skills 中缺失
 ```
 
-现有双端技能数量差异不属于本方案的整改范围；新增或修改技能时，继续由 `add-skill` 执行双端同步。校验失败时禁止提交治理文件；同步脚本不得使用 `git add -A`，只处理本方案涉及的精确文件。
+试点阶段的双端技能数量差异不再视为范围外：后续全量改造必须覆盖全部 `.claude/skills/` 共享技能，并由 `add-skill` 执行 `.claude/skills/` → `.agents/skills/` 同步。同步完成后必须运行递归完整技能包校验；失败时先修复镜像，若校验能力不能覆盖新的目录结构或无法给出可操作差异，才允许升级校验器和其样例，但不得降低断言、跳过技能或把失败降级为警告。最多重试 2 次；仍失败时记录失败指纹并阻塞该技能，校验失败时禁止提交治理文件。同步脚本不得使用 `git add -A`，只处理本方案涉及的精确文件。
 
 ## 实施任务
 
-- [ ] T-01. 建立治理目录与基线统计（类型：配置）
+- [x] T-01. 建立治理目录与基线统计（类型：配置）
   - 任务目标：产出不可变的改造前统计和路由样例，作为后续性能与行为回归基线。
   - 前置条件：无；只读取当前规则、Hook 和技能目录。
   - 依赖：无；后继任务：T-02。
@@ -283,13 +283,13 @@ Claude 的 `PreToolUse` 与 `Stop` Hook 继续承担安全拦截、范围检查�
   - 实施步骤：统计文件与技能体积；以固定样例运行现有 Hook；保存机器可读的基线快照。
   - 测试标准：统计脚本对缺失可选文件返回明确状态；六类样例均有记录。
   - 验收标准：`baseline.json` 包含上述全部字段且数值非负；样例至少包括 CRUD、建表、页面、报错、只读问答、性能分析。
-  - 验证命令：`node .agent-governance/scripts/collect-baseline.cjs`，预期退出码 0 且生成 `baseline.json`。
+  - 验证命令：`node .agent-governance/baseline/collect-baseline.cjs`，预期退出码 0 且生成 `baseline.json`。
   - 审查清单：快照不含用户提示词全文、密钥或业务数据；不改变任何既有运行时行为。
   - 失败处理边界：仅修复统计脚本路径和 JSON 序列化，最多重试 2 次；无法读取的文件记录为缺失并停止，不臆造数据。
-  - 完成证据：脚本输出、`baseline.json` SHA-256、已统计文件清单。
+  - 完成证据：2026-08-19 执行 `node .agent-governance/baseline/collect-baseline.cjs` 成功生成快照；`baseline.json` SHA-256 为 `AC98B7D01DACC3C206D653DDFB906DE169A46A4FAFCBEA529BA9670C61DB3236`；已统计 `AGENTS.md`、`CLAUDE.md`、双端技能目录及三类 Hook，六类匿名样例均有记录。
   - 提交：`chore(agent-governance): 添加上下文基线统计`。
 
-- [ ] T-02. 建立统一 manifest、路由库与同步校验（类型：配置）
+- [x] T-02. 建立统一 manifest、路由库与同步校验（类型：配置）
   - 任务目标：建立可由双端 Hook 共同调用的确定性路由实现，消除 Hook 内的完整技能清单。
   - 前置条件：T-01 已完成并存在可读基线。
   - 依赖：T-01；后继任务：T-03、T-04、T-05、T-06。
@@ -304,10 +304,10 @@ Claude 的 `PreToolUse` 与 `Stop` Hook 继续承担安全拦截、范围检查�
   - 验证命令：`node .agent-governance/scripts/verify-agent-assets.cjs`，预期退出码 0 且每个 fixture 输出 `[OK]`。
   - 审查清单：不回显原始提示词；路由失败降级为空路由；JSON schema 与错误信息不泄露本地内容。
   - 失败处理边界：仅修复 manifest、router 与 fixtures，最多重试 2 次；发现既有双端技能差异时记录为范围外，不自动同步存量差异。
-  - 完成证据：fixture 结果、manifest SHA-256、脚本输出及路由 API 文档。
+  - 完成证据：2026-08-19 执行 `node .agent-governance/scripts/verify-agent-assets.cjs` 成功，7 个路由 fixture 全部通过；manifest SHA-256 为 `E60CBEF6B77D430DFB5961EFD22B31BCDF0FC9E6843E09831C6CA9DB71CE4F18`；路由 API 为 `.agent-governance/lib/router.cjs` 导出的 `selectRoute(prompt)`。
   - 提交：`feat(agent-governance): 增加统一技能路由与校验`。
 
-- [ ] T-03. 改造 Codex Hook（类型：非业务逻辑）
+- [x] T-03. 改造 Codex Hook（类型：非业务逻辑）
   - 任务目标：使 Codex 仅注入精确路由提示，SessionStart 默认仅输出经验路径索引。
   - 前置条件：T-02 的 router 和 manifest 已验证通过。
   - 依赖：T-02；后继任务：T-07。
@@ -322,10 +322,10 @@ Claude 的 `PreToolUse` 与 `Stop` Hook 继续承担安全拦截、范围检查�
   - 验证命令：`node .codex/hooks/test/skill-router.test.cjs`，预期退出码 0 且输出所有 `[OK]`。
   - 审查清单：保留恢复会话跳过；不阻断其他 Hook；缺 manifest 时空输出而非报错注入。
   - 失败处理边界：仅修复 T-03 文件，最多重试 2 次；无法兼容 Hook 输入时保留原安全路径并标记阻塞。
-  - 完成证据：测试输出、最大字节统计、受影响文件清单。
+  - 完成证据：2026-08-19 执行 `node .codex/hooks/test/skill-router.test.cjs` 成功；7 个共享 fixture、恢复会话跳过和经验路径索引均通过，最大普通输出 226 B；受影响文件为 `.codex/hooks/skill-forced-eval.cjs`、`.codex/hooks/session-start.cjs`、`.codex/hooks/test/skill-router.test.cjs`。
   - 提交：`feat(codex): 精简技能路由与会话经验注入`。
 
-- [ ] T-04. 改造 Claude Code Hook（类型：非业务逻辑）
+- [x] T-04. 改造 Claude Code Hook（类型：非业务逻辑）
   - 任务目标：让 Claude Code 输出单次精确路由，不再注入完整技能列表。
   - 前置条件：T-02 的 router 和 manifest 已验证通过。
   - 依赖：T-02；后继任务：T-07。
@@ -340,10 +340,10 @@ Claude 的 `PreToolUse` 与 `Stop` Hook 继续承担安全拦截、范围检查�
   - 验证命令：`node .claude/hooks/test/skill-router.test.cjs`，预期退出码 0 且输出所有 `[OK]`。
   - 审查清单：不回显用户输入；保留 command bypass；Hook 故障降级为空路由。
   - 失败处理边界：仅修复 T-04 文件，最多重试 2 次；settings 兼容性不明时停止并保留原 Hook 入口。
-  - 完成证据：测试输出、最大字节统计、配置差异与受影响文件清单。
+  - 完成证据：2026-08-19 执行 `node .claude/hooks/test/skill-router.test.cjs` 成功；7 个共享 fixture、展开命令绕过和注入防护均通过，最大普通输出 435 B；`.claude/settings.json` 无需变更，既有入口委托新的共享路由适配层；受影响文件为 `.claude/hooks/skill-forced-eval.cjs`、`.claude/hooks/skill-router.cjs`、`.claude/hooks/test/skill-router.test.cjs`。
   - 提交：`feat(claude): 精简技能路由注入`。
 
-- [ ] T-05. 生成双端薄入口规则（类型：配置）
+- [x] T-05. 生成双端薄入口规则（类型：配置）
   - 任务目标：将共同硬规则生成到两份根规则，同时把长模板和案例移至治理资料或按需 references。
   - 前置条件：T-02 的同步与校验脚本已可用。
   - 依赖：T-02；后继任务：T-06、T-07。
@@ -358,10 +358,10 @@ Claude 的 `PreToolUse` 与 `Stop` Hook 继续承担安全拦截、范围检查�
   - 验证命令：`node .agent-governance/scripts/verify-agent-assets.cjs`，预期退出码 0 且报告根规则一致。
   - 审查清单：不删编码与安全禁令；生成文件 UTF-8 无 BOM；不得扩大根规则的运行时注入。
   - 失败处理边界：仅修复模板、core-rules 与生成脚本，最多重试 2 次；检测到遗漏硬规则时停止，不发布半成品。
-  - 完成证据：生成日志、根规则哈希、校验输出和迁移清单。
+  - 完成证据：2026-08-19 执行 `node .agent-governance/scripts/sync-agent-assets.cjs` 成功生成双端根规则；`AGENTS.md` SHA-256 为 `70E39E34DA850E8A1EACB8FE112DA509426023164D412E61FF590898804D258D`，`CLAUDE.md` SHA-256 为 `4C77D80D5B8830CB06E61969FEAD1E218981D9F9096865CE3873D15C3C97A02B`；同步校验确认两份根规则与模板渲染完全一致，且均为 UTF-8 无 BOM。
   - 提交：`refactor(agent-governance): 生成双端薄入口规则`。
 
-- [ ] T-06. 试点拆分五个高频大技能（类型：技能改造）
+- [x] T-06. 试点拆分五个高频大技能（类型：技能改造）
   - 任务目标：将五个试点技能改成短入口 + 按需 references，同时保持 add-skill 的 Claude 主目录到 Codex 镜像同步。
   - 前置条件：T-02、T-05 已完成；五个试点原文已归档并可追溯。
   - 依赖：T-02、T-05；后继任务：T-07。
@@ -376,13 +376,13 @@ Claude 的 `PreToolUse` 与 `Stop` Hook 继续承担安全拦截、范围检查�
   - 验证命令：`node .agent-governance/scripts/verify-agent-assets.cjs`，预期退出码 0 且五组技能均报告 `[OK]`。
   - 审查清单：先改 `.claude/skills/` 再同步 `.agents/skills/`；description 不扩大触发范围；UTF-8 无 BOM。
   - 失败处理边界：仅修复五个试点目录和同步脚本，最多重试 2 次；任一技能无法无损拆分则保留原技能并记录阻塞。
-  - 完成证据：五组目录哈希、行数报告、reference 映射与校验输出。
+  - 完成证据：2026-08-19 执行 `node .agent-governance/scripts/verify-agent-assets.cjs` 成功；`crud-development`、`ui-pc`、`ui-mobile`、`architecture-design` 的入口与 `references/full-guide.md` 双端 SHA-256 均一致，入口行数依次为 31、21、19、21；`dev` 经用户确认按 `.claude/commands/dev.md` → `.agents/skills/dev/SKILL.md` 命令映射处理，正文一致且不新增 `.claude/skills/dev/`。此次任务级重基线：原“五组共享技能哈希”调整为“四组共享技能哈希 + dev 命令映射正文一致”，依据为用户 2026-08-19 的明确裁决及 add-skill 的命令映射规则；受影响下游 T-07 将按该规则回归。
   - 提交：`refactor(skills): 试点短入口与按需参考资料`。
 
-- [ ] T-07. 回归验证与灰度发布（类型：验证）
+- [x] T-07. 试点回归验证与灰度发布（类型：验证）
   - 任务目标：证明双端路由一致、上下文注入下降且所有硬规则与同步机制保持有效。
   - 前置条件：T-03、T-04、T-05、T-06 全部完成并具有局部验证证据。
-  - 依赖：T-03、T-04、T-05、T-06；后继任务：无。
+  - 依赖：T-03、T-04、T-05、T-06；后继任务：T-08。
   - 执行模式：串行。
   - 文件所有权：`.agent-governance/fixtures/`、`.agent-governance/baseline/`、`.agent-governance/reports/`。
   - 共享契约：使用 T-01 基线和 T-02 fixture schema；不更改已发布路由规则来迁就测试。
@@ -394,8 +394,44 @@ Claude 的 `PreToolUse` 与 `Stop` Hook 继续承担安全拦截、范围检查�
   - 验证命令：`node .agent-governance/scripts/verify-agent-assets.cjs`，预期退出码 0 且输出回归总数、通过数和所有 `[OK]`。
   - 审查清单：报告不含原始用户提示词；对比仅使用 T-01 基线；未通过时不标记任务完成。
   - 失败处理边界：只修复验证材料或退回直接责任任务，最多重试 2 次；超过上限记录错误原文、影响范围和回滚建议。
-  - 完成证据：双端测试输出、基线对比报告、哈希报告、Hook 字节统计和回滚结论。
+  - 完成证据：2026-08-19 运行 Codex 与 Claude Hook 测试、`verify-agent-assets.cjs` 及 `.agent-governance/reports/run-regression.cjs` 均成功；12/12 匿名路由样例通过，覆盖 CRUD、建表、页面、报错、只读、性能、显式技能、斜杠命令、恢复会话、无命中、端专属技能和注入防护；Codex/Claude 最大普通输出为 226 B/435 B，基线为 8685 B；根规则从 73834 B/23335 B 降至 4436 B/4496 B；报告位于 `.agent-governance/reports/regression-report.json`，回滚结论为不需要回滚。
   - 提交：`test(agent-governance): 验证上下文注入优化回归`。
+
+- [ ] T-08. 全量拆分并同步其余共享技能（类型：技能改造）
+  - 任务目标：在已完成五个试点的基础上，改造其余全部 Claude 共享技能为“短入口 + 按需 `references/`”，并由 `add-skill` 将每个完整技能包同步到 Codex 镜像。
+  - 前置条件：T-06、T-07 已完成；`add-skill` 已具备同步后全量递归校验与受限自修复规则。
+  - 依赖：T-06、T-07；后继任务：T-09。
+  - 执行模式：串行（所有技能共享同一 `add-skill` 同步和校验契约）。
+  - 文件所有权：除已完成试点外的 `.claude/skills/*/` 及同名 `.agents/skills/*/` 镜像目录；`.agent-governance/scripts/verify-agent-assets.cjs` 及其校验样例仅在校验能力不足时可修改。
+  - 共享契约：每个 Claude 技能目录是内容源；对应 Codex 目录必须包含完全相同的常规文件树和 SHA-256 内容。`dev` 保持既有 Claude Command → Codex Skill 映射，不伪造 `.claude/skills/dev/`。
+  - 允许改动：其余共享技能的入口、`references/`、必要的本地 `scripts/`；对应 Codex 镜像；必要时升级 `add-skill`、全量校验器及其样例。
+  - 禁止改动：业务代码、`.codex/skills/`、Hook 路由策略；不得以删除规则、放宽断言、跳过目录或将失败转警告的方式获得校验通过。
+  - 实施步骤：逐个读取现有技能并抽取任务必需的准则、触发边界与资料索引；将长教程、模板和案例移入同技能 `references/`；使用 `add-skill` 从 Claude 源同步完整目录到 Codex；每个技能或同一无冲突批次同步后立即运行全量校验，失败按 add-skill 的受限自修复流程处理。
+  - 测试标准：每个入口保留原 `name` 与 `description` 语义且不扩大触发范围；入口不超过 200 行；每个原有硬约束可在入口或其索引资料中检索；校验器能够报告缺失、多余、内容不同的具体相对路径。
+  - 验收标准：所有 `.claude/skills/*/` 均有同名 `.agents/skills/*/` 镜像，递归文件清单与 SHA-256 完全一致；所有改造后的技能均为短入口 + 按需资料；`dev` 命令映射仍正文一致；未出现重复 `.codex/skills/`。
+  - 验证命令：`node .agent-governance/scripts/verify-agent-assets.cjs`，预期退出码 0，并逐个输出所有共享技能的完整技能包校验 `[OK]`。
+  - 审查清单：每次改造均实际使用 `add-skill`；先改 Claude 源再同步 Codex；所有文件 UTF-8 无 BOM；同步失败的修复仅限镜像与校验能力；不将用户原文写入 fixture 或报告。
+  - 失败处理边界：每个失败指纹最多重试 2 次；优先修复镜像，再在不降低质量断言的前提下升级校验器；同一失败仍存在则记录差异、尝试与恢复条件并停止该技能，不影响无依赖技能继续改造。
+  - 完成证据：待执行。需记录技能总数、已改造数、每个技能的入口行数、完整技能包校验输出及所有失败指纹处理结果。
+  - 提交：`refactor(skills): 全量拆分并同步共享技能`。
+
+- [ ] T-09. 全量技能回归与治理验收（类型：验证）
+  - 任务目标：在 T-08 后验证双端 Hook、根规则、全量共享技能镜像和 `add-skill` 受限自修复门禁共同有效。
+  - 前置条件：T-08 全部成功，或所有被阻塞技能已有用户明确裁决。
+  - 依赖：T-08；后继任务：无。
+  - 执行模式：串行。
+  - 文件所有权：`.agent-governance/fixtures/`、`.agent-governance/reports/`、本任务完成证据；回归失败时仅退回其直接责任任务。
+  - 共享契约：不得为了回归通过而改变既有路由语义、降低镜像哈希断言或跳过任何 Claude 共享技能。
+  - 允许改动：验证样例、报告与完成证据；校验能力缺陷只能按 T-08 的自修复边界处理。
+  - 禁止改动：业务代码、技能内容、Hook 路由策略；除非回归失败后退回直接责任任务。
+  - 实施步骤：运行双端 Hook 测试、全量治理校验和回归报告；检查每个共享技能的递归校验结果；模拟或审查一个镜像差异，确认校验失败可被定位且不会自动放宽断言。
+  - 测试标准：原 12 类匿名路由样例全部通过；全量技能均输出 `[OK]`；镜像差异会使校验退出非 0 且指明差异路径。
+  - 验收标准：所有治理验证退出码为 0；全量镜像完整一致；add-skill 对失败具备“修复镜像/必要时升级校验器/不放宽门禁/两次上限”的可复核证据。
+  - 验证命令：`node .codex/hooks/test/skill-router.test.cjs`、`node .claude/hooks/test/skill-router.test.cjs`、`node .agent-governance/scripts/verify-agent-assets.cjs`、`node .agent-governance/reports/run-regression.cjs`，预期均退出 0。
+  - 审查清单：报告不含原始用户提示词；UTF-8 无 BOM；无跳过技能的隐藏白名单；失败场景的恢复过程不改源技能规则。
+  - 失败处理边界：只修复验证材料或退回直接责任任务，最多重试 2 次；超过上限记录失败指纹、影响范围和用户需要决定的最小事项。
+  - 完成证据：待执行。需保存全量验证输出、差异防护断言和回归报告位置。
+  - 提交：`test(agent-governance): 验收全量技能同步治理`。
 
 ## 验收指标
 
@@ -406,8 +442,9 @@ Claude 的 `PreToolUse` 与 `Stop` Hook 继续承担安全拦截、范围检查�
 | Codex SessionStart 默认历史经验注入 | 不超过 512 B |
 | 单次路由技能数 | 1 个主技能 + 最多 2 个辅助技能 |
 | 必需依赖突破上限 | 仅 manifest 标记为 `required` 时允许，且必须输出原因 |
-| 试点技能入口长度 | 不超过 200 行 |
-| 本次修改的共享技能与 references 一致性 | SHA-256 一致 |
+| 全量共享技能入口长度 | 不超过 200 行 |
+| 全量 Claude 共享技能与 Codex 镜像一致性 | 递归文件清单及 SHA-256 一致 |
+| 同步失败自修复 | 仅可修复镜像或增强校验器；不得放宽断言；同一失败最多 2 次 |
 | 共同硬规则一致性 | 直接生成到两个根规则文件并校验通过 |
 | 路由正确性 | 覆盖正向、负向、显式、恢复、冲突与注入样例 |
 
@@ -415,8 +452,9 @@ Claude 的 `PreToolUse` 与 `Stop` Hook 继续承担安全拦截、范围检查�
 
 | 风险 | 处理方式 |
 |---|---|
-| 路由过度收窄导致漏加载技能 | 保留 manifest 测试样例；先灰度五个高频技能。 |
-| 新增或修改技能时双端目录发生漂移 | 继续执行 `add-skill` 的 `.claude/skills/` → `.agents/skills/` 同步及哈希校验。 |
+| 路由过度收窄导致漏加载技能 | 保留 manifest 测试样例；试点后逐批完成全部技能改造并做全量回归。 |
+| 新增或修改技能时双端目录发生漂移 | 强制由 `add-skill` 执行 `.claude/skills/` → `.agents/skills/` 同步，并递归校验每个完整技能包。 |
+| 校验器对新目录结构覆盖不足 | 允许在不放宽断言的前提下升级校验器与样例；同一失败最多重试 2 次，仍失败则记录并阻塞。 |
 | 瘦身后遗漏关键规则 | 将编码、架构禁令、并发安全列为根规则直接包含的不可迁移项。 |
 | Hook 故障影响使用 | Hook 读取 manifest 失败时降级为空路由提示，不阻塞安全 Hook 和正常会话；安全 Hook 保持独立。 |
 | 结构化经验被错误自动注入 | 仅允许人工审核、未过期且带固定标识的阻断级记录自动注入。 |

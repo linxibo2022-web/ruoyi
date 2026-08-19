@@ -1,0 +1,29 @@
+{
+  "name": "IoT 物联网",
+  "description": "ruoyi-common-mqtt 模块（mica-mqtt 物联网设备通信） + 业务侧 IoT 设备代码",
+  "delete_dirs": [
+    "ruoyi-common/ruoyi-common-mqtt"
+  ],
+  "delete_files": [],
+  "remove_pom_lines": [
+    {
+      "file": "ruoyi-common/pom.xml",
+      "patterns": [
+        "<module>ruoyi-common-mqtt</module>"
+      ]
+    },
+    {
+      "file": "ruoyi-modules/ruoyi-business/pom.xml",
+      "patterns": [
+        "<artifactId>ruoyi-common-mqtt</artifactId>"
+      ]
+    }
+  ],
+  "manual_actions": [
+    "✅ 实测：单独裁 iot 编译通过（当前业务代码不直接依赖 mqtt 类）",
+    "若后续业务代码新增 MqttClientTemplate / @MqttSubscribe 引用，本预设需手动配套删除",
+    "删除 application.yml 中 mqtt 配置（mica.mqtt.client / mica.mqtt.server 节点）",
+    "若有 iot_ 开头的数据库表（设备/指令/上报数据等），需手动从 SQL 脚本移除"
+  ],
+  "depends_on": []
+}

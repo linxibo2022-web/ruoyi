@@ -1,0 +1,100 @@
+#!/usr/bin/env node
+const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
+const { loadManifest, selectRoute } = require('../lib/router.cjs');
+
+const root = path.resolve(__dirname, '..', '..');
+let failed = false;
+function ok(message) { console.log(`[OK] ${message}`); }
+function fail(message) { failed = true; console.error(`[FAIL] ${message}`); }
+function hash(file) { return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex'); }
+function listFiles(directory) {
+  if (!fs.existsSync(directory)) return [];
+  return fs.readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
+    const fullPath = path.join(directory, entry.name);
+    if (entry.isDirectory()) return listFiles(fullPath).map(file => path.join(entry.name, file));
+    return entry.isFile() ? [entry.name] : [];
+  }).sort();
+}
+
+let manifest;
+try {
+  manifest = loadManifest();
+  const generic = new Set(['开发', '优化', '方案']);
+  const invalid = manifest.skills.flatMap(skill => (skill.includeAny || []).filter(item => generic.has(String(item).toLowerCase())).map(item => `${skill.name}:${item}`));
+  if (invalid.length) fail(`manifest 含泛词触发：${invalid.join(', ')}`); else ok('manifest 未使用单独泛词触发');
+} catch (error) {
+  fail(`无法读取 manifest：${error.message}`);
+}
+
+try {
+  const fixtures = JSON.parse(fs.readFileSync(path.join(root, '.agent-governance', 'fixtures', 'router-fixtures.json'), 'utf8'));
+  for (const fixture of fixtures) {
+    const actual = selectRoute(fixture.prompt, manifest);
+    if (JSON.stringify(actual) === JSON.stringify(fixture.expected)) ok(`路由样例 ${fixture.id}`);
+    else fail(`路由样例 ${fixture.id} 不匹配`);
+  }
+} catch (error) {
+  fail(`无法验证路由样例：${error.message}`);
+}
+
+const core = path.join(root, '.agent-governance', 'core-rules.md');
+if (!fs.existsSync(core)) {
+  ok('根规则模板校验暂缓至 T-05');
+} else {
+  const rules = fs.readFileSync(core, 'utf8');
+  for (const name of ['AGENTS.md', 'CLAUDE.md']) {
+    const file = path.join(root, name);
+    const template = path.join(root, '.agent-governance', 'templates', `${name}.tpl`);
+    if (!fs.existsSync(template)) {
+      fail(`缺少根规则模板 ${name}.tpl`);
+      continue;
+    }
+    const expected = fs.readFileSync(template, 'utf8').replace('{{CORE_RULES}}', rules);
+    if (fs.readFileSync(file, 'utf8') === expected) ok(`${name} 与模板渲染结果一致且直接包含共同硬规则`);
+    else fail(`${name} 与模板渲染结果不一致`);
+  }
+}
+
+const claudeSkillsRoot = path.join(root, '.claude', 'skills');
+const codexSkillsRoot = path.join(root, '.agents', 'skills');
+const sharedSkills = fs.existsSync(claudeSkillsRoot)
+  ? fs.readdirSync(claudeSkillsRoot, { withFileTypes: true }).filter(entry => entry.isDirectory()).map(entry => entry.name).sort()
+  : [];
+if (!sharedSkills.length) {
+  fail('未发现 Claude 技能目录，无法校验双端镜像');
+}
+for (const name of sharedSkills) {
+  const source = path.join(root, '.claude', 'skills', name);
+  const mirror = path.join(root, '.agents', 'skills', name);
+  if (!fs.existsSync(source) || !fs.existsSync(mirror)) {
+    fail(`共享技能 ${name} 缺少 Claude 或 Codex 镜像目录`);
+    continue;
+  }
+  const sourceFiles = listFiles(source);
+  const mirrorFiles = listFiles(mirror);
+  const sourceSet = new Set(sourceFiles);
+  const mirrorSet = new Set(mirrorFiles);
+  const missingInMirror = sourceFiles.filter(file => !mirrorSet.has(file));
+  const extraInMirror = mirrorFiles.filter(file => !sourceSet.has(file));
+  const different = sourceFiles.filter(file => mirrorSet.has(file) && hash(path.join(source, file)) !== hash(path.join(mirror, file)));
+  if (missingInMirror.length || extraInMirror.length || different.length) {
+    fail(`共享技能 ${name} 镜像不一致：缺少=${missingInMirror.join(',') || '无'}；多余=${extraInMirror.join(',') || '无'}；内容不同=${different.join(',') || '无'}`);
+  } else {
+    ok(`共享技能 ${name} 完整技能包哈希一致（${sourceFiles.length} 个文件）`);
+  }
+}
+
+const command = path.join(root, '.claude', 'commands', 'dev.md');
+const devSkill = path.join(root, '.agents', 'skills', 'dev', 'SKILL.md');
+if (!fs.existsSync(command) || !fs.existsSync(devSkill)) {
+  fail('dev 命令映射缺失');
+} else {
+  const commandBody = fs.readFileSync(command, 'utf8').replace(/^# \/dev - 开发新功能\r?\n\r?\n/, '');
+  const skillBody = fs.readFileSync(devSkill, 'utf8').replace(/^---[\s\S]*?---\r?\n# \/dev - 开发新功能\r?\n\r?\n/, '');
+  if (commandBody === skillBody) ok('dev 命令与 Codex 技能正文一致');
+  else fail('dev 命令与 Codex 技能正文不一致');
+}
+
+process.exit(failed ? 1 : 0);

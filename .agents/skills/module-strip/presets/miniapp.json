@@ -1,0 +1,35 @@
+{
+  "name": "微信小程序",
+  "description": "ruoyi-common-miniapp 模块（小程序登录/订阅消息/手机号授权）",
+  "delete_dirs": [
+    "ruoyi-common/ruoyi-common-miniapp"
+  ],
+  "delete_files": [],
+  "remove_pom_lines": [
+    {
+      "file": "ruoyi-common/pom.xml",
+      "patterns": [
+        "<module>ruoyi-common-miniapp</module>"
+      ]
+    },
+    {
+      "file": "ruoyi-modules/ruoyi-business/pom.xml",
+      "patterns": [
+        "<artifactId>ruoyi-common-miniapp</artifactId>"
+      ]
+    },
+    {
+      "file": "ruoyi-modules/ruoyi-mall/pom.xml",
+      "patterns": [
+        "<artifactId>ruoyi-common-miniapp</artifactId>"
+      ]
+    }
+  ],
+  "manual_actions": [
+    "⚠️ 实测发现：单独裁 miniapp 会编译失败！ruoyi-business 中 PhoneController.java 和 MiniappAuthStrategy.java 直接 import cn.binarywang.wx.miniapp.*",
+    "⚠️ 必须手动删除：plus.ruoyi.business.api.app.PhoneController + plus.ruoyi.business.base.authStrategy.MiniappAuthStrategy",
+    "搜索业务代码中其他 'WxMa'、'wxLogin' 关键字（手机号授权、小程序登录策略）",
+    "删除 application.yml 中 wx.miniapp 配置（appid/secret 等）"
+  ],
+  "depends_on": []
+}

@@ -1,0 +1,29 @@
+{
+  "name": "社交登录",
+  "description": "ruoyi-common-social 模块（第三方登录：微信/QQ/GitHub/钉钉等）",
+  "delete_dirs": [
+    "ruoyi-common/ruoyi-common-social"
+  ],
+  "delete_files": [],
+  "remove_pom_lines": [
+    {
+      "file": "ruoyi-common/pom.xml",
+      "patterns": [
+        "<module>ruoyi-common-social</module>"
+      ]
+    },
+    {
+      "file": "ruoyi-modules/ruoyi-system/pom.xml",
+      "patterns": [
+        "<artifactId>ruoyi-common-social</artifactId>"
+      ]
+    }
+  ],
+  "manual_actions": [
+    "⚠️ 实测发现：单独裁 social 会编译失败！ruoyi-system 的 AuthController.java 和 SysLoginService.java 直接 import 了 me.zhyd.oauth.* 和 plus.ruoyi.common.social.* 类",
+    "⚠️ 必须手动删除/重构以下文件中社交登录相关方法：plus.ruoyi.system.auth.controller.AuthController + plus.ruoyi.system.auth.service.SysLoginService",
+    "删除 application.yml 中 justauth 配置（justauth.type.* 节点）",
+    "若前端有 socialLogin 相关页面（plus-ui/src/views/login 下），需手动移除"
+  ],
+  "depends_on": []
+}
