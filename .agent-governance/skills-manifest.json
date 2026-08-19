@@ -32,7 +32,7 @@
     { "name": "architecture-design", "priority": 79, "includeAny": ["模块划分", "架构设计", "代码重构"], "excludeAny": ["只回答", "解释"], "dependencies": [] },
     { "name": "project-navigator", "priority": 96, "includeAny": ["项目结构", "文件在哪", "文档在哪", "文件位置", "目录位置", "定位代码", "哪个文件", "在哪里"], "excludeAny": [], "dependencies": [] },
     { "name": "plan-executor", "priority": 95, "includeAny": ["执行实施计划", "计划执行", "任务编排"], "excludeAny": [], "dependencies": [] },
-    { "name": "skill-check", "priority": 92, "includeAny": ["skill-check", "检查技能同步", "校验技能镜像", "技能双端同步", "检查技能差异", "修复技能同步"], "excludeAny": ["只回答", "解释"], "dependencies": [{ "whenAny": ["修复", "直接修复", "差异直接修复"], "skills": ["add-skill"], "required": true }] },
+    { "name": "skill-check", "priority": 92, "includeAny": ["skill-check", "检查技能", "check技能", "检查所有技能", "检查全部技能", "检查技能同步", "校验技能镜像", "技能双端同步", "检查技能差异", "修复技能同步"], "excludeAny": ["只回答", "解释"], "dependencies": [{ "whenAny": ["修复", "直接修复", "差异直接修复"], "skills": ["add-skill"], "required": true }] },
     { "name": "writing-plans", "priority": 78, "includeAny": ["制定计划", "实施计划", "可执行计划"], "excludeAny": [], "dependencies": [] },
     { "name": "brainstorm", "priority": 78, "includeAny": ["头脑风暴", "方案探索", "功能规划", "一起想想", "发散思路"], "excludeAny": ["文件在哪", "文档在哪", "文件位置", "目录位置", "哪个文件", "在哪里", "只回答", "解释"], "dependencies": [] },
     { "name": "tech-decision", "priority": 89, "includeAny": ["技术选型", "方案对比", "哪个更好", "怎么选择", "怎么选"], "excludeAny": ["文件在哪", "文档在哪", "只回答", "解释"], "dependencies": [] },

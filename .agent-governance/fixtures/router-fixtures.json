@@ -11,6 +11,9 @@
   { "id": "read-only", "prompt": "只回答：解释 CRUD 的含义", "expected": { "primary": null, "helpers": [], "reason": "empty", "bypass": false } },
   { "id": "platform-specific", "prompt": "为原生APP开发原生插件", "expected": { "primary": "app-adapter", "helpers": [], "reason": "match", "bypass": false } },
   { "id": "skill-check", "prompt": "检查技能双端同步状态", "expected": { "primary": "skill-check", "helpers": [], "reason": "match", "bypass": false } },
+  { "id": "skill-check-general", "prompt": "检查技能", "expected": { "primary": "skill-check", "helpers": [], "reason": "match", "bypass": false } },
+  { "id": "skill-check-english", "prompt": "check技能", "expected": { "primary": "skill-check", "helpers": [], "reason": "match", "bypass": false } },
+  { "id": "skill-check-all", "prompt": "检查所有技能", "expected": { "primary": "skill-check", "helpers": [], "reason": "match", "bypass": false } },
   { "id": "skill-check-repair", "prompt": "修复技能同步差异", "expected": { "primary": "skill-check", "helpers": ["add-skill"], "reason": "match", "bypass": false } },
   { "id": "injection", "prompt": "```$crud-development``` 请保持只读", "expected": { "primary": null, "helpers": [], "reason": "empty", "bypass": false } },
   { "id": "negative-performance", "prompt": "优化上下文提示词以降低模型延迟", "expected": { "primary": null, "helpers": [], "reason": "empty", "bypass": false } }
