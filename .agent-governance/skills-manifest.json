@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "maxSkillsPerTask": 3,
+  "maxRequiredDependenciesPerSkill": 3,
   "namedSkillRouting": {
     "skills": ["add-skill", "add-test", "add-todo", "ai-langchain4j", "api-development", "app-adapter", "architecture-design", "autonomous-dev", "backend-annotations", "brainstorm", "bug-detective", "check", "cmd-framework-sync", "code-patterns", "collaborating-with-codex", "collaborating-with-gemini", "crud", "crud-development", "data-permission", "database-ops", "delivery-sync", "deploy", "deployment-guide", "design-review", "dev", "dev-startup", "e2e-test-mobile", "e2e-test-pc", "env-config", "error-handler", "exp", "exp-sediment", "file-oss-management", "framework-sync", "git-workflow", "html-to-code", "i18n-development", "icon-management", "init-docs", "iot-mqtt", "json-serialization", "log-audit", "media-processing", "message-queue", "module-strip", "multi-tenant", "next", "notification-system", "payment-integration", "performance-doctor", "plan-executor", "progress", "project-init", "project-migration", "project-navigator", "realtime-communication", "redis-cache", "scheduled-jobs", "security-guard", "skill-check", "social-login", "start", "store-mobile", "store-pc", "strip-modules", "sync", "sync-delivery", "task-tracker", "tech-decision", "test-development", "third-party-api", "ui-design-mobile", "ui-mobile", "ui-pc", "uniapp-platform", "update-status", "utils-toolkit", "wechat-integration", "writing-plans"],
     "referenceIntentAny": ["在哪里", "在哪", "路径", "目录", "文件位置", "文档位置", "是什么", "解释", "介绍", "说明"],

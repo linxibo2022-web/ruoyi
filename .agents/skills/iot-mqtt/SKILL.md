@@ -46,3 +46,4 @@ description: |
 - 与其他技能的关系
 - 快速启动 MQTT Broker
 - 参考文件索引
+- FAQ

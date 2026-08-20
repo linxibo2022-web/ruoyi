@@ -66,6 +66,28 @@ function bodyWithoutYaml(file) {
   const content = text(file);
   return (frontMatter(content)?.body || content).replace(/^# [^\r\n]+\r?\n\r?\n/, '');
 }
+function mappingGuides(mapping) {
+  const commandStem = path.basename(mapping.claudeCommand, '.md');
+  return {
+    command: path.join(root, '.claude', 'commands', `${commandStem}-references`, 'full-guide.md'),
+    skill: path.join(codexSkills, mapping.codexSkill, 'references', 'full-guide.md')
+  };
+}
+function syncCommandFromSkill(mapping, skill, command) {
+  fs.writeFileSync(command, text(skill).replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, ''), 'utf8');
+  const guides = mappingGuides(mapping);
+  fs.mkdirSync(path.dirname(guides.command), { recursive: true });
+  fs.copyFileSync(guides.skill, guides.command);
+}
+function compareMapping(mapping, command, skill) {
+  const guides = mappingGuides(mapping);
+  return {
+    bodyEqual: bodyWithoutYaml(command) === bodyWithoutYaml(skill),
+    guidesEqual: fs.existsSync(guides.command) && fs.existsSync(guides.skill)
+      && hash(guides.command) === hash(guides.skill),
+    guides
+  };
+}
 function shouldCheck(name) { return !selected.size || selected.has(name); }
 function policy() { return JSON.parse(fs.readFileSync(policyPath, 'utf8')); }
 function validateNamedRoutes() {
@@ -110,6 +132,7 @@ if (!['codex', 'claude'].includes(base)) {
 const syncPolicy = policy();
 validateNamedRoutes();
 const mappings = new Map(syncPolicy.commandMappings.map(item => [item.name, item]));
+const dualEntries = new Map((syncPolicy.dualEntrySkills || []).map(item => [item.name, item]));
 const codexExclusive = new Set(syncPolicy.codexExclusiveSkills || []);
 const claudeExclusive = new Set(syncPolicy.claudeExclusiveCommands || []);
 const baseRoot = base === 'codex' ? codexSkills : claudeSkills;
@@ -128,6 +151,32 @@ for (const name of [...names].sort()) {
   if (mapping) {
     const command = path.join(root, '.claude', 'commands', mapping.claudeCommand);
     const skill = path.join(codexSkills, mapping.codexSkill, 'SKILL.md');
+    const dualEntry = dualEntries.get(name);
+    if (dualEntry) {
+      const claudeSkillDir = path.join(claudeSkills, name);
+      const codexSkillDir = path.dirname(skill);
+      const baselineDir = base === 'codex' ? codexSkillDir : claudeSkillDir;
+      const baseline = validateSkill(baselineDir, name, `${base} 双入口基准`);
+      const commandValidation = validateCommand(command, 'claude 命令入口');
+      if (dualEntry.claudeSource !== 'skill') { fail(`${name} 双入口 claudeSource 仅支持 skill`); continue; }
+      if (!baseline.ok) { fail(`${name} ${baseline.issue}；请先由 add-skill 修复基准`); continue; }
+      if (!commandValidation.ok) { fail(`${name} ${commandValidation.issue}`); continue; }
+      if (fixDifferences) {
+        if (base === 'codex') copyPackage(codexSkillDir, claudeSkillDir);
+        else copyPackage(claudeSkillDir, codexSkillDir);
+        syncCommandFromSkill(mapping, skill, command);
+        print('FIXED', `${name} 双入口已按 ${base} 基准同步共享包、命令正文与完整资料`);
+        continue;
+      }
+      const packageDiff = comparePackages(name, claudeSkillDir, codexSkillDir);
+      const mappingDiff = compareMapping(mapping, command, skill);
+      if (!packageDiff && mappingDiff.bodyEqual && mappingDiff.guidesEqual) {
+        print('OK', `${name} 双入口共享包、命令正文与完整资料一致`);
+      } else {
+        fail(`${name} 双入口不一致：共享包=${packageDiff ? '不同' : '一致'}；命令正文=${mappingDiff.bodyEqual ? '一致' : '不同'}；完整资料=${mappingDiff.guidesEqual ? '一致' : '不同'}`);
+      }
+      continue;
+    }
     const baselineFile = base === 'codex' ? skill : command;
     if (!fs.existsSync(baselineFile)) { fail(`${name} 基准映射文件缺失：${baselineFile}`); continue; }
     const baseline = base === 'codex'
@@ -135,17 +184,20 @@ for (const name of [...names].sort()) {
       : validateCommand(command, 'claude 基准');
     if (!baseline.ok) { fail(`${name} ${baseline.issue}；请先由 add-skill 修复基准`); continue; }
     if (!fs.existsSync(command) || !fs.existsSync(skill)) { fail(`${name} 命令映射不完整`); continue; }
-    if (bodyWithoutYaml(command) === bodyWithoutYaml(skill)) print('OK', `${name} Claude Command 与 Codex Skill 正文一致`);
+    const mappingDiff = compareMapping(mapping, command, skill);
+    if (mappingDiff.bodyEqual && mappingDiff.guidesEqual) print('OK', `${name} Claude Command 与 Codex Skill 正文及完整资料一致`);
     else if (fixDifferences) {
-      if (base === 'codex') fs.writeFileSync(command, text(skill).replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, ''), 'utf8');
+      if (base === 'codex') syncCommandFromSkill(mapping, skill, command);
       else {
         const existing = text(skill);
         const header = frontMatter(existing)?.raw;
         if (!header) { fail(`${name} 缺少可保留的 Codex YAML 头，无法自动修复映射`); continue; }
         fs.writeFileSync(skill, `${header}${text(command)}`, 'utf8');
+        if (!fs.existsSync(mappingDiff.guides.command)) { fail(`${name} Claude Command 缺少完整资料，无法按 Claude 基准修复`); continue; }
+        fs.copyFileSync(mappingDiff.guides.command, mappingDiff.guides.skill);
       }
-      print('FIXED', `${name} 命令映射已按 ${base} 基准修复`);
-    } else fail(`${name} Claude Command 与 Codex Skill 正文不同`);
+      print('FIXED', `${name} 命令映射正文及完整资料已按 ${base} 基准修复`);
+    } else fail(`${name} Claude Command 与 Codex Skill 不一致：正文=${mappingDiff.bodyEqual ? '一致' : '不同'}；完整资料=${mappingDiff.guidesEqual ? '一致' : '不同'}`);
     continue;
   }
   const baselineDir = path.join(baseRoot, name);

@@ -11,7 +11,20 @@ function emptyRoute(bypass = false) {
 }
 
 function loadManifest() {
-  return JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const requiredLimit = Number(manifest.maxRequiredDependenciesPerSkill);
+  if (!Number.isInteger(requiredLimit) || requiredLimit < 0) {
+    throw new Error('maxRequiredDependenciesPerSkill 必须是非负整数');
+  }
+  for (const skill of manifest.skills || []) {
+    const required = new Set((skill.dependencies || [])
+      .filter(dependency => dependency.required)
+      .flatMap(dependency => dependency.skills || []));
+    if (required.size > requiredLimit) {
+      throw new Error(`${skill.name} 的必需依赖数 ${required.size} 超过绝对上限 ${requiredLimit}`);
+    }
+  }
+  return manifest;
 }
 
 function normalizePrompt(prompt) {

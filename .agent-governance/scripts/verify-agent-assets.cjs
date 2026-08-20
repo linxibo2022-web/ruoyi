@@ -16,6 +16,24 @@ function routeMatches(actual, expected) {
 function ok(message) { console.log(`[OK] ${message}`); }
 function fail(message) { failed = true; console.error(`[FAIL] ${message}`); }
 function hash(file) { return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex'); }
+function text(file) { return fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, ''); }
+function frontMatter(content) {
+  const match = content.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n/);
+  return match ? { raw: match[0], body: content.slice(match[0].length) } : null;
+}
+function bodyWithoutYaml(file) {
+  const content = text(file);
+  return (frontMatter(content)?.body || content).replace(/^# [^\r\n]+\r?\n\r?\n/, '');
+}
+function validateGuideIndex(entryFile, guideFile, label) {
+  if (!fs.existsSync(entryFile) || !fs.existsSync(guideFile)) return;
+  const entry = text(entryFile);
+  if (!entry.includes('原入口的完整规范、模板、案例和边界。主要专题：')) return;
+  const headings = [...text(guideFile).matchAll(/^##\s+(.+)$/gm)].map(match => match[1].trim());
+  const missing = headings.filter(heading => !entry.split(/\r?\n/).includes(`- ${heading}`));
+  if (missing.length) fail(`${label} 资料索引不完整：缺少=${missing.join('、')}`);
+  else ok(`${label} 资料索引覆盖全部 ${headings.length} 个二级标题`);
+}
 function listFiles(directory) {
   if (!fs.existsSync(directory)) return [];
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
@@ -48,6 +66,11 @@ try {
   });
   if (claudeFailures.length) fail(`Claude 技能名称调用路由或端专属过滤失败：${claudeFailures.join(',')}`);
   else ok(`Claude 技能名称调用与端专属过滤通过（${declared.length} 个）`);
+  const requiredLimit = manifest.maxRequiredDependenciesPerSkill;
+  const maxRequired = Math.max(0, ...manifest.skills.map(skill => new Set((skill.dependencies || [])
+    .filter(dependency => dependency.required)
+    .flatMap(dependency => dependency.skills || [])).size));
+  ok(`manifest 必需依赖绝对上限有效（当前最大 ${maxRequired}，上限 ${requiredLimit}）`);
 } catch (error) {
   fail(`无法读取 manifest：${error.message}`);
 }
@@ -108,17 +131,74 @@ for (const name of sharedSkills) {
   } else {
     ok(`共享技能 ${name} 完整技能包哈希一致（${sourceFiles.length} 个文件）`);
   }
+  validateGuideIndex(
+    path.join(source, 'SKILL.md'),
+    path.join(source, 'references', 'full-guide.md'),
+    `共享技能 ${name}`
+  );
 }
 
-const command = path.join(root, '.claude', 'commands', 'dev.md');
-const devSkill = path.join(root, '.agents', 'skills', 'dev', 'SKILL.md');
-if (!fs.existsSync(command) || !fs.existsSync(devSkill)) {
-  fail('dev 命令映射缺失');
-} else {
-  const commandBody = fs.readFileSync(command, 'utf8').replace(/^# \/dev - 开发新功能\r?\n\r?\n/, '');
-  const skillBody = fs.readFileSync(devSkill, 'utf8').replace(/^---[\s\S]*?---\r?\n# \/dev - 开发新功能\r?\n\r?\n/, '');
-  if (commandBody === skillBody) ok('dev 命令与 Codex 技能正文一致');
-  else fail('dev 命令与 Codex 技能正文不一致');
+try {
+  const policy = JSON.parse(fs.readFileSync(path.join(root, '.agent-governance', 'skill-sync-policy.json'), 'utf8'));
+  const mappings = policy.commandMappings || [];
+  const mappingNames = mappings.map(item => item.name);
+  const duplicateMappings = mappingNames.filter((name, index) => mappingNames.indexOf(name) !== index);
+  if (duplicateMappings.length) fail(`命令映射名称重复：${[...new Set(duplicateMappings)].join(', ')}`);
+
+  const dualEntries = policy.dualEntrySkills || [];
+  const dualNames = dualEntries.map(item => item.name);
+  const invalidDualEntries = dualEntries.filter(item =>
+    !mappingNames.includes(item.name)
+    || item.claudeSource !== 'skill'
+    || !fs.existsSync(path.join(claudeSkillsRoot, item.name, 'SKILL.md'))
+  );
+  if (invalidDualEntries.length) fail(`双入口技能声明无效：${invalidDualEntries.map(item => item.name).join(', ')}`);
+  else ok(`双入口技能身份声明有效（${dualNames.join(', ') || '无'}）`);
+
+  for (const mapping of mappings) {
+    const command = path.join(root, '.claude', 'commands', mapping.claudeCommand);
+    const skill = path.join(codexSkillsRoot, mapping.codexSkill, 'SKILL.md');
+    const commandStem = path.basename(mapping.claudeCommand, '.md');
+    const commandGuide = path.join(root, '.claude', 'commands', `${commandStem}-references`, 'full-guide.md');
+    const skillGuide = path.join(codexSkillsRoot, mapping.codexSkill, 'references', 'full-guide.md');
+    if (!fs.existsSync(command) || !fs.existsSync(skill)) {
+      fail(`${mapping.name} 命令映射缺失`);
+      continue;
+    }
+    if (bodyWithoutYaml(command) === bodyWithoutYaml(skill)) ok(`${mapping.name} Claude Command 与 Codex Skill 正文一致`);
+    else fail(`${mapping.name} Claude Command 与 Codex Skill 正文不一致`);
+    if (!fs.existsSync(commandGuide) || !fs.existsSync(skillGuide)) fail(`${mapping.name} 命令映射缺少完整资料`);
+    else if (hash(commandGuide) === hash(skillGuide)) ok(`${mapping.name} Claude Command 与 Codex Skill 完整资料一致`);
+    else fail(`${mapping.name} Claude Command 与 Codex Skill 完整资料不一致`);
+    validateGuideIndex(command, commandGuide, `命令 ${mapping.name}`);
+  }
+  ok(`已遍历 ${mappings.length} 个策略命令映射`);
+} catch (error) {
+  fail(`无法验证技能同步策略：${error.message}`);
+}
+
+const deprecatedInstructions = [
+  /登记：`?\.claude\/hooks\/skill-forced-eval\.cjs`?\s*技能列表/,
+  /声明到\s*hook\s*\+\s*AGENTS\.md/i,
+  /Edit\s+\.claude\/hooks\/skill-forced-eval\.cjs/i,
+  /Edit\s+AGENTS\.md\s*技能表/i
+];
+const deprecatedHits = listFiles(claudeSkillsRoot)
+  .filter(file => file.endsWith(path.join('references', 'full-guide.md')))
+  .flatMap(file => deprecatedInstructions.some(pattern => pattern.test(text(path.join(claudeSkillsRoot, file)))) ? [file] : []);
+if (deprecatedHits.length) fail(`完整资料仍含废弃治理指令：${deprecatedHits.join(', ')}`);
+else ok('完整资料未发现手改 Hook 技能表或生成根规则的废弃指令');
+
+try {
+  const settings = JSON.parse(text(path.join(root, '.claude', 'settings.json')));
+  const matcher = (settings.hooks?.PreToolUse || []).map(item => item.matcher || '').join('|');
+  const hookSource = text(path.join(root, '.claude', 'hooks', 'pre-tool-use.cjs'));
+  const matcherCovered = matcher.includes('Edit') && matcher.includes('Write');
+  const branchCovered = hookSource.includes("toolName === 'Edit'") && hookSource.includes("toolName === 'Write'");
+  if (matcherCovered && branchCovered) ok('Claude Edit/Write 均进入敏感文件提醒');
+  else fail('Claude PreToolUse matcher 与敏感文件处理分支未成对覆盖 Edit/Write');
+} catch (error) {
+  fail(`无法验证 Claude 敏感文件 Hook：${error.message}`);
 }
 
 process.exit(failed ? 1 : 0);

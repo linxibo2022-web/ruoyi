@@ -29,26 +29,26 @@ function routeInput(input) {
  * 将路由转换为不含用户提示词的固定说明。
  *
  * @param {{ primary: string | null, helpers: string[], matches: string[], reason: string, bypass: boolean }} route 路由结果
- * @returns {string} 可注入 Claude Code 上下文的说明
+ * @returns {string} 命中技能时可注入 Claude Code 上下文的说明；无需路由时为空字符串
  */
 function renderRoute(route) {
-  if (route.bypass) return '## ⚙️ 强制技能评估\n\n结果：跳过自动路由（斜杠命令）。';
-  if (!route.primary) return '## ⚙️ 强制技能评估\n\n结果：未匹配专用技能，按项目通用规则执行。';
+  const header = '⚙️ 强制技能评估';
+  if (route.bypass || !route.primary) return '';
 
   const candidates = route.matches.length > 1
-    ? `\n候选技能：${route.matches.map(skill => `\`${skill}\``).join('、')}`
+    ? `；候选技能：${route.matches.join('、')}`
     : '';
   const helperLines = route.helpers.length
-    ? `\n辅助技能：${route.helpers.map(skill => `\`${skill}\``).join('、')}`
+    ? `；满足依赖条件时加载：${route.helpers.join('、')}`
     : '';
   const requiredNotice = route.reason === 'required-dependency'
-    ? '\n说明：manifest 标记的必需依赖可突破默认辅助技能上限。'
+    ? '；必需依赖按 manifest 的绝对上限保留'
     : '';
 
   const skillPath = path.posix.join('.claude/skills', route.primary, 'SKILL.md');
   const commandPath = path.posix.join('.claude/commands', `${route.primary}.md`);
   const target = fs.existsSync(path.join(__dirname, '..', 'skills', route.primary, 'SKILL.md')) ? skillPath : commandPath;
-  return `## ⚙️ 强制技能评估\n\n### 匹配技能：**【🟨 ${route.primary}】**${candidates}${helperLines}\n路由原因：\`${route.reason}\`${requiredNotice}\n不要预读技能正文；开始对应子任务前，再读取对应的 \`${target}\`。`;
+  return `${header}：匹配技能 【🟨 ${route.primary}】${candidates}${helperLines}；路由原因：${route.reason}${requiredNotice}。不要预读技能正文；开始对应子任务前再读取 ${target}。`;
 }
 
 module.exports = { renderRoute, routeInput };

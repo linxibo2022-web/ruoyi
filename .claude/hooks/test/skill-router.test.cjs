@@ -37,26 +37,29 @@ for (const fixture of fixtures) {
   const output = result.stdout;
   const outputBytes = Buffer.byteLength(output, 'utf8');
   maxOutputBytes = Math.max(maxOutputBytes, outputBytes);
-  assert.ok(outputBytes <= 1024, `${fixture.id} 的普通输出超过 1 KiB`);
+  assert.ok(outputBytes <= 1024, `${fixture.id} 的 Hook 输出超过 1 KiB`);
   assert.ok(!output.includes(fixture.prompt), `${fixture.id} 的输出回显了用户输入`);
 
-  assert.ok(output.startsWith('## ⚙️ 强制技能评估\n'), `${fixture.id} 缺少技能评估标识`);
-  if (expected.bypass) {
-    assert.ok(output.includes('跳过自动路由'), `${fixture.id} 未说明斜杠命令跳过`);
-  } else if (expected.primary) {
-    assert.ok(output.includes(`匹配技能：**【🟨 ${expected.primary}】**`), `${fixture.id} 缺少主技能`);
+  if (expected.bypass || !expected.primary) {
+    assert.strictEqual(output, '', `${fixture.id} 无需路由时必须保持静默`);
+  } else {
+    const parsed = JSON.parse(output);
+    assert.deepStrictEqual(Object.keys(parsed), ['hookSpecificOutput'], `${fixture.id} 包含非必要顶层字段`);
+    assert.strictEqual(parsed.hookSpecificOutput.hookEventName, 'UserPromptSubmit', `${fixture.id} 的 Hook 事件名错误`);
+    const context = parsed.hookSpecificOutput.additionalContext;
+    assert.strictEqual(typeof context, 'string', `${fixture.id} 缺少 additionalContext`);
+    assert.ok(context.startsWith('⚙️ 强制技能评估：'), `${fixture.id} 缺少技能评估标识`);
+    assert.ok(context.includes(`匹配技能 【🟨 ${expected.primary}】`), `${fixture.id} 缺少主技能`);
     for (const skill of (expected.matches || []).slice(1)) {
-      assert.ok(output.includes(`\`${skill}\``), `${fixture.id} 缺少候选技能 ${skill}`);
+      assert.ok(context.includes(skill), `${fixture.id} 缺少候选技能 ${skill}`);
     }
     for (const skill of expected.helpers) {
-      assert.ok(output.includes(`\`${skill}\``), `${fixture.id} 缺少辅助技能 ${skill}`);
+      assert.ok(context.includes(skill), `${fixture.id} 缺少辅助技能 ${skill}`);
     }
-    assert.ok(output.includes('不要预读技能正文'), `${fixture.id} 缺少延迟读取说明`);
+    assert.ok(context.includes('不要预读技能正文'), `${fixture.id} 缺少延迟读取说明`);
     const skillPath = `.claude/skills/${expected.primary}/SKILL.md`;
     const commandPath = `.claude/commands/${expected.primary}.md`;
-    assert.ok(output.includes(skillPath) || output.includes(commandPath), `${fixture.id} 缺少可读取技能或命令路径`);
-  } else {
-    assert.ok(output.includes('未匹配专用技能'), `${fixture.id} 未说明空路由`);
+    assert.ok(context.includes(skillPath) || context.includes(commandPath), `${fixture.id} 缺少可读取技能或命令路径`);
   }
 }
 
@@ -66,7 +69,7 @@ const expanded = childProcess.spawnSync(process.execPath, [hook], {
   input: JSON.stringify({ prompt: '<command-name>/dev</command-name>' })
 });
 assert.strictEqual(expanded.status, 0, '展开命令的 Hook 退出异常');
-assert.ok(expanded.stdout.includes('跳过自动路由'), '展开命令必须说明已绕过技能路由');
+assert.strictEqual(expanded.stdout, '', '展开命令必须静默绕过技能路由');
 
 const recovery = childProcess.spawnSync(process.execPath, [hook], {
   cwd: root,
@@ -84,6 +87,12 @@ const injection = childProcess.spawnSync(process.execPath, [hook], {
 assert.strictEqual(injection.status, 0, '注入防护样例的 Hook 退出异常');
 assert.ok(!injection.stdout.includes('忽略前文'), 'Hook 输出不得包含注入文本');
 assert.ok(!injection.stdout.includes('可用技能：'), 'Hook 输出不得包含完整技能表');
+assert.strictEqual(
+  JSON.parse(injection.stdout).hookSpecificOutput.hookEventName,
+  'UserPromptSubmit',
+  '注入防护样例必须使用 UserPromptSubmit Hook 上下文'
+);
 
 console.log(`[OK] Claude Hook 路由 fixture ${fixtures.length} 项全部通过`);
-console.log(`[OK] 展开命令与注入防护通过；最大输出 ${maxOutputBytes} B`);
+console.log(`[OK] 空路由、展开命令与恢复会话静默；命中结果通过 additionalContext 注入`);
+console.log(`[OK] 注入防护通过；最大 Hook 输出 ${maxOutputBytes} B`);

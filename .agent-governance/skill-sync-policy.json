@@ -18,6 +18,9 @@
     { "name": "sync-delivery", "claudeCommand": "sync-delivery.md", "codexSkill": "sync-delivery" },
     { "name": "update-status", "claudeCommand": "update-status.md", "codexSkill": "update-status" }
   ],
+  "dualEntrySkills": [
+    { "name": "framework-sync", "claudeSource": "skill" }
+  ],
   "codexExclusiveSkills": ["autonomous-dev", "cmd-framework-sync"],
   "claudeExclusiveCommands": ["dev-loop.md", "kickoff.md", "loop-gen.md"]
 }

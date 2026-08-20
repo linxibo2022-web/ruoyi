@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-19T09:46:10.588Z",
+  "generatedAt": "2026-08-20T04:23:39.380Z",
   "fixtures": {
     "total": 44,
     "passed": 44,
@@ -8,266 +8,266 @@
       {
         "id": "explicit",
         "routeMatch": true,
-        "codexOutputBytes": 170,
-        "claudeOutputBytes": 225
+        "codexOutputBytes": 201,
+        "claudeOutputBytes": 283
       },
       {
         "id": "explicit-shared-unlisted",
         "routeMatch": true,
-        "codexOutputBytes": 163,
-        "claudeOutputBytes": 211
+        "codexOutputBytes": 187,
+        "claudeOutputBytes": 269
       },
       {
         "id": "slash",
         "routeMatch": true,
         "codexOutputBytes": 67,
-        "claudeOutputBytes": 78
+        "claudeOutputBytes": 0
       },
       {
         "id": "no-match",
         "routeMatch": true,
         "codexOutputBytes": 82,
-        "claudeOutputBytes": 93
+        "claudeOutputBytes": 0
       },
       {
         "id": "excluded",
         "routeMatch": true,
         "codexOutputBytes": 82,
-        "claudeOutputBytes": 93
+        "claudeOutputBytes": 0
       },
       {
         "id": "dependencies",
         "routeMatch": true,
-        "codexOutputBytes": 280,
-        "claudeOutputBytes": 323
+        "codexOutputBytes": 308,
+        "claudeOutputBytes": 390
       },
       {
         "id": "required-exception",
         "routeMatch": true,
-        "codexOutputBytes": 370,
-        "claudeOutputBytes": 467
+        "codexOutputBytes": 421,
+        "claudeOutputBytes": 503
       },
       {
         "id": "bug",
         "routeMatch": true,
-        "codexOutputBytes": 167,
-        "claudeOutputBytes": 216
+        "codexOutputBytes": 192,
+        "claudeOutputBytes": 274
       },
       {
         "id": "performance",
         "routeMatch": true,
-        "codexOutputBytes": 172,
-        "claudeOutputBytes": 226
+        "codexOutputBytes": 202,
+        "claudeOutputBytes": 284
       },
       {
         "id": "read-only",
         "routeMatch": true,
         "codexOutputBytes": 82,
-        "claudeOutputBytes": 93
+        "claudeOutputBytes": 0
       },
       {
         "id": "platform-specific",
         "routeMatch": true,
-        "codexOutputBytes": 165,
-        "claudeOutputBytes": 212
+        "codexOutputBytes": 188,
+        "claudeOutputBytes": 270
       },
       {
         "id": "skill-check",
         "routeMatch": true,
-        "codexOutputBytes": 165,
-        "claudeOutputBytes": 212
+        "codexOutputBytes": 188,
+        "claudeOutputBytes": 270
       },
       {
         "id": "skill-check-general",
         "routeMatch": true,
-        "codexOutputBytes": 165,
-        "claudeOutputBytes": 212
+        "codexOutputBytes": 188,
+        "claudeOutputBytes": 270
       },
       {
         "id": "skill-check-english",
         "routeMatch": true,
-        "codexOutputBytes": 165,
-        "claudeOutputBytes": 212
+        "codexOutputBytes": 188,
+        "claudeOutputBytes": 270
       },
       {
         "id": "skill-check-all",
         "routeMatch": true,
-        "codexOutputBytes": 165,
-        "claudeOutputBytes": 212
+        "codexOutputBytes": 188,
+        "claudeOutputBytes": 270
       },
       {
         "id": "skill-check-repair",
         "routeMatch": true,
-        "codexOutputBytes": 207,
-        "claudeOutputBytes": 239
+        "codexOutputBytes": 230,
+        "claudeOutputBytes": 312
       },
       {
         "id": "injection",
         "routeMatch": true,
         "codexOutputBytes": 82,
-        "claudeOutputBytes": 93
+        "claudeOutputBytes": 0
       },
       {
         "id": "negative-performance",
         "routeMatch": true,
         "codexOutputBytes": 82,
-        "claudeOutputBytes": 93
+        "claudeOutputBytes": 0
       },
       {
         "id": "navigator-document",
         "routeMatch": true,
-        "codexOutputBytes": 171,
-        "claudeOutputBytes": 224
+        "codexOutputBytes": 200,
+        "claudeOutputBytes": 282
       },
       {
         "id": "brainstorm",
         "routeMatch": true,
-        "codexOutputBytes": 164,
-        "claudeOutputBytes": 210
+        "codexOutputBytes": 186,
+        "claudeOutputBytes": 268
       },
       {
         "id": "tech-decision",
         "routeMatch": true,
-        "codexOutputBytes": 212,
-        "claudeOutputBytes": 263
+        "codexOutputBytes": 237,
+        "claudeOutputBytes": 319
       },
       {
         "id": "design-review",
         "routeMatch": true,
-        "codexOutputBytes": 167,
-        "claudeOutputBytes": 216
+        "codexOutputBytes": 192,
+        "claudeOutputBytes": 274
       },
       {
         "id": "document-review",
         "routeMatch": true,
-        "codexOutputBytes": 167,
-        "claudeOutputBytes": 216
+        "codexOutputBytes": 192,
+        "claudeOutputBytes": 274
       },
       {
         "id": "error-handler",
         "routeMatch": true,
-        "codexOutputBytes": 214,
-        "claudeOutputBytes": 265
+        "codexOutputBytes": 239,
+        "claudeOutputBytes": 321
       },
       {
         "id": "backend-annotations",
         "routeMatch": true,
-        "codexOutputBytes": 173,
-        "claudeOutputBytes": 228
+        "codexOutputBytes": 204,
+        "claudeOutputBytes": 286
       },
       {
         "id": "env-config",
         "routeMatch": true,
-        "codexOutputBytes": 164,
-        "claudeOutputBytes": 210
+        "codexOutputBytes": 186,
+        "claudeOutputBytes": 268
       },
       {
         "id": "oss",
         "routeMatch": true,
-        "codexOutputBytes": 173,
-        "claudeOutputBytes": 228
+        "codexOutputBytes": 204,
+        "claudeOutputBytes": 286
       },
       {
         "id": "log-audit",
         "routeMatch": true,
-        "codexOutputBytes": 163,
-        "claudeOutputBytes": 208
+        "codexOutputBytes": 184,
+        "claudeOutputBytes": 266
       },
       {
         "id": "notification",
         "routeMatch": true,
-        "codexOutputBytes": 173,
-        "claudeOutputBytes": 228
+        "codexOutputBytes": 204,
+        "claudeOutputBytes": 286
       },
       {
         "id": "realtime",
         "routeMatch": true,
-        "codexOutputBytes": 176,
-        "claudeOutputBytes": 234
+        "codexOutputBytes": 210,
+        "claudeOutputBytes": 292
       },
       {
         "id": "scheduled",
         "routeMatch": true,
-        "codexOutputBytes": 168,
-        "claudeOutputBytes": 218
+        "codexOutputBytes": 194,
+        "claudeOutputBytes": 276
       },
       {
         "id": "third-party",
         "routeMatch": true,
-        "codexOutputBytes": 169,
-        "claudeOutputBytes": 220
+        "codexOutputBytes": 196,
+        "claudeOutputBytes": 278
       },
       {
         "id": "payment",
         "routeMatch": true,
-        "codexOutputBytes": 173,
-        "claudeOutputBytes": 228
+        "codexOutputBytes": 204,
+        "claudeOutputBytes": 286
       },
       {
         "id": "wechat",
         "routeMatch": true,
-        "codexOutputBytes": 172,
-        "claudeOutputBytes": 226
+        "codexOutputBytes": 202,
+        "claudeOutputBytes": 284
       },
       {
         "id": "i18n",
         "routeMatch": true,
-        "codexOutputBytes": 170,
-        "claudeOutputBytes": 222
+        "codexOutputBytes": 198,
+        "claudeOutputBytes": 280
       },
       {
         "id": "git",
         "routeMatch": true,
-        "codexOutputBytes": 166,
-        "claudeOutputBytes": 214
+        "codexOutputBytes": 190,
+        "claudeOutputBytes": 272
       },
       {
         "id": "json",
         "routeMatch": true,
-        "codexOutputBytes": 172,
-        "claudeOutputBytes": 226
+        "codexOutputBytes": 202,
+        "claudeOutputBytes": 284
       },
       {
         "id": "multiple-independent",
         "routeMatch": true,
-        "codexOutputBytes": 210,
-        "claudeOutputBytes": 261
+        "codexOutputBytes": 235,
+        "claudeOutputBytes": 317
       },
       {
         "id": "named-skill-call",
         "routeMatch": true,
-        "codexOutputBytes": 167,
-        "claudeOutputBytes": 216
+        "codexOutputBytes": 192,
+        "claudeOutputBytes": 274
       },
       {
         "id": "named-skill-location",
         "routeMatch": true,
-        "codexOutputBytes": 171,
-        "claudeOutputBytes": 224
+        "codexOutputBytes": 200,
+        "claudeOutputBytes": 282
       },
       {
         "id": "named-skill-definition",
         "routeMatch": true,
         "codexOutputBytes": 82,
-        "claudeOutputBytes": 93
+        "claudeOutputBytes": 0
       },
       {
         "id": "named-command-call",
         "routeMatch": true,
-        "codexOutputBytes": 159,
-        "claudeOutputBytes": 196
+        "codexOutputBytes": 176,
+        "claudeOutputBytes": 254
       },
       {
         "id": "named-skill-substring",
         "routeMatch": true,
-        "codexOutputBytes": 165,
-        "claudeOutputBytes": 212
+        "codexOutputBytes": 188,
+        "claudeOutputBytes": 270
       },
       {
         "id": "named-skill-action-with-explanation",
         "routeMatch": true,
-        "codexOutputBytes": 167,
-        "claudeOutputBytes": 216
+        "codexOutputBytes": 192,
+        "claudeOutputBytes": 274
       }
     ]
   },
@@ -282,8 +282,8 @@
     }
   },
   "hookBytes": {
-    "codexMax": 370,
-    "claudeMax": 467,
+    "codexMax": 421,
+    "claudeMax": 503,
     "baselineMax": 8685
   },
   "rootRuleBytes": {

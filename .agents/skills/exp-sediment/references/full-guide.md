@@ -367,8 +367,8 @@ find .claude/docs/experience -name "*-exp-summary.md" -type f | sort | tail -3
 → 读 .claude/skills/add-skill/SKILL.md 完整执行：
   - YAML 头部规范
   - 文档结构
-  - 声明到 hook + AGENTS.md
-  - 同步 .agents/skills/
+  - 路由登记到 .agent-governance/skills-manifest.json
+  - 从 .claude/skills/ 同步完整技能包到 .agents/skills/
 ```
 
 #### ② 现有技能漏洞
@@ -376,8 +376,8 @@ find .claude/docs/experience -name "*-exp-summary.md" -type f | sort | tail -3
 ```
 framework 模式：
   Edit .claude/skills/{target}/SKILL.md
-  cp .claude/skills/{target}/SKILL.md .agents/skills/{target}/SKILL.md
-  diff 验证一致
+  同步 .claude/skills/{target}/ 完整技能包到 .agents/skills/{target}/
+  运行 verify-agent-assets.cjs 验证递归镜像一致
 
 subproject 模式：
   追加到 .claude/docs/experience/feedback-to-framework.md
@@ -388,7 +388,7 @@ subproject 模式：
 
 ```
 framework 模式：
-  Edit CLAUDE.md 禁止表（根据类型找到正确的表）
+  Edit .agent-governance/core-rules.md 或对应模板，再运行 sync-agent-assets.cjs
   若是特定领域 → 改对应 Skill 的"常见错误"章节
 
 subproject 模式：
@@ -414,8 +414,9 @@ Write .claude/docs/experience/YYYY-MM/YYYY-MM-DD-{slug}.md
 ```
 Write .claude/commands/{cmd}.md（无 YAML）
 Write .agents/skills/{cmd}/SKILL.md（加 YAML 头）
-Edit .claude/hooks/skill-forced-eval.cjs（若希望参与评估）
-Edit AGENTS.md 技能表
+Edit .agent-governance/skill-sync-policy.json 声明命令映射
+若希望参与自然语言评估，Edit .agent-governance/skills-manifest.json
+运行 verify-agent-assets.cjs 校验命令正文、资料与路由一致性
 ```
 
 ---

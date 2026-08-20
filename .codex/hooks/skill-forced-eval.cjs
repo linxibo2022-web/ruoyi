@@ -38,5 +38,5 @@ if (!route.primary) {
 
 const candidates = route.matches.length > 1 ? `；候选技能：${route.matches.join('、')}` : '';
 const helpers = route.helpers.length ? `；满足依赖条件时加载：${route.helpers.join('、')}` : '';
-const required = route.reason === 'required-dependency' ? '；必需依赖按 manifest 例外保留' : '';
-process.stdout.write(`${header}：匹配技能 【🟨 ${route.primary}】${candidates}${helpers}${required}。不要预读技能正文；开始对应子任务前再读取 .agents/skills/<技能名>/SKILL.md。`);
+const required = route.reason === 'required-dependency' ? '；必需依赖按 manifest 的绝对上限保留' : '';
+process.stdout.write(`${header}：匹配技能 【🟨 ${route.primary}】${candidates}${helpers}；路由原因：${route.reason}${required}。不要预读技能正文；开始对应子任务前再读取 .agents/skills/${route.primary}/SKILL.md。`);

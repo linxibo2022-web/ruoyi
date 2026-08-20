@@ -360,5 +360,6 @@ brainstorm(方案)  →  【writing-plans(计划契约)】  →  plan-executor(�
 本技能为 Skill，须同步 Codex 镜像（按 `add-skill` 规范）：
 - 主：`.claude/skills/writing-plans/SKILL.md`
 - 镜像：`.agents/skills/writing-plans/SKILL.md`（内容完全相同，`diff` 无差异）
-- 登记：`.claude/hooks/skill-forced-eval.cjs` 技能列表 + `AGENTS.md` 技能表
+- 路由登记：`.agent-governance/skills-manifest.json`；不得在 Hook 中维护技能列表
+- 根规则：修改 `.agent-governance/core-rules.md` 或模板后运行 `sync-agent-assets.cjs`，不得手工编辑生成的 `AGENTS.md`、`CLAUDE.md`
 - single 分支同步时：约束清单内 `TenantEntity` 改 `BaseEntity`

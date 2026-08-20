@@ -92,8 +92,8 @@ if (toolName === 'Bash') {
   }
 }
 
-// Write 工具检查
-if (toolName === 'Write') {
+// Edit / Write 工具都可能修改敏感配置，必须进入同一提醒分支。
+if (toolName === 'Edit' || toolName === 'Write') {
   const filePath = toolInput.file_path || '';
 
   // 检查是否写入敏感配置文件

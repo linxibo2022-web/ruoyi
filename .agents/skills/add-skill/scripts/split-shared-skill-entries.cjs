@@ -9,6 +9,7 @@ const path = require('path');
 const root = path.resolve(__dirname, '..', '..', '..', '..');
 const claudeRoot = path.join(root, '.claude', 'skills');
 const codexRoot = path.join(root, '.agents', 'skills');
+const refreshIndexes = process.argv.slice(2).includes('--refresh-indexes');
 
 function read(file) {
   return fs.readFileSync(file, 'utf8');
@@ -26,7 +27,7 @@ function splitFrontMatter(source, name) {
 }
 
 function buildEntry(name, frontMatter, body) {
-  const headings = [...body.matchAll(/^##\s+(.+)$/gm)].map(match => match[1].trim()).slice(0, 16);
+  const headings = [...body.matchAll(/^##\s+(.+)$/gm)].map(match => match[1].trim());
   const index = headings.length
     ? headings.map(heading => `- ${heading}`).join('\n')
     : '- 完整执行规范与历史案例';
@@ -43,10 +44,19 @@ for (const entry of fs.readdirSync(claudeRoot, { withFileTypes: true }).filter(i
   const name = entry.name;
   const source = path.join(claudeRoot, name);
   const skillFile = path.join(source, 'SKILL.md');
-  if (!fs.existsSync(skillFile) || fs.existsSync(path.join(source, 'references', 'full-guide.md'))) continue;
+  const guideFile = path.join(source, 'references', 'full-guide.md');
+  if (!fs.existsSync(skillFile)) continue;
   const { frontMatter, body } = splitFrontMatter(read(skillFile), name);
-  write(path.join(source, 'references', 'full-guide.md'), body);
-  write(skillFile, buildEntry(name, frontMatter, body));
+  if (fs.existsSync(guideFile)) {
+    if (!refreshIndexes || !body.includes('原入口的完整规范、模板、案例和边界。主要专题：')) continue;
+    const refreshed = buildEntry(name, frontMatter, read(guideFile));
+    const mirrorSkill = path.join(codexRoot, name, 'SKILL.md');
+    if (read(skillFile) === refreshed && fs.existsSync(mirrorSkill) && read(mirrorSkill) === refreshed) continue;
+    if (read(skillFile) !== refreshed) write(skillFile, refreshed);
+  } else {
+    write(guideFile, body);
+    write(skillFile, buildEntry(name, frontMatter, body));
+  }
   sync(source, path.join(codexRoot, name));
   converted.push(name);
 }

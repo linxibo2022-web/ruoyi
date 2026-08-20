@@ -14,6 +14,8 @@
 | 双端根规则 | `.agent-governance/core-rules.md`、`templates/` | 通过渲染脚本生成 `AGENTS.md` 与 `CLAUDE.md` |
 | 一致性验收 | `.agent-governance/scripts/verify-agent-assets.cjs` | 校验路由、根规则、试点镜像和命令映射 |
 
+`skill-sync-policy.json.dualEntrySkills` 用于显式声明同时具有 Claude Skill 与 Claude Command 入口的技能。当前 `framework-sync` 的 Claude 内容源为共享 Skill；校验器必须同时检查 Claude Skill ↔ Codex Skill 完整包和 Claude Command ↔ Codex Skill 正文/资料，不能按映射优先级跳过任一关系。
+
 > 不再在 `.claude/hooks/skill-forced-eval.cjs` 手写技能列表，也不手动编辑 `AGENTS.md`、`CLAUDE.md` 的技能表。Hook 只负责调用公共 router。
 
 > 常规维护以 Claude 技能目录为内容源。唯一例外是 `skill-check` 已完成基准自检且用户明确要求“差异直接修复”时：本次修复以 `skill-check` 指定的合格基准为源同步另一端；该例外不改变后续常规维护的默认来源。
@@ -86,6 +88,7 @@ description: |
 - `includeAny` 只放领域特征明显的短语；需要解释、定位文件等只读意图应放入 `excludeAny`。
 - `priority` 用于解决多个候选技能；依赖通过 `dependencies` 声明，`required: true` 表示不可省略。
 - 同一次任务最多选择 `maxSkillsPerTask` 个技能，避免无关上下文注入。
+- 每个主技能声明的必需依赖总数不得超过 `maxRequiredDependenciesPerSkill`；确需调整时必须同步评估当前最大组合并补充路由 fixture。
 - 更新路由同时在 `.agent-governance/fixtures/router-fixtures.json` 补充正例、负例及依赖样例，且只记录样例 ID 和预期路由，不写入真实用户内容。
 - 若技能名称会与“文件在哪、路径、目录、文档位置”等定位意图共现，必须补充冲突例，确保 `project-navigator` 优先；不得因领域名出现就误加载业务技能。
 - Hook 可以保留多个直接命中的候选技能，但不得预读其正文；进入对应子任务前才读取该技能。相同领域的候选按优先级选择一个，独立领域的候选按任务顺序依次使用。单个子任务只能产生一个主技能；需要组合能力时，通过主技能的 `dependencies` 声明辅助技能。
@@ -105,6 +108,8 @@ Copy-Item -Recurse -Force .claude/skills/<名称>/* .agents/skills/<名称>/
 当 `skill-check` 明确指定“以 Codex 为基准并差异直接修复”时，允许反向将 `.agents/skills/<名称>/` 的完整技能包同步至 `.claude/skills/<名称>/`。仅处理 `skill-check` 报告的精确技能和文件；同步前再次确认基准校验已通过，同步后立即重跑 `skill-check` 与本节验收命令。
 
 对 Claude Command → Codex Skill 映射，Codex 为基准时仅将去除 YAML 头后的正文同步回 `.claude/commands/<名称>.md`；不得把 YAML 头写入 Claude Command，也不得影响未在 `.agent-governance/skill-sync-policy.json` 声明的命令。
+
+命令映射与共享技能同名时，必须先在 `dualEntrySkills` 声明唯一 Claude 内容源。运行命令拆分脚本还必须显式传入 `--dual-entry-base claude|codex`；脚本在写入任何文件前检查全部重叠，禁止无参数静默反向覆盖共享技能源。
 
 ### 5. 强制校验与受限自修复
 
@@ -158,9 +163,13 @@ node .agent-governance/reports/run-regression.cjs
 
 - 路由 fixture 全部通过，且无泛词触发。
 - 两端 Hook 都不回显用户原文；无匹配、显式斜杠命令和恢复会话时静默绕过。
+- Claude `UserPromptSubmit` 仅在命中技能时输出结构化 `hookSpecificOutput.additionalContext`；不得用普通 stdout 伪装 Hook 上下文，也不得为空路由生成兜底提示。
 - 技能入口及其 `references/` 镜像哈希一致。
 - 根规则严格等于模板渲染结果。
 - Command 与 Codex 镜像去除 YAML 后正文一致。
+- 双入口技能的共享完整包、命令正文和命令资料三方关系均与策略声明一致。
+- Claude `PreToolUse` 的文件修改 matcher 与敏感文件处理分支同时覆盖 `Edit`、`Write`。
+- 通用短入口的资料索引覆盖完整资料全部二级标题，不得固定截断。
 - 所有新增或修改文件均为 UTF-8 无 BOM。
 - 任一 Claude 共享技能的完整技能包均已递归通过镜像校验；不能仅校验本次试点或只校验 `SKILL.md`。
 
