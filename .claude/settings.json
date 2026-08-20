@@ -7,18 +7,44 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/skill-forced-eval.cjs"
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/skill-forced-eval.cjs"]
           }
         ]
       }
     ],
     "PreToolUse": [
       {
-        "matcher": "Bash|Edit|Write",
+        "matcher": "Bash|PowerShell|Edit|Write",
         "hooks": [
           {
             "type": "command",
-            "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/pre-tool-use.cjs",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/pre-tool-use.cjs"],
+            "timeout": 5000
+          }
+        ]
+      },
+      {
+        "matcher": "^Agent$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/agent-skill-preflight.cjs"],
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/subagent-start.cjs"],
             "timeout": 5000
           }
         ]
@@ -30,7 +56,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/stop.cjs",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/stop.cjs"],
             "timeout": 10000
           }
         ]

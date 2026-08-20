@@ -33,4 +33,7 @@ assert.deepStrictEqual(
 const blocked = invoke('Bash', { command: 'drop database production' });
 assert.strictEqual(blocked.decision, 'block', '危险 Bash 命令必须继续被阻止');
 
-console.log('[OK] Claude PreToolUse 的 Edit/Write 敏感文件提醒与 Bash 阻断通过');
+const powerShellBlocked = invoke('PowerShell', { command: 'drop database production' });
+assert.strictEqual(powerShellBlocked.decision, 'block', '危险 PowerShell 命令必须继续被阻止');
+
+console.log('[OK] Claude PreToolUse 的 Edit/Write 敏感文件提醒与 Bash/PowerShell 阻断通过');

@@ -1,0 +1,10 @@
+{
+  "noMatch": { "runtime": "codex", "agentType": "ruoyi-code-reviewer", "message": "只读取当前目录结构", "input": { "message": "只读取当前目录结构", "description": "保留字段" } },
+  "matched": { "runtime": "codex", "agentType": "ruoyi-code-reviewer", "message": "请做单元测试", "input": { "message": "请做单元测试", "description": "敏感任务正文不得进入审计" } },
+  "invalid": { "runtime": "Codex", "agentType": "ruoyi-code-reviewer", "message": "x", "input": { "message": "x" } },
+  "requiredOverflowManifest": {
+    "maxSkillsPerTask": 1,
+    "maxRequiredDependenciesPerSkill": 2,
+    "skills": [{ "name": "primary", "priority": 1, "includeAny": ["overflow"], "excludeAny": [], "dependencies": [{ "whenAny": ["overflow"], "skills": ["one", "two"], "required": true }] }]
+  }
+}

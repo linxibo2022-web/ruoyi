@@ -30,8 +30,8 @@ try {
 const toolName = input.tool_name;
 const toolInput = input.tool_input || {};
 
-// Bash 命令检查
-if (toolName === 'Bash') {
+// Bash / PowerShell 命令检查。设置 matcher 必须与这里同步，避免 PowerShell 绕过安全门禁。
+if (toolName === 'Bash' || toolName === 'PowerShell') {
   const command = toolInput.command || '';
 
   // 检测 > nul 错误用法（Windows 会创建名为 nul 的文件）

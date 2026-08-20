@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "delegationDepthPolicy": {
+    "target": 1,
+    "claudeEnforcement": "hard-agent-id",
+    "codexEnforcement": "probe-required"
+  },
+  "reservedNames": {
+    "claude": ["Explore", "Plan", "general-purpose"],
+    "codex": ["default", "worker", "explorer"]
+  },
+  "capabilities": [
+    {
+      "id": "check",
+      "runtimes": {
+        "claude": { "kind": "command", "path": ".claude/commands/check.md", "preloadable": false },
+        "codex": { "kind": "skill", "path": ".agents/skills/check/SKILL.md", "preloadable": true }
+      }
+    },
+    {
+      "id": "progress",
+      "runtimes": {
+        "claude": { "kind": "command", "path": ".claude/commands/progress.md", "preloadable": false },
+        "codex": { "kind": "skill", "path": ".agents/skills/progress/SKILL.md", "preloadable": true }
+      }
+    },
+    {
+      "id": "init-docs",
+      "runtimes": {
+        "claude": { "kind": "command", "path": ".claude/commands/init-docs.md", "preloadable": false },
+        "codex": { "kind": "skill", "path": ".agents/skills/init-docs/SKILL.md", "preloadable": true }
+      }
+    },
+    {
+      "id": "update-status",
+      "runtimes": {
+        "claude": { "kind": "command", "path": ".claude/commands/update-status.md", "preloadable": false },
+        "codex": { "kind": "skill", "path": ".agents/skills/update-status/SKILL.md", "preloadable": true }
+      }
+    },
+    {
+      "id": "add-todo",
+      "runtimes": {
+        "claude": { "kind": "command", "path": ".claude/commands/add-todo.md", "preloadable": false },
+        "codex": { "kind": "skill", "path": ".agents/skills/add-todo/SKILL.md", "preloadable": true }
+      }
+    }
+  ],
+  "agents": [
+    { "id": "Explore", "builtin": true, "risk": "read-only", "runtimeNames": { "claude": "Explore" }, "maxDelegationDepth": 0, "skillPolicy": { "taskRoute": true, "baselineCapabilities": [], "optional": [] } },
+    { "id": "Plan", "builtin": true, "risk": "read-only", "runtimeNames": { "claude": "Plan" }, "maxDelegationDepth": 0, "skillPolicy": { "taskRoute": true, "baselineCapabilities": [], "optional": [] } },
+    { "id": "general-purpose", "builtin": true, "risk": "write", "runtimeNames": { "claude": "general-purpose" }, "maxDelegationDepth": 0, "skillPolicy": { "taskRoute": true, "baselineCapabilities": [], "optional": [] } },
+    { "id": "default", "builtin": true, "risk": "write", "runtimeNames": { "codex": "default" }, "maxDelegationDepth": 0, "skillPolicy": { "taskRoute": true, "baselineCapabilities": [], "optional": [] } },
+    { "id": "worker", "builtin": true, "risk": "write", "runtimeNames": { "codex": "worker" }, "maxDelegationDepth": 0, "skillPolicy": { "taskRoute": true, "baselineCapabilities": [], "optional": [] } },
+    { "id": "explorer", "builtin": true, "risk": "read-only", "runtimeNames": { "codex": "explorer" }, "maxDelegationDepth": 0, "skillPolicy": { "taskRoute": true, "baselineCapabilities": [], "optional": [] } },
+    {
+      "id": "ruoyi-code-reviewer",
+      "description": "只读审查 RuoYi 项目改动，输出证据、风险和验证缺口。",
+      "risk": "review",
+      "runtimeNames": { "claude": "ruoyi-code-reviewer", "codex": "ruoyi-code-reviewer" },
+      "runtime": { "claude": { "model": "sonnet", "tools": ["Read", "Grep", "Glob"], "mode": "read-only" }, "codex": { "model": "gpt-5.4", "tools": ["Read", "Grep", "Glob"], "mode": "read-only" } },
+      "budget": { "roleBodyMaxLines": 200, "startupContextMaxTokens": 800 },
+      "maxDelegationDepth": 0,
+      "skillPolicy": { "taskRoute": true, "baselineCapabilities": ["check"], "optional": ["crud-development", "ui-pc", "ui-mobile", "test-development"] },
+      "source": ".agent-governance/agents/ruoyi-code-reviewer.md"
+    },
+    {
+      "id": "ruoyi-project-reporter",
+      "description": "只读汇总项目状态、进度和文档事实。",
+      "risk": "read-only",
+      "runtimeNames": { "claude": "ruoyi-project-reporter", "codex": "ruoyi-project-reporter" },
+      "runtime": { "claude": { "model": "sonnet", "tools": ["Read", "Grep", "Glob"], "mode": "read-only" }, "codex": { "model": "gpt-5.4", "tools": ["Read", "Grep", "Glob"], "mode": "read-only" } },
+      "budget": { "roleBodyMaxLines": 200, "startupContextMaxTokens": 800 },
+      "maxDelegationDepth": 0,
+      "skillPolicy": { "taskRoute": true, "baselineCapabilities": ["progress"], "optional": [] },
+      "source": ".agent-governance/agents/ruoyi-project-reporter.md"
+    },
+    {
+      "id": "ruoyi-project-updater",
+      "description": "在明确授权后更新 docs/ 下的项目文档。",
+      "risk": "docs-write",
+      "runtimeNames": { "claude": "ruoyi-project-updater", "codex": "ruoyi-project-updater" },
+      "runtime": { "claude": { "model": "sonnet", "tools": ["Read", "Grep", "Glob", "Edit", "Write"], "mode": "docs-write" }, "codex": { "model": "gpt-5.4", "tools": ["Read", "Grep", "Glob", "Edit", "Write"], "mode": "docs-write" } },
+      "budget": { "roleBodyMaxLines": 200, "startupContextMaxTokens": 800 },
+      "maxDelegationDepth": 0,
+      "skillPolicy": { "taskRoute": true, "baselineCapabilities": ["update-status"], "optional": ["init-docs", "add-todo"] },
+      "source": ".agent-governance/agents/ruoyi-project-updater.md"
+    }
+  ]
+}

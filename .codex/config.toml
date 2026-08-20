@@ -1,3 +1,6 @@
+# 与当前项目默认推理强度保持一致，供子代理使用。
+model_reasoning_effort = "medium"
+
 # ruoyi-plus-uniapp 项目级 Codex 配置
 # 仅在 .codex/ 被标记为 trusted 时生效（首次启动 Codex 会询问）。
 # 用户级配置位于 ~/.codex/config.toml，本文件以叠加方式补充项目级所需特性。
@@ -5,3 +8,7 @@
 [features]
 # 启用 hooks 系统：加载 .codex/hooks.json 中的事件处理器
 hooks = true
+
+[agents]
+# 项目级子代理并发上限；递归深度仍由运行时与软审计策略约束。
+max_threads = 4

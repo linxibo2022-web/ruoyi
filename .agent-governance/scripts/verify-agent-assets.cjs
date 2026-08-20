@@ -3,6 +3,9 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const { loadManifest, selectRoute } = require('../lib/router.cjs');
+const agentRegistry = require('../lib/agent-registry.cjs');
+const { renderEnvelope } = require('../lib/delegation-envelope.cjs');
+const { renderStartupContext } = require('../lib/subagent-context.cjs');
 
 const root = path.resolve(__dirname, '..', '..');
 let failed = false;
@@ -41,6 +44,141 @@ function listFiles(directory) {
     if (entry.isDirectory()) return listFiles(fullPath).map(file => path.join(entry.name, file));
     return entry.isFile() ? [entry.name] : [];
   }).sort();
+}
+
+function readUtf8WithoutBom(file) {
+  const raw = fs.readFileSync(file);
+  if (raw.subarray(0, 3).equals(Buffer.from([0xEF, 0xBB, 0xBF]))) {
+    fail(`${path.relative(root, file)} 不得使用 UTF-8 BOM`);
+  }
+  const content = raw.toString('utf8');
+  if (content.includes('\r')) fail(`${path.relative(root, file)} 必须使用 LF，且不得包含字面 \\r`);
+  return content;
+}
+
+function assertEqual(actual, expected, label) {
+  if (actual === expected) ok(label);
+  else fail(`${label}：实际值与单一源不一致`);
+}
+
+function expectedProjectAgents(agentManifest) {
+  return agentManifest.agents.filter(agent => !agent.builtin && agent.id.startsWith('ruoyi-'));
+}
+
+function validateClaudeStaging(agent, file) {
+  const content = readUtf8WithoutBom(file);
+  const match = content.match(/^---\nname: ([^\n]+)\ndescription: (.+)\nmodel: ([^\n]+)\ntools: ([^\n]*)\n---\n\n([\s\S]*?)\n$/);
+  if (!match) return fail(`Claude staging YAML 结构无效：${path.relative(root, file)}`);
+  const [, name, description, model, tools, body] = match;
+  assertEqual(name, agent.runtimeNames.claude, `Claude staging 名称匹配 ${agent.id}`);
+  assertEqual(description, JSON.stringify(agent.description), `Claude staging 描述匹配 ${agent.id}`);
+  assertEqual(model, agent.runtime.claude.model, `Claude staging 模型匹配 ${agent.id}`);
+  assertEqual(tools, agent.runtime.claude.tools.join(', '), `Claude staging 工具匹配 ${agent.id}`);
+  assertEqual(body, readUtf8WithoutBom(path.join(root, agent.source)).replace(/\n*$/, ''), `Claude staging 正文匹配 ${agent.id}`);
+}
+
+function validateCodexStaging(agent, file) {
+  const content = readUtf8WithoutBom(file);
+  const match = content.match(/^name = (.+)\ndescription = (.+)\nmodel = (.+)\ntools = \[(.*)\]\nmode = (.+)\ndeveloper_instructions = """\n([\s\S]*?)\n"""\n$/);
+  if (!match) return fail(`Codex staging TOML 结构无效：${path.relative(root, file)}`);
+  const [, name, description, model, tools, mode, body] = match;
+  assertEqual(name, JSON.stringify(agent.runtimeNames.codex), `Codex staging 名称匹配 ${agent.id}`);
+  assertEqual(description, JSON.stringify(agent.description), `Codex staging 描述匹配 ${agent.id}`);
+  assertEqual(model, JSON.stringify(agent.runtime.codex.model), `Codex staging 模型匹配 ${agent.id}`);
+  assertEqual(tools, agent.runtime.codex.tools.map(JSON.stringify).join(', '), `Codex staging 工具匹配 ${agent.id}`);
+  assertEqual(mode, JSON.stringify(agent.runtime.codex.mode), `Codex staging 模式匹配 ${agent.id}`);
+  assertEqual(body, readUtf8WithoutBom(path.join(root, agent.source)).replace(/\n*$/, ''), `Codex staging 正文匹配 ${agent.id}`);
+}
+
+function validateAgentGovernance() {
+  let agentManifest;
+  try {
+    agentManifest = agentRegistry.loadManifest();
+    ok('agent manifest schema、保留名与 runtime 资源通过 registry 校验');
+  } catch (error) {
+    fail(`agent manifest schema、保留名或 runtime 资源无效：${error.message}`);
+    return;
+  }
+
+  const agents = expectedProjectAgents(agentManifest);
+  if (agents.length !== 3) fail(`项目角色必须恰好为三个 ruoyi-*：当前 ${agents.length}`);
+  else ok('项目角色数量为三个且均来自 manifest');
+
+  const staging = path.join(root, '.agent-governance', 'staging');
+  const expectedClaude = agents.map(agent => `${agent.runtimeNames.claude}.md`).sort();
+  const expectedCodex = agents.map(agent => `${agent.runtimeNames.codex}.toml`).sort();
+  const actualClaude = listFiles(path.join(staging, 'claude', 'agents'));
+  const actualCodex = listFiles(path.join(staging, 'codex', 'agents'));
+  assertEqual(JSON.stringify(actualClaude), JSON.stringify(expectedClaude), 'Claude staging 文件清单无漂移、无旧角色');
+  assertEqual(JSON.stringify(actualCodex), JSON.stringify(expectedCodex), 'Codex staging 文件清单无漂移、无旧角色');
+  for (const agent of agents) {
+    const source = path.join(root, agent.source);
+    const body = readUtf8WithoutBom(source);
+    const lines = body.replace(/\n*$/, '').split('\n').length;
+    if (lines > agent.budget.roleBodyMaxLines || lines > 200) fail(`角色正文预算超限：${agent.id}=${lines} 行`);
+    else ok(`角色正文预算通过：${agent.id}=${lines} 行`);
+    validateClaudeStaging(agent, path.join(staging, 'claude', 'agents', `${agent.runtimeNames.claude}.md`));
+    validateCodexStaging(agent, path.join(staging, 'codex', 'agents', `${agent.runtimeNames.codex}.toml`));
+
+    for (const runtime of ['claude', 'codex']) {
+      const startup = renderStartupContext({ agentType: agent.runtimeNames[runtime], runtime });
+      if (startup.budgetStatus !== 'within-budget' || startup.estimatedTokenCount > 800 || startup.byteLength > 3200) {
+        fail(`启动上下文预算超限：${agent.id}/${runtime}`);
+      } else ok(`启动上下文预算通过：${agent.id}/${runtime}=${startup.estimatedTokenCount} tokens`);
+    }
+    const payload = {
+      schemaVersion: 1,
+      status: 'matched',
+      primary: null,
+      helpers: [],
+      baselineCapabilities: agent.skillPolicy.baselineCapabilities,
+      optionalSkills: agent.skillPolicy.optional
+    };
+    const bytes = Buffer.byteLength(renderEnvelope(payload), 'utf8');
+    if (bytes > 1024) fail(`技能路由信封预算超限：${agent.id}=${bytes} bytes`);
+    else ok(`技能路由信封预算通过：${agent.id}=${bytes} bytes`);
+  }
+
+  try {
+    const settings = JSON.parse(readUtf8WithoutBom(path.join(root, '.claude', 'settings.json')));
+    const preToolUse = settings.hooks?.PreToolUse || [];
+    const hasClaudePreflight = preToolUse.some(item => item.matcher === '^Agent$'
+      && item.hooks?.some(hook => hook.command === 'node' && hook.args?.includes('${CLAUDE_PROJECT_DIR}/.claude/hooks/agent-skill-preflight.cjs')));
+    const hasClaudeStart = (settings.hooks?.SubagentStart || []).some(item => item.matcher === '.*'
+      && item.hooks?.some(hook => hook.command === 'node' && hook.args?.includes('${CLAUDE_PROJECT_DIR}/.claude/hooks/subagent-start.cjs')));
+    if (hasClaudePreflight && hasClaudeStart) ok('Claude Agent preflight 与 SubagentStart Hook 接线完整');
+    else fail('Claude Agent preflight 或 SubagentStart Hook 接线缺失');
+  } catch (error) { fail(`无法验证 Claude Hook 接线：${error.message}`); }
+
+  try {
+    const codexHooks = JSON.parse(readUtf8WithoutBom(path.join(root, '.codex', 'hooks.json')));
+    const unsupported = codexHooks.hooks?.SubagentStart;
+    const phantomPreflight = JSON.stringify(codexHooks).includes('agent-skill-preflight.cjs');
+    if (!unsupported && !phantomPreflight) ok('Codex unsupported SubagentStart 与已撤销 preflight 无伪接线');
+    else fail('Codex 存在当前运行时不支持的子代理 Hook 接线');
+  } catch (error) { fail(`无法验证 Codex Hook 接线：${error.message}`); }
+
+  for (const [runtime, stagingRuntime, extension] of [['.claude/agents', 'claude', '.md'], ['.codex/agents', 'codex', '.toml']]) {
+    const discovered = listFiles(path.join(root, runtime)).filter(file => file.startsWith('ruoyi-') && file.endsWith(extension));
+    const expected = agents.map(agent => `${agent.runtimeNames[stagingRuntime]}${extension}`).sort();
+    if (JSON.stringify(discovered) !== JSON.stringify(expected)) {
+      fail(`${runtime} 项目角色激活清单不匹配：实际=${discovered.join(', ') || '无'}`);
+      continue;
+    }
+    ok(`${runtime} 已激活全部项目角色`);
+    for (const file of expected) {
+      const target = path.join(root, runtime, file);
+      const staged = path.join(staging, stagingRuntime, 'agents', file);
+      readUtf8WithoutBom(target);
+      if (fs.readFileSync(target).equals(fs.readFileSync(staged))) ok(`${runtime}/${file} 与 staging 字节一致`);
+      else fail(`${runtime}/${file} 与 staging 不一致；必须重新生成，不得手改运行时文件`);
+    }
+  }
+
+  const router = require('../lib/router.cjs');
+  const compatibility = router.selectRoute('不会命中');
+  if (typeof router.selectRoute === 'function' && Object.keys(compatibility).sort().join(',') === 'bypass,helpers,matches,primary,reason') ok('旧 selectRoute API 返回形状保持兼容');
+  else fail('旧 selectRoute API 不兼容');
 }
 
 let manifest;
@@ -200,5 +338,7 @@ try {
 } catch (error) {
   fail(`无法验证 Claude 敏感文件 Hook：${error.message}`);
 }
+
+validateAgentGovernance();
 
 process.exit(failed ? 1 : 0);

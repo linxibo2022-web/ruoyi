@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "executionMode": "unattended",
+  "recordedAt": "2026-08-20T14:30:00Z",
+  "privacy": {
+    "stores": ["role", "runtime", "status", "relativePath", "byteLength", "sha256", "commandResult", "conclusion"],
+    "neverStores": ["taskPrompt", "userInput", "transcriptContent", "absoluteUserPath", "secret"]
+  },
+  "runtimes": {
+    "claude": {
+      "version": "2.1.195",
+      "status": "verified",
+      "evidence": [
+        "agent-skill-preflight.test.cjs: strict task field, recursion deny and field preservation",
+        "subagent-start.test.cjs: role boundary, unknown fallback, budget and privacy",
+        "subagent-runtime-probe.json: controlled Explore Agent/SubagentStart evidence"
+      ]
+    },
+    "codex": {
+      "version": "0.148.0",
+      "status": "bounded",
+      "evidence": [
+        "skill-router.test.cjs: 44 route fixtures",
+        "subagent-runtime-probe.json: Agent/SubagentStart not observable",
+        "verify-agent-assets.cjs: unsupported SubagentStart has no phantom hook registration"
+      ],
+      "unsupported": ["SubagentStart event", "caller-depth hard correlation", "interactive trust and /hooks UI state"]
+    }
+  },
+  "activation": {
+    "status": "verified",
+    "commandResults": [
+      "sync-agent-assets.test.cjs",
+      "sync-agent-assets.cjs --check --activate",
+      "verify-agent-assets.cjs"
+    ],
+    "roles": [
+      { "runtime": "claude", "role": "ruoyi-code-reviewer", "relativePath": ".claude/agents/ruoyi-code-reviewer.md", "byteLength": 657, "sha256": "fd2e4de88607a4a5dedbf819d8e4d36020d9652670a211c3383339a9c9b0f7ed" },
+      { "runtime": "claude", "role": "ruoyi-project-reporter", "relativePath": ".claude/agents/ruoyi-project-reporter.md", "byteLength": 611, "sha256": "ba3ff1978cb2fbca74bdb3ee049b472391da60c0a60eecb4e88dfe945b1fc2d9" },
+      { "runtime": "claude", "role": "ruoyi-project-updater", "relativePath": ".claude/agents/ruoyi-project-updater.md", "byteLength": 666, "sha256": "629d7ae39e7124b58334052ba26ffc057f6994c32d73be2931869e23b2880b6f" },
+      { "runtime": "codex", "role": "ruoyi-code-reviewer", "relativePath": ".codex/agents/ruoyi-code-reviewer.toml", "byteLength": 717, "sha256": "f390cd0dfb02231006bf9892104a2838114bcdb9c5d4c444e06dd03e8e6d407b" },
+      { "runtime": "codex", "role": "ruoyi-project-reporter", "relativePath": ".codex/agents/ruoyi-project-reporter.toml", "byteLength": 671, "sha256": "cae393f854d7de09c44bf85948e24672d6b4516bfcf8084e74cb62adbf182b96" },
+      { "runtime": "codex", "role": "ruoyi-project-updater", "relativePath": ".codex/agents/ruoyi-project-updater.toml", "byteLength": 731, "sha256": "2aae1df21485250745814c343727b24b63e5e59998a671874a656a787517f1ae" }
+    ]
+  },
+  "conclusion": "无人值守验收通过：所有可自动验证断言均通过；Codex 未观测能力按 P0 结论保持 unsupported/not-observable，不要求人工 UI 确认。"
+}

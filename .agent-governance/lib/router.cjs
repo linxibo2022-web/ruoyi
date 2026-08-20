@@ -78,24 +78,42 @@ function isClaudeAvailable(name) {
 }
 
 function selectRoute(prompt, suppliedManifest, runtime = 'codex') {
+  const { status, ...route } = selectRouteWithStatus(prompt, suppliedManifest, runtime);
+  return route;
+}
+
+/**
+ * 返回路由结果及可供创建子代理前置检查使用的诊断状态。
+ * 与 selectRoute 不同，此接口不会把非字符串输入或 manifest 读取失败混为普通空路由。
+ */
+function selectRouteWithStatus(prompt, suppliedManifest, runtime = 'codex') {
+  try {
+    return selectRouteInternal(prompt, suppliedManifest, runtime);
+  } catch {
+    return { ...emptyRoute(), status: 'router-error' };
+  }
+}
+
+function selectRouteInternal(prompt, suppliedManifest, runtime = 'codex') {
+  if (typeof prompt !== 'string') return { ...emptyRoute(), status: 'invalid-input' };
   let manifest;
   try {
     manifest = suppliedManifest || loadManifest();
   } catch {
-    return emptyRoute();
+    return { ...emptyRoute(), status: 'router-error' };
   }
-  const raw = String(prompt || '').trim();
-  if (/^\/[^/\s]+/.test(raw) || /<command-name>/i.test(raw)) return emptyRoute(true);
+  const raw = prompt.trim();
+  if (/^\/[^/\s]+/.test(raw) || /<command-name>/i.test(raw)) return { ...emptyRoute(true), status: 'no-match' };
   const explicit = raw.match(/(?:^|\s)\$([a-z][a-z0-9-]*)\b/i);
   if (explicit) {
     const name = explicit[1].toLowerCase();
     const listed = manifest.skills.some(item => item.name === name);
     return listed || isSharedSkill(name)
-      ? { primary: name, helpers: [], matches: [name], reason: 'explicit', bypass: false }
-      : emptyRoute();
+      ? { primary: name, helpers: [], matches: [name], reason: 'explicit', bypass: false, status: 'matched' }
+      : { ...emptyRoute(), status: 'no-match' };
   }
   const text = normalizePrompt(raw);
-  if (!text) return emptyRoute();
+  if (!text) return { ...emptyRoute(), status: 'no-match' };
   const keywordMatches = manifest.skills
     .map((skill, index) => ({ skill, index }))
     .filter(({ skill }) => containsAny(text, skill.includeAny || []) && !containsAny(text, skill.excludeAny || []))
@@ -106,7 +124,7 @@ function selectRoute(prompt, suppliedManifest, runtime = 'codex') {
   const matches = [...namedMatches, ...keywordMatches]
     .filter((item, index, all) => all.findIndex(candidate => candidate.skill.name === item.skill.name) === index)
     .sort((left, right) => right.skill.priority - left.skill.priority || left.index - right.index);
-  if (!matches.length) return emptyRoute();
+  if (!matches.length) return { ...emptyRoute(), status: 'no-match' };
   const primary = matches[0].skill;
   const matchedNames = matches.map(({ skill }) => skill.name);
   const helpers = [];
@@ -126,8 +144,9 @@ function selectRoute(prompt, suppliedManifest, runtime = 'codex') {
     helpers: selected.map(item => item.name),
     matches: matchedNames,
     reason: required.length > cap ? 'required-dependency' : 'match',
-    bypass: false
+    bypass: false,
+    status: 'matched'
   };
 }
 
-module.exports = { isSharedSkill, loadManifest, normalizePrompt, selectRoute };
+module.exports = { isSharedSkill, loadManifest, normalizePrompt, selectRoute, selectRouteWithStatus };

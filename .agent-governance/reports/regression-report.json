@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-20T04:23:39.380Z",
+  "generatedAt": "2026-08-20T13:32:46.096Z",
   "fixtures": {
     "total": 44,
     "passed": 44,
@@ -9,13 +9,13 @@
         "id": "explicit",
         "routeMatch": true,
         "codexOutputBytes": 201,
-        "claudeOutputBytes": 283
+        "claudeOutputBytes": 503
       },
       {
         "id": "explicit-shared-unlisted",
         "routeMatch": true,
         "codexOutputBytes": 187,
-        "claudeOutputBytes": 269
+        "claudeOutputBytes": 475
       },
       {
         "id": "slash",
@@ -27,247 +27,247 @@
         "id": "no-match",
         "routeMatch": true,
         "codexOutputBytes": 82,
-        "claudeOutputBytes": 0
+        "claudeOutputBytes": 265
       },
       {
         "id": "excluded",
         "routeMatch": true,
         "codexOutputBytes": 82,
-        "claudeOutputBytes": 0
+        "claudeOutputBytes": 265
       },
       {
         "id": "dependencies",
         "routeMatch": true,
         "codexOutputBytes": 308,
-        "claudeOutputBytes": 390
+        "claudeOutputBytes": 717
       },
       {
         "id": "required-exception",
         "routeMatch": true,
         "codexOutputBytes": 421,
-        "claudeOutputBytes": 503
+        "claudeOutputBytes": 943
       },
       {
         "id": "bug",
         "routeMatch": true,
         "codexOutputBytes": 192,
-        "claudeOutputBytes": 274
+        "claudeOutputBytes": 485
       },
       {
         "id": "performance",
         "routeMatch": true,
         "codexOutputBytes": 202,
-        "claudeOutputBytes": 284
+        "claudeOutputBytes": 505
       },
       {
         "id": "read-only",
         "routeMatch": true,
         "codexOutputBytes": 82,
-        "claudeOutputBytes": 0
+        "claudeOutputBytes": 265
       },
       {
         "id": "platform-specific",
         "routeMatch": true,
         "codexOutputBytes": 188,
-        "claudeOutputBytes": 270
+        "claudeOutputBytes": 477
       },
       {
         "id": "skill-check",
         "routeMatch": true,
         "codexOutputBytes": 188,
-        "claudeOutputBytes": 270
+        "claudeOutputBytes": 477
       },
       {
         "id": "skill-check-general",
         "routeMatch": true,
         "codexOutputBytes": 188,
-        "claudeOutputBytes": 270
+        "claudeOutputBytes": 477
       },
       {
         "id": "skill-check-english",
         "routeMatch": true,
         "codexOutputBytes": 188,
-        "claudeOutputBytes": 270
+        "claudeOutputBytes": 477
       },
       {
         "id": "skill-check-all",
         "routeMatch": true,
         "codexOutputBytes": 188,
-        "claudeOutputBytes": 270
+        "claudeOutputBytes": 477
       },
       {
         "id": "skill-check-repair",
         "routeMatch": true,
         "codexOutputBytes": 230,
-        "claudeOutputBytes": 312
+        "claudeOutputBytes": 561
       },
       {
         "id": "injection",
         "routeMatch": true,
         "codexOutputBytes": 82,
-        "claudeOutputBytes": 0
+        "claudeOutputBytes": 265
       },
       {
         "id": "negative-performance",
         "routeMatch": true,
         "codexOutputBytes": 82,
-        "claudeOutputBytes": 0
+        "claudeOutputBytes": 265
       },
       {
         "id": "navigator-document",
         "routeMatch": true,
         "codexOutputBytes": 200,
-        "claudeOutputBytes": 282
+        "claudeOutputBytes": 501
       },
       {
         "id": "brainstorm",
         "routeMatch": true,
         "codexOutputBytes": 186,
-        "claudeOutputBytes": 268
+        "claudeOutputBytes": 473
       },
       {
         "id": "tech-decision",
         "routeMatch": true,
         "codexOutputBytes": 237,
-        "claudeOutputBytes": 319
+        "claudeOutputBytes": 575
       },
       {
         "id": "design-review",
         "routeMatch": true,
         "codexOutputBytes": 192,
-        "claudeOutputBytes": 274
+        "claudeOutputBytes": 485
       },
       {
         "id": "document-review",
         "routeMatch": true,
         "codexOutputBytes": 192,
-        "claudeOutputBytes": 274
+        "claudeOutputBytes": 485
       },
       {
         "id": "error-handler",
         "routeMatch": true,
         "codexOutputBytes": 239,
-        "claudeOutputBytes": 321
+        "claudeOutputBytes": 579
       },
       {
         "id": "backend-annotations",
         "routeMatch": true,
         "codexOutputBytes": 204,
-        "claudeOutputBytes": 286
+        "claudeOutputBytes": 509
       },
       {
         "id": "env-config",
         "routeMatch": true,
         "codexOutputBytes": 186,
-        "claudeOutputBytes": 268
+        "claudeOutputBytes": 473
       },
       {
         "id": "oss",
         "routeMatch": true,
         "codexOutputBytes": 204,
-        "claudeOutputBytes": 286
+        "claudeOutputBytes": 509
       },
       {
         "id": "log-audit",
         "routeMatch": true,
         "codexOutputBytes": 184,
-        "claudeOutputBytes": 266
+        "claudeOutputBytes": 469
       },
       {
         "id": "notification",
         "routeMatch": true,
         "codexOutputBytes": 204,
-        "claudeOutputBytes": 286
+        "claudeOutputBytes": 509
       },
       {
         "id": "realtime",
         "routeMatch": true,
         "codexOutputBytes": 210,
-        "claudeOutputBytes": 292
+        "claudeOutputBytes": 521
       },
       {
         "id": "scheduled",
         "routeMatch": true,
         "codexOutputBytes": 194,
-        "claudeOutputBytes": 276
+        "claudeOutputBytes": 489
       },
       {
         "id": "third-party",
         "routeMatch": true,
         "codexOutputBytes": 196,
-        "claudeOutputBytes": 278
+        "claudeOutputBytes": 493
       },
       {
         "id": "payment",
         "routeMatch": true,
         "codexOutputBytes": 204,
-        "claudeOutputBytes": 286
+        "claudeOutputBytes": 509
       },
       {
         "id": "wechat",
         "routeMatch": true,
         "codexOutputBytes": 202,
-        "claudeOutputBytes": 284
+        "claudeOutputBytes": 505
       },
       {
         "id": "i18n",
         "routeMatch": true,
         "codexOutputBytes": 198,
-        "claudeOutputBytes": 280
+        "claudeOutputBytes": 497
       },
       {
         "id": "git",
         "routeMatch": true,
         "codexOutputBytes": 190,
-        "claudeOutputBytes": 272
+        "claudeOutputBytes": 481
       },
       {
         "id": "json",
         "routeMatch": true,
         "codexOutputBytes": 202,
-        "claudeOutputBytes": 284
+        "claudeOutputBytes": 505
       },
       {
         "id": "multiple-independent",
         "routeMatch": true,
         "codexOutputBytes": 235,
-        "claudeOutputBytes": 317
+        "claudeOutputBytes": 571
       },
       {
         "id": "named-skill-call",
         "routeMatch": true,
         "codexOutputBytes": 192,
-        "claudeOutputBytes": 274
+        "claudeOutputBytes": 485
       },
       {
         "id": "named-skill-location",
         "routeMatch": true,
         "codexOutputBytes": 200,
-        "claudeOutputBytes": 282
+        "claudeOutputBytes": 501
       },
       {
         "id": "named-skill-definition",
         "routeMatch": true,
         "codexOutputBytes": 82,
-        "claudeOutputBytes": 0
+        "claudeOutputBytes": 265
       },
       {
         "id": "named-command-call",
         "routeMatch": true,
         "codexOutputBytes": 176,
-        "claudeOutputBytes": 254
+        "claudeOutputBytes": 445
       },
       {
         "id": "named-skill-substring",
         "routeMatch": true,
         "codexOutputBytes": 188,
-        "claudeOutputBytes": 270
+        "claudeOutputBytes": 477
       },
       {
         "id": "named-skill-action-with-explanation",
         "routeMatch": true,
         "codexOutputBytes": 192,
-        "claudeOutputBytes": 274
+        "claudeOutputBytes": 485
       }
     ]
   },
@@ -283,7 +283,7 @@
   },
   "hookBytes": {
     "codexMax": 421,
-    "claudeMax": 503,
+    "claudeMax": 943,
     "baselineMax": 8685
   },
   "rootRuleBytes": {
@@ -298,8 +298,25 @@
       }
     },
     "current": {
-      "AGENTS.md": 4848,
-      "CLAUDE.md": 4908
+      "AGENTS.md": 6001,
+      "CLAUDE.md": 6061
+    }
+  },
+  "governanceBaseline": {
+    "status": "present",
+    "agentsExpected": 4,
+    "agentsPresent": 4,
+    "delegationRuleBytes": {
+      "AGENTS.md": 689,
+      "CLAUDE.md": 689,
+      ".agent-governance/core-rules.md": 689
+    },
+    "hookOutputMaxBytes": 505,
+    "redaction": {
+      "taskTextStored": false,
+      "absolutePathsStored": false,
+      "environmentValuesStored": false,
+      "promptRepresentation": "sha256"
     }
   },
   "rollback": "不需要回滚；所有回归门禁通过。"

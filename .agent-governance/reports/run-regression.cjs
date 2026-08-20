@@ -8,6 +8,10 @@ const { selectRoute } = require('../lib/router.cjs');
 const root = path.resolve(__dirname, '..', '..');
 const fixtures = JSON.parse(fs.readFileSync(path.join(root, '.agent-governance/fixtures/router-fixtures.json'), 'utf8'));
 const baseline = JSON.parse(fs.readFileSync(path.join(root, '.agent-governance/baseline/baseline.json'), 'utf8'));
+const subagentBaselinePath = path.join(root, '.agent-governance/baseline/subagent-governance-baseline.json');
+const subagentBaseline = fs.existsSync(subagentBaselinePath)
+  ? JSON.parse(fs.readFileSync(subagentBaselinePath, 'utf8'))
+  : null;
 function routeMatches(actual, expected) {
   const { matches, ...base } = actual;
   const { matches: expectedMatches, ...expectedBase } = expected;
@@ -62,6 +66,15 @@ const report = {
       'CLAUDE.md': fs.statSync(path.join(root, 'CLAUDE.md')).size
     }
   },
+  governanceBaseline: subagentBaseline ? {
+    status: 'present',
+    agentsExpected: subagentBaseline.agents.expectedCount,
+    agentsPresent: subagentBaseline.agents.presentCount,
+    delegationRuleBytes: Object.fromEntries(Object.entries(subagentBaseline.rootDelegationRules)
+      .map(([file, stats]) => [file, stats.bytes])),
+    hookOutputMaxBytes: subagentBaseline.hooks.output.maxBytes,
+    redaction: subagentBaseline.redaction
+  } : { status: 'missing' },
   rollback: allPass ? '不需要回滚；所有回归门禁通过。' : '建议回滚直接责任任务的 Hook 或 manifest 改动。'
 };
 fs.writeFileSync(path.join(__dirname, 'regression-report.json'), `${JSON.stringify(report, null, 2)}\n`, 'utf8');
