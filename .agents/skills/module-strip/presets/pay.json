@@ -1,0 +1,43 @@
+{
+  "name": "支付",
+  "description": "ruoyi-common-pay 父模块（含 5 个子模块: core/wechat/alipay/unionpay/balance） + 各处 pom 引用",
+  "delete_dirs": [
+    "ruoyi-common/ruoyi-common-pay"
+  ],
+  "delete_files": [],
+  "remove_pom_lines": [
+    {
+      "file": "ruoyi-common/pom.xml",
+      "patterns": [
+        "<module>ruoyi-common-pay</module>"
+      ]
+    },
+    {
+      "file": "ruoyi-modules/ruoyi-business/pom.xml",
+      "patterns": [
+        "<artifactId>ruoyi-common-pay-core</artifactId>",
+        "<artifactId>ruoyi-common-pay-wechat</artifactId>",
+        "<artifactId>ruoyi-common-pay-alipay</artifactId>",
+        "<artifactId>ruoyi-common-pay-unionpay</artifactId>",
+        "<artifactId>ruoyi-common-pay-balance</artifactId>"
+      ]
+    },
+    {
+      "file": "ruoyi-modules/ruoyi-mall/pom.xml",
+      "patterns": [
+        "<artifactId>ruoyi-common-pay-core</artifactId>",
+        "<artifactId>ruoyi-common-pay-wechat</artifactId>",
+        "<artifactId>ruoyi-common-pay-alipay</artifactId>",
+        "<artifactId>ruoyi-common-pay-unionpay</artifactId>",
+        "<artifactId>ruoyi-common-pay-balance</artifactId>"
+      ]
+    }
+  ],
+  "manual_actions": [
+    "⚠️ 实测发现：单独裁 pay 会编译失败！ruoyi-mall 模块的 OrderPayController 和 PayNotifyController 引用了支付类",
+    "⚠️ 必须组合裁剪：/strip-modules mall pay（先 mall 后 pay 同一次执行）",
+    "从 script/sql/ry_plus_new.sql 移除支付相关菜单和字典初始化（搜索 '支付'、pay_）",
+    "删除 application.yml / application-dev.yml 中 pay 相关配置（如 wxpay/alipay 商户配置）"
+  ],
+  "depends_on": ["mall"]
+}

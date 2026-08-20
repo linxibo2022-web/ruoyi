@@ -30,8 +30,8 @@ try {
 const toolName = input.tool_name;
 const toolInput = input.tool_input || {};
 
-// Bash 命令检查
-if (toolName === 'Bash') {
+// Bash / PowerShell 命令检查。设置 matcher 必须与这里同步，避免 PowerShell 绕过安全门禁。
+if (toolName === 'Bash' || toolName === 'PowerShell') {
   const command = toolInput.command || '';
 
   // 检测 > nul 错误用法（Windows 会创建名为 nul 的文件）
@@ -92,8 +92,8 @@ if (toolName === 'Bash') {
   }
 }
 
-// Write 工具检查
-if (toolName === 'Write') {
+// Edit / Write 工具都可能修改敏感配置，必须进入同一提醒分支。
+if (toolName === 'Edit' || toolName === 'Write') {
   const filePath = toolInput.file_path || '';
 
   // 检查是否写入敏感配置文件

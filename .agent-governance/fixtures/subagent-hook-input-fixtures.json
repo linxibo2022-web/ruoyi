@@ -1,0 +1,687 @@
+{
+    "schemaVersion":  1,
+    "redactionContract":  {
+                              "storedData":  [
+                                                 "field-name",
+                                                 "value-type",
+                                                 "presence",
+                                                 "fixed-enum",
+                                                 "utf8-byte-length",
+                                                 "sha256"
+                                             ],
+                              "forbiddenData":  [
+                                                    "prompt-body",
+                                                    "transcript-body",
+                                                    "user-input",
+                                                    "absolute-path-value"
+                                                ],
+                              "hashAlgorithm":  "sha256"
+                          },
+    "claude":  {
+                   "runtime":  {
+                                   "product":  "Claude Code",
+                                   "version":  "2.1.195",
+                                   "platform":  "win32",
+                                   "captureStatus":  "observed"
+                               },
+                   "attempts":  [
+                                    {
+                                        "attemptId":  "claude-attempt-01",
+                                        "configuration":  "project-settings-only",
+                                        "outcome":  "authentication-unavailable",
+                                        "exitCode":  1,
+                                        "eventCount":  0,
+                                        "failureFingerprint":  "not-logged-in"
+                                    },
+                                    {
+                                        "attemptId":  "claude-attempt-02",
+                                        "configuration":  "default-settings",
+                                        "outcome":  "budget-exhausted-after-nested-call",
+                                        "exitCode":  1,
+                                        "eventCount":  3,
+                                        "failureFingerprint":  "maximum-budget-0.20"
+                                    },
+                                    {
+                                        "attemptId":  "claude-attempt-03",
+                                        "configuration":  "default-settings",
+                                        "outcome":  "success",
+                                        "exitCode":  0,
+                                        "eventCount":  4,
+                                        "failureFingerprint":  null
+                                    }
+                                ],
+                   "events":  [
+                                  {
+                                      "eventId":  "claude-event-01",
+                                      "sourceAttempt":  "claude-attempt-02",
+                                      "capture":  {
+                                                      "captureVersion":  1,
+                                                      "fields":  [
+                                                                     {
+                                                                         "name":  "cwd",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  37,
+                                                                         "sha256":  "1fa87fd0e051fc0f809245296d79aa2e8547d5ccf1216ce083f9697ae936f39d"
+                                                                     },
+                                                                     {
+                                                                         "name":  "effort",
+                                                                         "present":  true,
+                                                                         "type":  "object",
+                                                                         "fields":  [
+                                                                                        {
+                                                                                            "name":  "level",
+                                                                                            "present":  true,
+                                                                                            "type":  "string",
+                                                                                            "byteLength":  4,
+                                                                                            "sha256":  "6ef7c9b15ecdd69083724b84cfdc2100351963488b51b4ea2fcbddf493fbec94"
+                                                                                        }
+                                                                                    ]
+                                                                     },
+                                                                     {
+                                                                         "name":  "hook_event_name",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  10,
+                                                                         "sha256":  "f27936b03f2c99c8de7a018b86ac39601d34406c60f7299696aa2bc9a0beca87",
+                                                                         "enumValue":  "PreToolUse"
+                                                                     },
+                                                                     {
+                                                                         "name":  "permission_mode",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  17,
+                                                                         "sha256":  "b2a01e47333e4cbb8b1fad661f5b08c65bfbd2a8dc85f88aadb877c50357f661"
+                                                                     },
+                                                                     {
+                                                                         "name":  "session_id",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  36,
+                                                                         "sha256":  "d35126d40100d6d0e4799faa3e1b7f95c9b9da8342cfc10ca62cc884faf9a371"
+                                                                     },
+                                                                     {
+                                                                         "name":  "tool_input",
+                                                                         "present":  true,
+                                                                         "type":  "object",
+                                                                         "fields":  [
+                                                                                        {
+                                                                                            "name":  "description",
+                                                                                            "present":  true,
+                                                                                            "type":  "string",
+                                                                                            "byteLength":  30,
+                                                                                            "sha256":  "61e110c1a1c50363d3fbeab2a10de872a9cba6a817af2a1c8b92ee8c321d7c37"
+                                                                                        },
+                                                                                        {
+                                                                                            "name":  "prompt",
+                                                                                            "present":  true,
+                                                                                            "type":  "string",
+                                                                                            "byteLength":  975,
+                                                                                            "sha256":  "58eda72349802e337601928c4e8da836fccdfaa81dcc3f1d834aea16e7dd77a1"
+                                                                                        },
+                                                                                        {
+                                                                                            "name":  "subagent_type",
+                                                                                            "present":  true,
+                                                                                            "type":  "string",
+                                                                                            "byteLength":  15,
+                                                                                            "sha256":  "db45ca5bb40691a7dfc7dabddf46abc471d0127192862513c819a04498788c93"
+                                                                                        }
+                                                                                    ]
+                                                                     },
+                                                                     {
+                                                                         "name":  "tool_name",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  5,
+                                                                         "sha256":  "11b39c93777e8f1f3983bdba7c72b22fe68cfea20c677e9de53e17cb7dbfb19f",
+                                                                         "enumValue":  "Agent"
+                                                                     },
+                                                                     {
+                                                                         "name":  "tool_use_id",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  32,
+                                                                         "sha256":  "d14bac34d6eb4a25f7b6fc35d0a1cd59b55025c310ebe90bff96388e3e054e3f"
+                                                                     },
+                                                                     {
+                                                                         "name":  "transcript_path",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  120,
+                                                                         "sha256":  "f117ffb771c9ba834c1acafedbb80b23aafe1b49e896e191849de5f131928d17"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "eventId":  "claude-event-02",
+                                      "sourceAttempt":  "claude-attempt-02",
+                                      "capture":  {
+                                                      "captureVersion":  1,
+                                                      "fields":  [
+                                                                     {
+                                                                         "name":  "agent_id",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  17,
+                                                                         "sha256":  "5caabfd24345e2dfa22c6a4f4e481f608e12a8dace1b1ee08dc2c777f1b3732b"
+                                                                     },
+                                                                     {
+                                                                         "name":  "agent_type",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  15,
+                                                                         "sha256":  "db45ca5bb40691a7dfc7dabddf46abc471d0127192862513c819a04498788c93",
+                                                                         "enumValue":  "general-purpose"
+                                                                     },
+                                                                     {
+                                                                         "name":  "cwd",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  37,
+                                                                         "sha256":  "1fa87fd0e051fc0f809245296d79aa2e8547d5ccf1216ce083f9697ae936f39d"
+                                                                     },
+                                                                     {
+                                                                         "name":  "hook_event_name",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  13,
+                                                                         "sha256":  "57c0f36c59e282dd05cc5ef18e697070fb1e300a5f2198c48e7a4484ab36b958",
+                                                                         "enumValue":  "SubagentStart"
+                                                                     },
+                                                                     {
+                                                                         "name":  "session_id",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  36,
+                                                                         "sha256":  "d35126d40100d6d0e4799faa3e1b7f95c9b9da8342cfc10ca62cc884faf9a371"
+                                                                     },
+                                                                     {
+                                                                         "name":  "transcript_path",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  120,
+                                                                         "sha256":  "f117ffb771c9ba834c1acafedbb80b23aafe1b49e896e191849de5f131928d17"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "eventId":  "claude-event-03",
+                                      "sourceAttempt":  "claude-attempt-02",
+                                      "capture":  {
+                                                      "captureVersion":  1,
+                                                      "fields":  [
+                                                                     {
+                                                                         "name":  "agent_id",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  17,
+                                                                         "sha256":  "5caabfd24345e2dfa22c6a4f4e481f608e12a8dace1b1ee08dc2c777f1b3732b"
+                                                                     },
+                                                                     {
+                                                                         "name":  "agent_type",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  15,
+                                                                         "sha256":  "db45ca5bb40691a7dfc7dabddf46abc471d0127192862513c819a04498788c93",
+                                                                         "enumValue":  "general-purpose"
+                                                                     },
+                                                                     {
+                                                                         "name":  "cwd",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  37,
+                                                                         "sha256":  "1fa87fd0e051fc0f809245296d79aa2e8547d5ccf1216ce083f9697ae936f39d"
+                                                                     },
+                                                                     {
+                                                                         "name":  "effort",
+                                                                         "present":  true,
+                                                                         "type":  "object",
+                                                                         "fields":  [
+                                                                                        {
+                                                                                            "name":  "level",
+                                                                                            "present":  true,
+                                                                                            "type":  "string",
+                                                                                            "byteLength":  4,
+                                                                                            "sha256":  "6ef7c9b15ecdd69083724b84cfdc2100351963488b51b4ea2fcbddf493fbec94"
+                                                                                        }
+                                                                                    ]
+                                                                     },
+                                                                     {
+                                                                         "name":  "hook_event_name",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  10,
+                                                                         "sha256":  "f27936b03f2c99c8de7a018b86ac39601d34406c60f7299696aa2bc9a0beca87",
+                                                                         "enumValue":  "PreToolUse"
+                                                                     },
+                                                                     {
+                                                                         "name":  "permission_mode",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  17,
+                                                                         "sha256":  "b2a01e47333e4cbb8b1fad661f5b08c65bfbd2a8dc85f88aadb877c50357f661"
+                                                                     },
+                                                                     {
+                                                                         "name":  "session_id",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  36,
+                                                                         "sha256":  "d35126d40100d6d0e4799faa3e1b7f95c9b9da8342cfc10ca62cc884faf9a371"
+                                                                     },
+                                                                     {
+                                                                         "name":  "tool_input",
+                                                                         "present":  true,
+                                                                         "type":  "object",
+                                                                         "fields":  [
+                                                                                        {
+                                                                                            "name":  "description",
+                                                                                            "present":  true,
+                                                                                            "type":  "string",
+                                                                                            "byteLength":  24,
+                                                                                            "sha256":  "ae77bb56d5b66ffffe7a9ab9c4267eec9b40c3da2e8427f83a8ab767c6e0af23"
+                                                                                        },
+                                                                                        {
+                                                                                            "name":  "prompt",
+                                                                                            "present":  true,
+                                                                                            "type":  "string",
+                                                                                            "byteLength":  566,
+                                                                                            "sha256":  "c5daa5857b7e6376c0168cfa15799ea16408c6a1c4d190833ab1d07f02cbc2bb"
+                                                                                        },
+                                                                                        {
+                                                                                            "name":  "subagent_type",
+                                                                                            "present":  true,
+                                                                                            "type":  "string",
+                                                                                            "byteLength":  7,
+                                                                                            "sha256":  "3b73900b8d29f963dece78edd4bd9529d855e50f2a3fcc39b3d66cd657630905"
+                                                                                        }
+                                                                                    ]
+                                                                     },
+                                                                     {
+                                                                         "name":  "tool_name",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  5,
+                                                                         "sha256":  "11b39c93777e8f1f3983bdba7c72b22fe68cfea20c677e9de53e17cb7dbfb19f",
+                                                                         "enumValue":  "Agent"
+                                                                     },
+                                                                     {
+                                                                         "name":  "tool_use_id",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  32,
+                                                                         "sha256":  "7d7f3f0d45490c10d154a252cac7f98f6c8dce93159a901988fbec47300ecab4"
+                                                                     },
+                                                                     {
+                                                                         "name":  "transcript_path",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  120,
+                                                                         "sha256":  "f117ffb771c9ba834c1acafedbb80b23aafe1b49e896e191849de5f131928d17"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "eventId":  "claude-event-04",
+                                      "sourceAttempt":  "claude-attempt-03",
+                                      "capture":  {
+                                                      "captureVersion":  1,
+                                                      "fields":  [
+                                                                     {
+                                                                         "name":  "cwd",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  37,
+                                                                         "sha256":  "1fa87fd0e051fc0f809245296d79aa2e8547d5ccf1216ce083f9697ae936f39d"
+                                                                     },
+                                                                     {
+                                                                         "name":  "effort",
+                                                                         "present":  true,
+                                                                         "type":  "object",
+                                                                         "fields":  [
+                                                                                        {
+                                                                                            "name":  "level",
+                                                                                            "present":  true,
+                                                                                            "type":  "string",
+                                                                                            "byteLength":  4,
+                                                                                            "sha256":  "6ef7c9b15ecdd69083724b84cfdc2100351963488b51b4ea2fcbddf493fbec94"
+                                                                                        }
+                                                                                    ]
+                                                                     },
+                                                                     {
+                                                                         "name":  "hook_event_name",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  10,
+                                                                         "sha256":  "f27936b03f2c99c8de7a018b86ac39601d34406c60f7299696aa2bc9a0beca87",
+                                                                         "enumValue":  "PreToolUse"
+                                                                     },
+                                                                     {
+                                                                         "name":  "permission_mode",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  17,
+                                                                         "sha256":  "b2a01e47333e4cbb8b1fad661f5b08c65bfbd2a8dc85f88aadb877c50357f661"
+                                                                     },
+                                                                     {
+                                                                         "name":  "session_id",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  36,
+                                                                         "sha256":  "521c312feec505e372fd239b0e6e0bc91aba00de23763aba694ffd3b9fdf380d"
+                                                                     },
+                                                                     {
+                                                                         "name":  "tool_input",
+                                                                         "present":  true,
+                                                                         "type":  "object",
+                                                                         "fields":  [
+                                                                                        {
+                                                                                            "name":  "description",
+                                                                                            "present":  true,
+                                                                                            "type":  "string",
+                                                                                            "byteLength":  18,
+                                                                                            "sha256":  "015172f54883ca858acebc66e808015d382cb4d11d298ba5fb6cc5a8437d81c9"
+                                                                                        },
+                                                                                        {
+                                                                                            "name":  "prompt",
+                                                                                            "present":  true,
+                                                                                            "type":  "string",
+                                                                                            "byteLength":  906,
+                                                                                            "sha256":  "fcb35d6a55f50b3bd39f92dce431540b51344eac5af93f4be138c92f8a876ab7"
+                                                                                        },
+                                                                                        {
+                                                                                            "name":  "subagent_type",
+                                                                                            "present":  true,
+                                                                                            "type":  "string",
+                                                                                            "byteLength":  15,
+                                                                                            "sha256":  "db45ca5bb40691a7dfc7dabddf46abc471d0127192862513c819a04498788c93"
+                                                                                        }
+                                                                                    ]
+                                                                     },
+                                                                     {
+                                                                         "name":  "tool_name",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  5,
+                                                                         "sha256":  "11b39c93777e8f1f3983bdba7c72b22fe68cfea20c677e9de53e17cb7dbfb19f",
+                                                                         "enumValue":  "Agent"
+                                                                     },
+                                                                     {
+                                                                         "name":  "tool_use_id",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  32,
+                                                                         "sha256":  "01938a052eabf958faa87fc242ff50706afec6d65db76ad92081fa1a858f6edd"
+                                                                     },
+                                                                     {
+                                                                         "name":  "transcript_path",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  120,
+                                                                         "sha256":  "d2d3f9ced8141744aef05275731dd5cb77ee968655b52ee58df65c3b9a54cea0"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "eventId":  "claude-event-05",
+                                      "sourceAttempt":  "claude-attempt-03",
+                                      "capture":  {
+                                                      "captureVersion":  1,
+                                                      "fields":  [
+                                                                     {
+                                                                         "name":  "agent_id",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  17,
+                                                                         "sha256":  "3d4271224a6b9804e976ff120f3b3838824e35e25d63fd05bb332c25f9169392"
+                                                                     },
+                                                                     {
+                                                                         "name":  "agent_type",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  15,
+                                                                         "sha256":  "db45ca5bb40691a7dfc7dabddf46abc471d0127192862513c819a04498788c93",
+                                                                         "enumValue":  "general-purpose"
+                                                                     },
+                                                                     {
+                                                                         "name":  "cwd",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  37,
+                                                                         "sha256":  "1fa87fd0e051fc0f809245296d79aa2e8547d5ccf1216ce083f9697ae936f39d"
+                                                                     },
+                                                                     {
+                                                                         "name":  "hook_event_name",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  13,
+                                                                         "sha256":  "57c0f36c59e282dd05cc5ef18e697070fb1e300a5f2198c48e7a4484ab36b958",
+                                                                         "enumValue":  "SubagentStart"
+                                                                     },
+                                                                     {
+                                                                         "name":  "session_id",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  36,
+                                                                         "sha256":  "521c312feec505e372fd239b0e6e0bc91aba00de23763aba694ffd3b9fdf380d"
+                                                                     },
+                                                                     {
+                                                                         "name":  "transcript_path",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  120,
+                                                                         "sha256":  "d2d3f9ced8141744aef05275731dd5cb77ee968655b52ee58df65c3b9a54cea0"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "eventId":  "claude-event-06",
+                                      "sourceAttempt":  "claude-attempt-03",
+                                      "capture":  {
+                                                      "captureVersion":  1,
+                                                      "fields":  [
+                                                                     {
+                                                                         "name":  "agent_id",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  17,
+                                                                         "sha256":  "3d4271224a6b9804e976ff120f3b3838824e35e25d63fd05bb332c25f9169392"
+                                                                     },
+                                                                     {
+                                                                         "name":  "agent_type",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  15,
+                                                                         "sha256":  "db45ca5bb40691a7dfc7dabddf46abc471d0127192862513c819a04498788c93",
+                                                                         "enumValue":  "general-purpose"
+                                                                     },
+                                                                     {
+                                                                         "name":  "cwd",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  37,
+                                                                         "sha256":  "1fa87fd0e051fc0f809245296d79aa2e8547d5ccf1216ce083f9697ae936f39d"
+                                                                     },
+                                                                     {
+                                                                         "name":  "effort",
+                                                                         "present":  true,
+                                                                         "type":  "object",
+                                                                         "fields":  [
+                                                                                        {
+                                                                                            "name":  "level",
+                                                                                            "present":  true,
+                                                                                            "type":  "string",
+                                                                                            "byteLength":  4,
+                                                                                            "sha256":  "6ef7c9b15ecdd69083724b84cfdc2100351963488b51b4ea2fcbddf493fbec94"
+                                                                                        }
+                                                                                    ]
+                                                                     },
+                                                                     {
+                                                                         "name":  "hook_event_name",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  10,
+                                                                         "sha256":  "f27936b03f2c99c8de7a018b86ac39601d34406c60f7299696aa2bc9a0beca87",
+                                                                         "enumValue":  "PreToolUse"
+                                                                     },
+                                                                     {
+                                                                         "name":  "permission_mode",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  17,
+                                                                         "sha256":  "b2a01e47333e4cbb8b1fad661f5b08c65bfbd2a8dc85f88aadb877c50357f661"
+                                                                     },
+                                                                     {
+                                                                         "name":  "session_id",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  36,
+                                                                         "sha256":  "521c312feec505e372fd239b0e6e0bc91aba00de23763aba694ffd3b9fdf380d"
+                                                                     },
+                                                                     {
+                                                                         "name":  "tool_input",
+                                                                         "present":  true,
+                                                                         "type":  "object",
+                                                                         "fields":  [
+                                                                                        {
+                                                                                            "name":  "description",
+                                                                                            "present":  true,
+                                                                                            "type":  "string",
+                                                                                            "byteLength":  33,
+                                                                                            "sha256":  "3f472b04c4e89924f2334aa15e008f0fe463b48d9741f0e1462048c690ae1628"
+                                                                                        },
+                                                                                        {
+                                                                                            "name":  "prompt",
+                                                                                            "present":  true,
+                                                                                            "type":  "string",
+                                                                                            "byteLength":  743,
+                                                                                            "sha256":  "1c62e5bfba69070c5a9c539ceba769b8d8e08f1d7586c8702d58885247912740"
+                                                                                        },
+                                                                                        {
+                                                                                            "name":  "subagent_type",
+                                                                                            "present":  true,
+                                                                                            "type":  "string",
+                                                                                            "byteLength":  7,
+                                                                                            "sha256":  "3b73900b8d29f963dece78edd4bd9529d855e50f2a3fcc39b3d66cd657630905"
+                                                                                        }
+                                                                                    ]
+                                                                     },
+                                                                     {
+                                                                         "name":  "tool_name",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  5,
+                                                                         "sha256":  "11b39c93777e8f1f3983bdba7c72b22fe68cfea20c677e9de53e17cb7dbfb19f",
+                                                                         "enumValue":  "Agent"
+                                                                     },
+                                                                     {
+                                                                         "name":  "tool_use_id",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  32,
+                                                                         "sha256":  "a96926136d9f910649f7603ec109876793fd23d0665c3c1acac9357333cd9fc1"
+                                                                     },
+                                                                     {
+                                                                         "name":  "transcript_path",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  120,
+                                                                         "sha256":  "d2d3f9ced8141744aef05275731dd5cb77ee968655b52ee58df65c3b9a54cea0"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "eventId":  "claude-event-07",
+                                      "sourceAttempt":  "claude-attempt-03",
+                                      "capture":  {
+                                                      "captureVersion":  1,
+                                                      "fields":  [
+                                                                     {
+                                                                         "name":  "agent_id",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  17,
+                                                                         "sha256":  "b6f29e8fe2aeefc737faf135105bd49bae6bc6658bcdbef4a7190c1902f4560a"
+                                                                     },
+                                                                     {
+                                                                         "name":  "agent_type",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  7,
+                                                                         "sha256":  "3b73900b8d29f963dece78edd4bd9529d855e50f2a3fcc39b3d66cd657630905",
+                                                                         "enumValue":  "Explore"
+                                                                     },
+                                                                     {
+                                                                         "name":  "cwd",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  37,
+                                                                         "sha256":  "1fa87fd0e051fc0f809245296d79aa2e8547d5ccf1216ce083f9697ae936f39d"
+                                                                     },
+                                                                     {
+                                                                         "name":  "hook_event_name",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  13,
+                                                                         "sha256":  "57c0f36c59e282dd05cc5ef18e697070fb1e300a5f2198c48e7a4484ab36b958",
+                                                                         "enumValue":  "SubagentStart"
+                                                                     },
+                                                                     {
+                                                                         "name":  "session_id",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  36,
+                                                                         "sha256":  "521c312feec505e372fd239b0e6e0bc91aba00de23763aba694ffd3b9fdf380d"
+                                                                     },
+                                                                     {
+                                                                         "name":  "transcript_path",
+                                                                         "present":  true,
+                                                                         "type":  "string",
+                                                                         "byteLength":  120,
+                                                                         "sha256":  "d2d3f9ced8141744aef05275731dd5cb77ee968655b52ee58df65c3b9a54cea0"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  }
+                              ],
+                   "observations":  {
+                                        "mainAgentPreToolUse":  "observed-without-agent-id",
+                                        "firstLevelSubagentStart":  "observed-with-agent-id",
+                                        "firstLevelAgentPreToolUse":  "observed-with-same-agent-id",
+                                        "secondLevelSubagentStart":  "observed",
+                                              "recursiveDelegationVisibility":  "observed-through-second-level-start"
+                                    }
+               },
+    "codex":  {
+                   "runtime":  {
+                                   "product":  "Codex CLI",
+                                   "version":  "0.148.0",
+                                   "platform":  "win32",
+                                   "captureStatus":  "not-observable"
+                               },
+                   "attempts":  [
+                                    {
+                                        "attemptId":  "codex-attempt-01",
+                                        "configuration":  "project-hooks-Agent-and-SubagentStart",
+                                        "outcome":  "eventless-external-session-stopped",
+                                        "exitCode":  null,
+                                        "eventCount":  0,
+                                        "failureFingerprint":  "codex-exec-started-without-runtime-hook-event"
+                                    }
+                                ],
+                   "events":  [],
+                   "observations":  {
+                                        "hookConfigurationDynamicLoad":  "not-observed",
+                                        "mainAgentSpawn":  "not-observed",
+                                        "firstLevelSubagentStart":  "not-observed",
+                                        "secondLevelSubagentStart":  "not-observed",
+                                        "turnIdAgentIdSessionIdCorrelation":  "not-observable",
+                                        "recursiveDelegationVisibility":  "not-observable"
+                                    }
+               }
+}

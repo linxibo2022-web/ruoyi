@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-20T18:43:43+08:00",
+  "evidence": {
+    "fixture": ".agent-governance/fixtures/subagent-hook-input-fixtures.json",
+    "fixtureSha256": "5c76feb5271c847a69115c51ba3fad8ead4b8012f315354104ac325cc4639cee",
+    "redaction": "只引用脱敏字段名、类型、presence、固定枚举、长度和哈希；不保存任务正文、用户输入、transcript 正文或绝对路径值。"
+  },
+  "claude": {
+    "captureStatus": "observed",
+    "agentPreflight": {
+      "event": "PreToolUse",
+      "toolName": "Agent",
+      "strictTaskField": "tool_input.prompt",
+      "roleField": "tool_input.subagent_type",
+      "preservedFields": ["tool_input.description", "tool_input.subagent_type"],
+      "boundary": "仅在 tool_name 为 Agent、tool_input 为对象且 prompt 为字符串时可进行任务级预检；其他输入必须按 invalid-input 处理。"
+    },
+    "subagentStart": {
+      "event": "SubagentStart",
+      "agentIdentityFields": ["agent_id", "agent_type"],
+      "workingDirectoryField": "cwd",
+      "sessionField": "session_id",
+      "boundary": "启动事件可使用 agent_id 和 agent_type 渲染角色边界；不得读取 transcript_path 内容或将其写入审计。"
+    },
+    "recursion": {
+      "capability": "hard-capable",
+      "evidence": "一级 Agent PreToolUse 事件携带与一级 SubagentStart 相同的 agent_id，随后观察到二级 SubagentStart。",
+      "policy": "当 Agent PreToolUse 输入存在非空 agent_id 时，拒绝再次委派。"
+    },
+    "runtimeBoundaries": {
+      "hookTimeout": "本次脱敏事件未记录 timeout 单位或运行时执行时长；T-07 必须使用 Claude 支持的跨平台 exec form，并在真实运行时验收 timeout。",
+      "workingDirectory": "每类已观察 Claude 事件均有 cwd 字符串字段，但值只以长度和哈希存在于 fixture；后续 Hook 仅把 cwd 作为运行时工作目录，不持久化其值。",
+      "startupContext": "SubagentStart 已真实触发，可注入短上下文；动态路由和阻断仍归 Agent PreToolUse。"
+    },
+    "runtimeAcceptance": {
+      "captureStatus": "observed",
+      "evidence": "受控只读 Explore 子代理实际触发 PreToolUse:Agent 与 SubagentStart:Explore；预检返回 no-match 权威信封，启动 Hook 返回已登记只读边界。",
+      "boundary": "验收输出仅记录事件、角色、状态和结论；不持久化任务正文、绝对路径、会话 ID 或 agent ID。"
+    }
+  },
+  "codex": {
+    "captureStatus": "not-observable",
+    "agentPreflight": {
+      "strictTaskField": "未由真实事件证明",
+      "boundary": "不得依据静态 hooks.json 或文档推断 spawn_agent.message、updatedInput 或身份字段的运行时形状。"
+    },
+    "recursion": {
+      "capability": "unobservable",
+      "policy": "采用 soft-only：不实施基于调用者身份的硬拒绝；后续仅可输出可审计提示，直至新的真实探针证据证明关联字段。"
+    },
+    "runtimeBoundaries": {
+      "hookTimeout": "本次真实探针没有 Hook 事件，不能冻结 timeout 单位或行为。",
+      "workingDirectory": "本次真实探针没有 Hook 事件，不能冻结相对命令的解析目录；T-08 必须从 Git 根显式解析并分别验证根目录、子目录和含空格路径。",
+      "startupContext": "本次真实探针没有 SubagentStart 事件；T-10 只能以 soft-only 状态提示实现，并以运行时验收决定后续能力。"
+    },
+    "runtimeAcceptance": {
+      "captureStatus": "unsupported",
+      "evidence": "Codex CLI 0.148.0 的 /hooks 运行时界面显示 SubagentStart Installed=0、Active=0。",
+      "boundary": "不注册不会执行的 SubagentStart Hook，不把静态配置或 continue:false 伪装为启动上下文或阻断能力。"
+    }
+  },
+  "downstreamConstraints": {
+    "claude": ["T-07 使用 tool_input.prompt 和 agent_id 硬递归门禁。", "T-09 使用 agent_id、agent_type 与 cwd，且不解析 transcript。"],
+    "codex": ["T-08 不得声称调用者关联或递归硬门禁。", "T-10 运行时不支持 SubagentStart；保持无注册配置，并把 soft-only 限制记录在静态治理结论中。"]
+  }
+}

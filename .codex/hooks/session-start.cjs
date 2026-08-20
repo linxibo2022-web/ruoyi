@@ -1,23 +1,4 @@
 #!/usr/bin/env node
-/**
- * Codex SessionStart Hook - 会话启动时注入经验摘要
- *
- * 功能：CLAUDE.md 约定"会话开始读 .claude/docs/experience/ 最近摘要"——
- * 在 Claude 端是模型自觉读取，命中率不稳定。这里改为 hook 自动注入到
- * additionalContext，零依赖模型记忆。
- *
- * Codex stdin schema：
- *   { session_id, source, cwd, hook_event_name, model }
- *   source ∈ { startup, resume, clear }
- *
- * Codex 输出：
- *   - {additionalContext: "..."} → 加入开发者上下文
- *   - 普通文本 → 同 additionalContext
- *   - {} → 不注入
- *
- * 触发策略：仅 startup（resume/clear 时上下文已存在或被刻意清空，不应再塞）
- */
-
 const fs = require('fs');
 const path = require('path');
 
@@ -63,7 +44,7 @@ try {
     }
   }
 } catch {
-  // 目录不存在或无权限，静默退出
+  // 目录不存在或无权限时保持空输出，不阻断会话。
 }
 
 if (!summaryFile) {
@@ -71,27 +52,8 @@ if (!summaryFile) {
   process.exit(0);
 }
 
-let content = '';
-try {
-  content = fs.readFileSync(summaryFile, 'utf8');
-} catch {
-  process.stdout.write('{}');
-  process.exit(0);
-}
-
-// 控制注入体积：超过 8KB 时截断（保留头部）
-const MAX = 8 * 1024;
-if (content.length > MAX) {
-  content = content.slice(0, MAX) + '\n\n…（已截断，完整内容见原文件）';
-}
-
 const relPath = path.relative(cwd, summaryFile).replace(/\\/g, '/');
-const wrapped = `## 历史经验加载（来自 ${relPath}）
+const wrapped = `最近经验摘要位于 \`${relPath}\`；仅当本轮涉及历史问题或用户明确要求时读取。`;
 
-> 以下为最近一次 \`/exp\` 沉淀的经验摘要，包含已沉淀的禁令、踩过的坑、待观察事项。
-> 本次会话开始前自动加载，避免重蹈覆辙。
-
-${content}`;
-
-process.stdout.write(JSON.stringify({ additionalContext: wrapped }));
+process.stdout.write(JSON.stringify({ additionalContext: wrapped.slice(0, 512) }));
 process.exit(0);

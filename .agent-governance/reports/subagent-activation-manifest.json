@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "activation": {
+    "staging": [
+      { "path": ".agent-governance/staging/claude/agents/ruoyi-code-reviewer.md", "sha256": "fd2e4de88607a4a5dedbf819d8e4d36020d9652670a211c3383339a9c9b0f7ed", "bytes": 657 },
+      { "path": ".agent-governance/staging/claude/agents/ruoyi-project-reporter.md", "sha256": "ba3ff1978cb2fbca74bdb3ee049b472391da60c0a60eecb4e88dfe945b1fc2d9", "bytes": 611 },
+      { "path": ".agent-governance/staging/claude/agents/ruoyi-project-updater.md", "sha256": "629d7ae39e7124b58334052ba26ffc057f6994c32d73be2931869e23b2880b6f", "bytes": 666 },
+      { "path": ".agent-governance/staging/codex/agents/ruoyi-code-reviewer.toml", "sha256": "f390cd0dfb02231006bf9892104a2838114bcdb9c5d4c444e06dd03e8e6d407b", "bytes": 717 },
+      { "path": ".agent-governance/staging/codex/agents/ruoyi-project-reporter.toml", "sha256": "cae393f854d7de09c44bf85948e24672d6b4516bfcf8084e74cb62adbf182b96", "bytes": 671 },
+      { "path": ".agent-governance/staging/codex/agents/ruoyi-project-updater.toml", "sha256": "2aae1df21485250745814c343727b24b63e5e59998a671874a656a787517f1ae", "bytes": 731 }
+    ],
+    "targets": [
+      ".claude/agents/ruoyi-code-reviewer.md",
+      ".claude/agents/ruoyi-project-reporter.md",
+      ".claude/agents/ruoyi-project-updater.md",
+      ".codex/agents/ruoyi-code-reviewer.toml",
+      ".codex/agents/ruoyi-project-reporter.toml",
+      ".codex/agents/ruoyi-project-updater.toml"
+    ],
+    "removeAfterWrite": [
+      { "path": ".claude/agents/code-reviewer.md", "sha256": "c456f8dd9bc5433460f5f0db3ba64041a1adb9b3be0087e2f8c4a1871c197eda", "bytes": 16057 },
+      { "path": ".claude/agents/project-manager.md", "sha256": "8d7f1e61adb5db23b5be2c01b5af6f63ab37467098f0ef1ede01f30670bc172e", "bytes": 8767 },
+      { "path": ".codex/agents/code-reviewer.toml", "sha256": "64b554b2fd8361661b80756e02d6a78895ff40397806305f240e0912e5800fae", "bytes": 17252 },
+      { "path": ".codex/agents/project-manager.toml", "sha256": "e74fa5a75c3d83f524eb418f0800ad8df5d847d37acddd4edbaafee881d615f0", "bytes": 9424 }
+    ]
+  },
+  "rollback": {
+    "method": "仅由 sync-agent-assets.cjs 的受控激活模式从已冻结 staging 重建；不使用 stash、reset 或 checkout 丢弃改动。",
+    "requiresMaintenanceWindow": false
+  },
+  "failureConditions": ["staging 哈希或字节数不匹配", "目标路径存在非受控内容", "受控激活后的字节校验失败"],
+  "executionMode": "unattended"
+}

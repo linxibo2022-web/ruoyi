@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "commandMappings": [
+    { "name": "add-test", "claudeCommand": "add-test.md", "codexSkill": "add-test" },
+    { "name": "add-todo", "claudeCommand": "add-todo.md", "codexSkill": "add-todo" },
+    { "name": "check", "claudeCommand": "check.md", "codexSkill": "check" },
+    { "name": "crud", "claudeCommand": "crud.md", "codexSkill": "crud" },
+    { "name": "deploy", "claudeCommand": "deploy.md", "codexSkill": "deploy" },
+    { "name": "dev", "claudeCommand": "dev.md", "codexSkill": "dev" },
+    { "name": "exp", "claudeCommand": "exp.md", "codexSkill": "exp" },
+    { "name": "framework-sync", "claudeCommand": "framework-sync.md", "codexSkill": "framework-sync" },
+    { "name": "init-docs", "claudeCommand": "init-docs.md", "codexSkill": "init-docs" },
+    { "name": "next", "claudeCommand": "next.md", "codexSkill": "next" },
+    { "name": "progress", "claudeCommand": "progress.md", "codexSkill": "progress" },
+    { "name": "start", "claudeCommand": "start.md", "codexSkill": "start" },
+    { "name": "strip-modules", "claudeCommand": "strip-modules.md", "codexSkill": "strip-modules" },
+    { "name": "sync", "claudeCommand": "sync.md", "codexSkill": "sync" },
+    { "name": "sync-delivery", "claudeCommand": "sync-delivery.md", "codexSkill": "sync-delivery" },
+    { "name": "update-status", "claudeCommand": "update-status.md", "codexSkill": "update-status" }
+  ],
+  "dualEntrySkills": [
+    { "name": "framework-sync", "claudeSource": "skill" }
+  ],
+  "codexExclusiveSkills": ["autonomous-dev", "cmd-framework-sync"],
+  "claudeExclusiveCommands": ["dev-loop.md", "kickoff.md", "loop-gen.md"]
+}

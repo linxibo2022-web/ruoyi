@@ -1,0 +1,17 @@
+{
+  "valid": {
+    "agentType": "ruoyi-code-reviewer",
+    "runtime": "codex",
+    "risk": "review",
+    "capability": { "id": "check", "kind": "skill", "path": ".agents/skills/check/SKILL.md", "preloadable": true }
+  },
+  "reservedName": { "agentId": "ruoyi-conflict", "runtime": "codex", "name": "explorer" },
+  "missingResource": { "capabilityId": "check", "runtime": "codex", "path": ".agents/skills/missing/SKILL.md" },
+  "claudeCommand": { "agentType": "ruoyi-code-reviewer", "runtime": "claude", "kind": "command", "preloadable": false },
+  "unknown": { "agentType": "unknown-agent", "runtime": "codex" },
+  "risks": [
+    { "agentType": "explorer", "runtime": "codex", "expected": "read-only" },
+    { "agentType": "ruoyi-code-reviewer", "runtime": "claude", "expected": "review" },
+    { "agentType": "ruoyi-project-updater", "runtime": "codex", "expected": "docs-write" }
+  ]
+}

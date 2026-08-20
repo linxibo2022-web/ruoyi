@@ -1,0 +1,60 @@
+# delivery-sync 排除清单（gitignore 风格）
+#
+# 此文件首次执行 /sync-delivery 时由模板自动生成到主项目根。
+# 后续可手动编辑（每次同步会读取最新版本）。
+#
+# 注意：本文件本身也会被排除（不会同步到交付目录），无需担心泄漏。
+
+# === 强制排除（无 git、无技能体系约束） ===
+.git/
+.github/
+.claude/
+.codex/
+AGENTS.md
+CLAUDE.md
+
+# === 内部状态文件 ===
+.framework-sync.json
+.branch-sync-local.json
+.delivery-sync.json
+.deliveryignore
+
+# === 内部协作文档 ===
+docs/tasks/
+docs/experience/
+docs/brainstorm-*.md
+docs/login-designs/
+docs/login-styles-gallery.html
+docs/prototype-login-tab.html
+docs/安全漏洞扫描报告.md
+
+# === 设计稿/截图 ===
+prototype/
+tpl*.png
+
+# === IDE / 本地配置 ===
+.idea/
+.vscode/
+*.iml
+*.sw[op]
+
+# === 编译产物 / 日志 ===
+*.log
+hs_err_pid*.log
+target/
+node_modules/
+dist/
+.DS_Store
+Thumbs.db
+
+# === 测试产物 ===
+test-results/
+playwright-report/
+coverage/
+
+# === 项目特定：不交付的端 ===
+plus-uniapp-demo/
+plus-uniappx/
+
+# === 主项目自带的 delivery 文档目录（脚本会单独把内容拷到根） ===
+delivery/

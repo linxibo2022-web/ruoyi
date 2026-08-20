@@ -1,0 +1,508 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-20T17:50:31+08:00",
+  "redaction": {
+    "taskTextStored": false,
+    "absolutePathsStored": false,
+    "environmentValuesStored": false,
+    "promptRepresentation": "sha256"
+  },
+  "contextBudgets": {
+    "schemaVersion": 1,
+    "routingEnvelope": {
+      "limit": 1024,
+      "unit": "utf8-bytes",
+      "measurement": "仅测量权威信封体；updatedInput 中原任务文本不计入"
+    },
+    "subagentStartAdditionalContext": {
+      "limit": 800,
+      "unit": "tokens",
+      "measurement": "按 additionalContextLimit 的 token 估算；同时记录 UTF-8 字节数"
+    },
+    "neutralAgentBody": {
+      "limit": 200,
+      "unit": "lines",
+      "measurement": "去除运行时 front matter 后按换行计数"
+    },
+    "claudeStaticPreload": {
+      "limit": 2,
+      "unit": "skills-and-utf8-bytes",
+      "byteLimit": 8192,
+      "measurement": "仅统计 preloadable Skill；按资源 UTF-8 字节求和"
+    },
+    "subagentReturnSummary": {
+      "limit": 1500,
+      "unit": "chinese-characters",
+      "measurement": "按回传摘要 Unicode 字符数计；只允许结论、证据路径、风险和验证结果"
+    }
+  },
+  "rootRuleBytes": {
+    "AGENTS.md": {
+      "status": "present",
+      "bytes": 5539,
+      "sha256": "89b96d42aea707146ea626778f0492b110358ea2b3cde569727649c5f1135a00"
+    },
+    "CLAUDE.md": {
+      "status": "present",
+      "bytes": 5599,
+      "sha256": "d837b060c2f38894e817a2f258da184206ed3affdb0323567a6569218c9c5f7c"
+    }
+  },
+  "skills": {
+    "codex": {
+      "count": 79,
+      "status": "present",
+      "files": 177,
+      "directories": 164,
+      "bytes": 1886517
+    },
+    "claude": {
+      "count": 62,
+      "status": "present",
+      "files": 145,
+      "directories": 132,
+      "bytes": 1591701
+    }
+  },
+  "agents": {
+    "expectedCount": 4,
+    "presentCount": 4,
+    "entries": [
+      {
+        "status": "present",
+        "name": "code-reviewer",
+        "relativePath": ".claude/agents/code-reviewer.md",
+        "format": "claude-markdown",
+        "tools": {
+          "declaration": "explicit",
+          "values": [
+            "Read",
+            "Grep",
+            "Glob"
+          ]
+        },
+        "permissions": {
+          "declaration": "inherited",
+          "mode": null
+        },
+        "body": {
+          "bytes": 16359,
+          "lines": 591,
+          "sha256": "bbc0da1a4f73c2bb5c8b08bb6821c64010185c8e34cdf253bea47f107c56229a"
+        },
+        "file": {
+          "bytes": 16653,
+          "lines": 597,
+          "sha256": "9927ac60a7fdf477bf3fdc0a4afd7402b7aa709387273dc9aaea598146a77d7f"
+        }
+      },
+      {
+        "status": "present",
+        "name": "project-manager",
+        "relativePath": ".claude/agents/project-manager.md",
+        "format": "claude-markdown",
+        "tools": {
+          "declaration": "explicit",
+          "values": [
+            "Read",
+            "Write",
+            "Grep",
+            "Bash"
+          ]
+        },
+        "permissions": {
+          "declaration": "inherited",
+          "mode": null
+        },
+        "body": {
+          "bytes": 8790,
+          "lines": 336,
+          "sha256": "2f5b28347a6f40585bdc75c35779dfcc87c3c4c40820e1a4bdc9b370384fe8ff"
+        },
+        "file": {
+          "bytes": 9108,
+          "lines": 342,
+          "sha256": "2723e19c4d055a9a5bdddc380a469e3a6f81da3deb5a6d6cef06d7ef905ae2b5"
+        }
+      },
+      {
+        "status": "present",
+        "name": "code-reviewer",
+        "relativePath": ".codex/agents/code-reviewer.toml",
+        "format": "codex-toml",
+        "tools": {
+          "declaration": "inherited",
+          "values": []
+        },
+        "permissions": {
+          "declaration": "inherited",
+          "mode": null
+        },
+        "body": {
+          "bytes": 16969,
+          "lines": 589,
+          "sha256": "61ce69cb73a64729d4231a27e0de3e7c2e2adbded9fb3cbb2defe4af46ff4072"
+        },
+        "file": {
+          "bytes": 17252,
+          "lines": 593,
+          "sha256": "64b554b2fd8361661b80756e02d6a78895ff40397806305f240e0912e5800fae"
+        }
+      },
+      {
+        "status": "present",
+        "name": "project-manager",
+        "relativePath": ".codex/agents/project-manager.toml",
+        "format": "codex-toml",
+        "tools": {
+          "declaration": "inherited",
+          "values": []
+        },
+        "permissions": {
+          "declaration": "inherited",
+          "mode": null
+        },
+        "body": {
+          "bytes": 9124,
+          "lines": 334,
+          "sha256": "d4c350bac4ce199ab2681f2856040958c4793bc591be7c82625d1d2ba092764a"
+        },
+        "file": {
+          "bytes": 9424,
+          "lines": 338,
+          "sha256": "e74fa5a75c3d83f524eb418f0800ad8df5d847d37acddd4edbaafee881d615f0"
+        }
+      }
+    ]
+  },
+  "rootDelegationRules": {
+    "AGENTS.md": {
+      "status": "present",
+      "bytes": 689,
+      "lines": 6,
+      "sha256": "b941c4745763c72438a65f3f015789e5f132053b3a255fea8715041013be6cef"
+    },
+    "CLAUDE.md": {
+      "status": "present",
+      "bytes": 689,
+      "lines": 6,
+      "sha256": "b941c4745763c72438a65f3f015789e5f132053b3a255fea8715041013be6cef"
+    },
+    ".agent-governance/core-rules.md": {
+      "status": "present",
+      "bytes": 689,
+      "lines": 6,
+      "sha256": "b941c4745763c72438a65f3f015789e5f132053b3a255fea8715041013be6cef"
+    }
+  },
+  "hooks": {
+    "configuration": {
+      ".claude/settings.json": {
+        "status": "present",
+        "bytes": 865,
+        "lines": 42,
+        "sha256": "2b21bdde2aaa32c5b514cf506d8e13e41d3e56c13e4c241da0f6c5883a29788e",
+        "events": [
+          {
+            "event": "UserPromptSubmit",
+            "groups": [
+              {
+                "matcher": null,
+                "hooks": [
+                  {
+                    "type": "command",
+                    "command": "node .claude/hooks/skill-forced-eval.cjs",
+                    "timeout": null
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "event": "PreToolUse",
+            "groups": [
+              {
+                "matcher": "Bash|Edit|Write",
+                "hooks": [
+                  {
+                    "type": "command",
+                    "command": "node .claude/hooks/pre-tool-use.cjs",
+                    "timeout": 5000
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "event": "Stop",
+            "groups": [
+              {
+                "matcher": null,
+                "hooks": [
+                  {
+                    "type": "command",
+                    "command": "node .claude/hooks/stop.cjs",
+                    "timeout": 10000
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      ".codex/hooks.json": {
+        "status": "present",
+        "bytes": 1227,
+        "lines": 55,
+        "sha256": "8cac472cc3e2b6fbaae81a8e9180867bb204a460b7eb25229a5a3d450fb8d214",
+        "events": [
+          {
+            "event": "SessionStart",
+            "groups": [
+              {
+                "matcher": "startup",
+                "hooks": [
+                  {
+                    "type": "command",
+                    "command": "node .codex/hooks/session-start.cjs",
+                    "timeout": 10
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "event": "UserPromptSubmit",
+            "groups": [
+              {
+                "matcher": null,
+                "hooks": [
+                  {
+                    "type": "command",
+                    "command": "node .codex/hooks/skill-forced-eval.cjs",
+                    "timeout": 10
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "event": "PreToolUse",
+            "groups": [
+              {
+                "matcher": "^(Bash|shell|apply_patch|Edit|Write)$",
+                "hooks": [
+                  {
+                    "type": "command",
+                    "command": "node .codex/hooks/pre-tool-use.cjs",
+                    "timeout": 10
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "event": "Stop",
+            "groups": [
+              {
+                "matcher": null,
+                "hooks": [
+                  {
+                    "type": "command",
+                    "command": "node .codex/hooks/stop.cjs",
+                    "timeout": 15
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      ".codex/config.toml": {
+        "status": "present",
+        "bytes": 333,
+        "sha256": "3ad582cbee3f206dc2a5a3ac692f6605249752e43dcdaa413e59d61a0967fda1"
+      }
+    },
+    "files": {
+      ".codex/hooks/skill-forced-eval.cjs": {
+        "status": "present",
+        "bytes": 1504,
+        "sha256": "0dfbf563b4515fead636443b85ef7e9147a55eecbc1c25bf79bbfd5a52648daf"
+      },
+      ".codex/hooks/session-start.cjs": {
+        "status": "present",
+        "bytes": 1539,
+        "sha256": "5238e29bb24c66fbeb392bc9a1847e45c3d7af9ee4c5530d986a4d4ccff947af"
+      },
+      ".codex/hooks/pre-tool-use.cjs": {
+        "status": "present",
+        "bytes": 9393,
+        "sha256": "c4428b73d024c71f0b68d3876844177e2b44b2c1b6c31cd829b1534a0fc28130"
+      },
+      ".codex/hooks/stop.cjs": {
+        "status": "present",
+        "bytes": 1879,
+        "sha256": "56e7c84cf49cd40b12afd153c2f58e60cdc45412b690ac03afd769d05cfb6277"
+      },
+      ".claude/hooks/skill-forced-eval.cjs": {
+        "status": "present",
+        "bytes": 902,
+        "sha256": "d063ad8489af3dc1483286a34ac45c19faa0d0a65bff9893b511010524e64a15"
+      },
+      ".claude/hooks/pre-tool-use.cjs": {
+        "status": "present",
+        "bytes": 4354,
+        "sha256": "a636292ff24514ec72faaac939e9f531e3e93721c79c3242bc698cd952639f8f"
+      },
+      ".claude/hooks/stop.cjs": {
+        "status": "present",
+        "bytes": 1020,
+        "sha256": "2006c7b70b31fff09c5cfd46920d72f38b9c00ac6b92d1be5b95d8618060a54d"
+      }
+    },
+    "maxOutputBytes": 505,
+    "output": {
+      "maxBytes": 505,
+      "routingSamples": [
+        {
+          "id": "crud",
+          "promptSha256": "21254c01b4501a0c23efe38312a54a207c52812151d246e74d54ccac6ad2abb7",
+          "codex": {
+            "status": "ok",
+            "exitCode": 0,
+            "outputBytes": 198,
+            "outputSha256": "191e658995625857c1ea88886b6dfca681b96f64e2dd992b7f26d6821f3d4a67"
+          },
+          "claude": {
+            "status": "ok",
+            "exitCode": 0,
+            "outputBytes": 497,
+            "outputSha256": "9d914171e1f38bf6abf392280248d1e3e2f91e87963126d63c5110447dd8f486"
+          }
+        },
+        {
+          "id": "database",
+          "promptSha256": "1bbda929347ca53b6ace69a4e4e09e38e9a0d7542e145d37521d22ce9ba460a6",
+          "codex": {
+            "status": "ok",
+            "exitCode": 0,
+            "outputBytes": 82,
+            "outputSha256": "62f5d11b0e60510f5e66696c9c1601f41dbf98e562bddf0c8f9ab905a6aad32b"
+          },
+          "claude": {
+            "status": "ok",
+            "exitCode": 0,
+            "outputBytes": 265,
+            "outputSha256": "871ff5394e53c6e593d0c19d2976d178f117417cd98d7865a7614b85aed39d76"
+          }
+        },
+        {
+          "id": "page",
+          "promptSha256": "0a0cdc60809bbad9b62d2fa4f166c077f9cb770595939577a49bc800315c1e9a",
+          "codex": {
+            "status": "ok",
+            "exitCode": 0,
+            "outputBytes": 82,
+            "outputSha256": "62f5d11b0e60510f5e66696c9c1601f41dbf98e562bddf0c8f9ab905a6aad32b"
+          },
+          "claude": {
+            "status": "ok",
+            "exitCode": 0,
+            "outputBytes": 265,
+            "outputSha256": "871ff5394e53c6e593d0c19d2976d178f117417cd98d7865a7614b85aed39d76"
+          }
+        },
+        {
+          "id": "error",
+          "promptSha256": "0e035edfe4f8e6e4af9d262e8f17933ae558cc3bff3bdb4e1fb77b642a89ec18",
+          "codex": {
+            "status": "ok",
+            "exitCode": 0,
+            "outputBytes": 192,
+            "outputSha256": "039e0edaf2366ea5fb864341c09a04b0130b14c0ac5af4afa31c438c730767ba"
+          },
+          "claude": {
+            "status": "ok",
+            "exitCode": 0,
+            "outputBytes": 485,
+            "outputSha256": "c390bad0fd44680ab04d21e641053cb0abfcaefa6d984b1ca0fa27a2b56ec7ca"
+          }
+        },
+        {
+          "id": "read-only",
+          "promptSha256": "6d296304abad72caaa08ab4287d4c2fe07b7690142fbde45973dfbf4335755c8",
+          "codex": {
+            "status": "ok",
+            "exitCode": 0,
+            "outputBytes": 82,
+            "outputSha256": "62f5d11b0e60510f5e66696c9c1601f41dbf98e562bddf0c8f9ab905a6aad32b"
+          },
+          "claude": {
+            "status": "ok",
+            "exitCode": 0,
+            "outputBytes": 265,
+            "outputSha256": "871ff5394e53c6e593d0c19d2976d178f117417cd98d7865a7614b85aed39d76"
+          }
+        },
+        {
+          "id": "performance",
+          "promptSha256": "bdca741874ece3954987cd64a28eea061893d361bdeeb5117c8e42104429ed87",
+          "codex": {
+            "status": "ok",
+            "exitCode": 0,
+            "outputBytes": 202,
+            "outputSha256": "945a07c6ae0b43f4af018e75295e85de25b4f569090f3ab6d383b73cf9188c2e"
+          },
+          "claude": {
+            "status": "ok",
+            "exitCode": 0,
+            "outputBytes": 505,
+            "outputSha256": "25c62bcdf92db69ae9155da9e2afcaeb44efa7c844594ed174c616d91fd47aba"
+          }
+        }
+      ],
+      "supplemental": {
+        "codexSessionStart": {
+          "status": "ok",
+          "exitCode": 0,
+          "outputBytes": 2,
+          "outputSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        },
+        "codexSafeTool": {
+          "status": "ok",
+          "exitCode": 0,
+          "outputBytes": 2,
+          "outputSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        },
+        "claudeSafeTool": {
+          "status": "ok",
+          "exitCode": 0,
+          "outputBytes": 18,
+          "outputSha256": "eec0ac849c9efe79d701cd404488aed59f717d6337c72dcdffd4aa02180286bc"
+        }
+      }
+    }
+  },
+  "filesMeasured": [
+    ".claude/agents/code-reviewer.md",
+    ".claude/agents/project-manager.md",
+    ".codex/agents/code-reviewer.toml",
+    ".codex/agents/project-manager.toml",
+    "AGENTS.md",
+    "CLAUDE.md",
+    ".agents/skills",
+    ".claude/skills",
+    ".agent-governance/core-rules.md",
+    ".claude/settings.json",
+    ".codex/hooks.json",
+    ".codex/config.toml",
+    ".codex/hooks/skill-forced-eval.cjs",
+    ".codex/hooks/session-start.cjs",
+    ".codex/hooks/pre-tool-use.cjs",
+    ".codex/hooks/stop.cjs",
+    ".claude/hooks/skill-forced-eval.cjs",
+    ".claude/hooks/pre-tool-use.cjs",
+    ".claude/hooks/stop.cjs"
+  ]
+}

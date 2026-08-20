@@ -1,0 +1,35 @@
+{
+  "name": "微信公众号",
+  "description": "ruoyi-common-mp 模块（公众号 H5 分享/JSSDK/菜单管理）",
+  "delete_dirs": [
+    "ruoyi-common/ruoyi-common-mp"
+  ],
+  "delete_files": [],
+  "remove_pom_lines": [
+    {
+      "file": "ruoyi-common/pom.xml",
+      "patterns": [
+        "<module>ruoyi-common-mp</module>"
+      ]
+    },
+    {
+      "file": "ruoyi-modules/ruoyi-business/pom.xml",
+      "patterns": [
+        "<artifactId>ruoyi-common-mp</artifactId>"
+      ]
+    },
+    {
+      "file": "ruoyi-modules/ruoyi-mall/pom.xml",
+      "patterns": [
+        "<artifactId>ruoyi-common-mp</artifactId>"
+      ]
+    }
+  ],
+  "manual_actions": [
+    "⚠️ 实测发现：单独裁 mp 会编译失败！ruoyi-business 中 WxShareController.java 直接 import plus.ruoyi.common.mp.domain 和 plus.ruoyi.common.mp.utils",
+    "⚠️ 必须手动删除：plus.ruoyi.business.api.app.WxShareController（H5 公众号分享）",
+    "搜索业务代码中其他 'WxMp'、'jssdk' 关键字",
+    "删除 application.yml 中 wx.mp 配置（appid/secret/token 等）"
+  ],
+  "depends_on": []
+}

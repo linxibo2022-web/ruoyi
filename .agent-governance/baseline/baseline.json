@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-19T04:34:45.429Z",
+  "rootRuleBytes": {
+    "AGENTS.md": {
+      "status": "present",
+      "bytes": 73834
+    },
+    "CLAUDE.md": {
+      "status": "present",
+      "bytes": 23335
+    }
+  },
+  "skills": {
+    "codex": {
+      "count": 78,
+      "status": "present",
+      "files": 80,
+      "directories": 80,
+      "bytes": 1736596
+    },
+    "claude": {
+      "count": 61,
+      "status": "present",
+      "files": 79,
+      "directories": 67,
+      "bytes": 1514267
+    }
+  },
+  "hooks": {
+    "files": {
+      ".codex/hooks/skill-forced-eval.cjs": {
+        "status": "present",
+        "bytes": 2238
+      },
+      ".codex/hooks/session-start.cjs": {
+        "status": "present",
+        "bytes": 2716
+      },
+      ".claude/hooks/skill-forced-eval.cjs": {
+        "status": "present",
+        "bytes": 10514
+      }
+    },
+    "maxOutputBytes": 8685,
+    "samples": [
+      {
+        "id": "crud",
+        "codex": {
+          "status": "ok",
+          "outputBytes": 596,
+          "outputSha256": "7bd0d93f4b13c0fa2002309d51f1c78d3a59ab4d80450967ac47edcae1e4e56c"
+        },
+        "claude": {
+          "status": "ok",
+          "outputBytes": 8685,
+          "outputSha256": "e45e2f950c44d4ebe740b5c852c0b7d26dea7238f98474045bd892bab83f120d"
+        }
+      },
+      {
+        "id": "database",
+        "codex": {
+          "status": "ok",
+          "outputBytes": 596,
+          "outputSha256": "7bd0d93f4b13c0fa2002309d51f1c78d3a59ab4d80450967ac47edcae1e4e56c"
+        },
+        "claude": {
+          "status": "ok",
+          "outputBytes": 8685,
+          "outputSha256": "e45e2f950c44d4ebe740b5c852c0b7d26dea7238f98474045bd892bab83f120d"
+        }
+      },
+      {
+        "id": "page",
+        "codex": {
+          "status": "ok",
+          "outputBytes": 596,
+          "outputSha256": "7bd0d93f4b13c0fa2002309d51f1c78d3a59ab4d80450967ac47edcae1e4e56c"
+        },
+        "claude": {
+          "status": "ok",
+          "outputBytes": 8685,
+          "outputSha256": "e45e2f950c44d4ebe740b5c852c0b7d26dea7238f98474045bd892bab83f120d"
+        }
+      },
+      {
+        "id": "error",
+        "codex": {
+          "status": "ok",
+          "outputBytes": 596,
+          "outputSha256": "7bd0d93f4b13c0fa2002309d51f1c78d3a59ab4d80450967ac47edcae1e4e56c"
+        },
+        "claude": {
+          "status": "ok",
+          "outputBytes": 8685,
+          "outputSha256": "e45e2f950c44d4ebe740b5c852c0b7d26dea7238f98474045bd892bab83f120d"
+        }
+      },
+      {
+        "id": "read-only",
+        "codex": {
+          "status": "ok",
+          "outputBytes": 596,
+          "outputSha256": "7bd0d93f4b13c0fa2002309d51f1c78d3a59ab4d80450967ac47edcae1e4e56c"
+        },
+        "claude": {
+          "status": "ok",
+          "outputBytes": 8685,
+          "outputSha256": "e45e2f950c44d4ebe740b5c852c0b7d26dea7238f98474045bd892bab83f120d"
+        }
+      },
+      {
+        "id": "performance",
+        "codex": {
+          "status": "ok",
+          "outputBytes": 596,
+          "outputSha256": "7bd0d93f4b13c0fa2002309d51f1c78d3a59ab4d80450967ac47edcae1e4e56c"
+        },
+        "claude": {
+          "status": "ok",
+          "outputBytes": 8685,
+          "outputSha256": "e45e2f950c44d4ebe740b5c852c0b7d26dea7238f98474045bd892bab83f120d"
+        }
+      }
+    ]
+  },
+  "filesMeasured": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    ".agents/skills",
+    ".claude/skills",
+    ".codex/hooks/skill-forced-eval.cjs",
+    ".codex/hooks/session-start.cjs",
+    ".claude/hooks/skill-forced-eval.cjs"
+  ]
+}
