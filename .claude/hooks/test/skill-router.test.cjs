@@ -40,12 +40,23 @@ for (const fixture of fixtures) {
   assert.ok(outputBytes <= 1024, `${fixture.id} 的 Hook 输出超过 1 KiB`);
   assert.ok(!output.includes(fixture.prompt), `${fixture.id} 的输出回显了用户输入`);
 
-  if (expected.bypass || !expected.primary) {
-    assert.strictEqual(output, '', `${fixture.id} 无需路由时必须保持静默`);
+  if (expected.bypass) {
+    assert.strictEqual(output, '', `${fixture.id} 斜杠命令/命令展开必须保持静默`);
+  } else if (!expected.primary) {
+    const parsed = JSON.parse(output);
+    assert.deepStrictEqual(Object.keys(parsed).sort(), ['hookSpecificOutput', 'systemMessage'], `${fixture.id} 顶层字段应为 systemMessage 与 hookSpecificOutput`);
+    assert.strictEqual(parsed.hookSpecificOutput.hookEventName, 'UserPromptSubmit', `${fixture.id} 的 Hook 事件名错误`);
+    assert.strictEqual(
+      parsed.hookSpecificOutput.additionalContext,
+      '⚙️ 强制技能评估：未匹配专用技能，按项目通用规则执行。',
+      `${fixture.id} 未命中时必须提示按通用规则执行`
+    );
+    assert.strictEqual(parsed.systemMessage, parsed.hookSpecificOutput.additionalContext, `${fixture.id} 用户可见提示应与注入上下文一致`);
   } else {
     const parsed = JSON.parse(output);
-    assert.deepStrictEqual(Object.keys(parsed), ['hookSpecificOutput'], `${fixture.id} 包含非必要顶层字段`);
+    assert.deepStrictEqual(Object.keys(parsed).sort(), ['hookSpecificOutput', 'systemMessage'], `${fixture.id} 顶层字段应为 systemMessage 与 hookSpecificOutput`);
     assert.strictEqual(parsed.hookSpecificOutput.hookEventName, 'UserPromptSubmit', `${fixture.id} 的 Hook 事件名错误`);
+    assert.strictEqual(parsed.systemMessage, parsed.hookSpecificOutput.additionalContext, `${fixture.id} 用户可见提示应与注入上下文一致`);
     const context = parsed.hookSpecificOutput.additionalContext;
     assert.strictEqual(typeof context, 'string', `${fixture.id} 缺少 additionalContext`);
     assert.ok(context.startsWith('⚙️ 强制技能评估：'), `${fixture.id} 缺少技能评估标识`);
@@ -94,5 +105,5 @@ assert.strictEqual(
 );
 
 console.log(`[OK] Claude Hook 路由 fixture ${fixtures.length} 项全部通过`);
-console.log(`[OK] 空路由、展开命令与恢复会话静默；命中结果通过 additionalContext 注入`);
+console.log(`[OK] 未命中提示按通用规则、展开命令与恢复会话静默；命中结果通过 additionalContext 注入`);
 console.log(`[OK] 注入防护通过；最大 Hook 输出 ${maxOutputBytes} B`);

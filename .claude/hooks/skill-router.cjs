@@ -29,11 +29,12 @@ function routeInput(input) {
  * 将路由转换为不含用户提示词的固定说明。
  *
  * @param {{ primary: string | null, helpers: string[], matches: string[], reason: string, bypass: boolean }} route 路由结果
- * @returns {string} 命中技能时可注入 Claude Code 上下文的说明；无需路由时为空字符串
+ * @returns {string} 命中技能时的完整说明，或未命中时的「按通用规则执行」提示；斜杠命令/命令展开（bypass）时为空字符串
  */
 function renderRoute(route) {
   const header = '⚙️ 强制技能评估';
-  if (route.bypass || !route.primary) return '';
+  if (route.bypass) return '';
+  if (!route.primary) return `${header}：未匹配专用技能，按项目通用规则执行。`;
 
   const candidates = route.matches.length > 1
     ? `；候选技能：${route.matches.join('、')}`

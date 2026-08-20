@@ -26,6 +26,7 @@ const additionalContext = renderRoute(routeInput(input));
 if (!additionalContext) process.exit(0);
 
 process.stdout.write(JSON.stringify({
+  systemMessage: additionalContext,
   hookSpecificOutput: {
     hookEventName: 'UserPromptSubmit',
     additionalContext
